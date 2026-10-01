@@ -61,22 +61,44 @@
         </div>
       </div>
 
-      <!-- 右側按鈕群 (專家諮詢 + 登入) -->
-      <div class="flex items-center gap-2">
+      <!-- 桌面版右側按鈕群 (sm 以上顯示) -->
+      <div class="hidden sm:flex items-center gap-2">
         <button onclick="openContactModal()"
           class="text-xs sm:text-sm bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-envelope-open-text"></i> 專家諮詢
         </button>
 
-        <!-- 登入按鈕 (預設未登入狀態) -->
         <button onclick="openLoginModal()"
           class="text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
-          id="authBtn">
+          id="authBtnDesktop">
           <i class="fa-solid fa-right-to-bracket text-slate-500"></i>
-          <span id="currentRoleText">登入</span>
+          <span id="currentRoleTextDesktop">登入</span>
         </button>
       </div>
 
+      <!-- 手機版漢堡選單按鈕 (sm 以下顯示) -->
+      <div class="flex sm:hidden items-center">
+        <button onclick="toggleMobileMenu()"
+          class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-base transition active:scale-95 cursor-pointer">
+          <i id="mobileMenuIcon" class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- 手機版下拉選單 (預設隱藏) -->
+    <div id="mobileMenu"
+      class="hidden sm:hidden bg-white border-t border-slate-100 px-4 py-4 space-y-2.5 shadow-lg transition-all">
+      <button onclick="closeMobileMenu(); openContactModal();"
+        class="w-full text-left px-4 py-2.5 bg-red-50 text-red-700 rounded-xl text-xs font-medium flex items-center gap-2.5 active:bg-red-100 transition">
+        <i class="fa-solid fa-envelope-open-text text-base"></i> 專家諮詢
+      </button>
+
+      <button onclick="closeMobileMenu(); openLoginModal();"
+        class="w-full text-left px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-medium flex items-center gap-2.5 active:bg-slate-200 transition">
+        <i id="authBtnMobileIcon" class="fa-solid fa-right-to-bracket text-base text-slate-500"></i>
+        <span id="currentRoleTextMobile">會員登入</span>
+      </button>
     </div>
   </header>
 
@@ -268,7 +290,7 @@
 
   <!-- JavaScript 互動邏輯 -->
   <script>
-    // 1. 權限帳號資料庫 JSON (包含 PM、RD 與新加入的「隨便」測試帳號)
+    // 1. 權限帳號資料庫 JSON
     const userCredentialsJSON = [
       {
         role: "pm",
@@ -354,10 +376,30 @@
       }
     ];
 
-    let currentRole = null; // 預設為未登入
+    let currentRole = null;
     let currentCategory = 'all';
     let currentPage = 1;
     const pageSize = 10;
+
+    // 手機版漢堡選單控制
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+    function toggleMobileMenu() {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      if (isOpen) {
+        mobileMenu.classList.add('hidden');
+        mobileMenuIcon.className = 'fa-solid fa-bars';
+      } else {
+        mobileMenu.classList.remove('hidden');
+        mobileMenuIcon.className = 'fa-solid fa-xmark';
+      }
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.add('hidden');
+      mobileMenuIcon.className = 'fa-solid fa-bars';
+    }
 
     // 登入彈窗控制
     const loginModal = document.getElementById('loginModal');
@@ -372,7 +414,6 @@
       loginModal.classList.add('hidden');
     }
 
-    // 一鍵帶入測試帳號小幫手
     function fillTestAccount(roleKey) {
       const targetUser = userCredentialsJSON.find(u => u.role === roleKey);
       if (targetUser) {
@@ -382,7 +423,6 @@
       }
     }
 
-    // 處理登入提交邏輯 (比對 JSON 帳密)
     function handleLoginSubmit(event) {
       event.preventDefault();
       const emailInput = document.getElementById('loginEmail').value.trim();
@@ -408,7 +448,6 @@
       }
     }
 
-    // 登出功能
     function logout() {
       currentRole = null;
       updateRoleUI();
@@ -421,35 +460,49 @@
       }, 3000);
     }
 
-    // 更新介面狀態
+    // 更新桌面與手機版介面狀態
     function updateRoleUI() {
-      const roleTextEl = document.getElementById('currentRoleText');
+      const roleTextDesktop = document.getElementById('currentRoleTextDesktop');
+      const roleTextMobile = document.getElementById('currentRoleTextMobile');
       const roleAlert = document.getElementById('roleAlert');
       const roleAlertText = document.getElementById('roleAlertText');
       const logoutBtn = document.getElementById('logoutBtn');
-      const authBtnIcon = document.querySelector('#authBtn i');
+      const desktopIcon = document.querySelector('#authBtnDesktop i');
+      const mobileIcon = document.getElementById('authBtnMobileIcon');
 
       if (currentRole === null) {
-        roleTextEl.textContent = '登入';
-        authBtnIcon.className = 'fa-solid fa-right-to-bracket text-slate-500';
+        roleTextDesktop.textContent = '登入';
+        roleTextMobile.textContent = '會員登入';
+        desktopIcon.className = 'fa-solid fa-right-to-bracket text-slate-500';
+        mobileIcon.className = 'fa-solid fa-right-to-bracket text-base text-slate-500';
+
         roleAlert.className = 'mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
         roleAlertText.textContent = '目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。';
         logoutBtn.classList.add('hidden');
       } else if (currentRole === 'pm') {
-        roleTextEl.textContent = '產品經理 (PM)';
-        authBtnIcon.className = 'fa-solid fa-briefcase text-blue-500';
+        roleTextDesktop.textContent = '產品經理 (PM)';
+        roleTextMobile.textContent = '產品經理 (PM)';
+        desktopIcon.className = 'fa-solid fa-briefcase text-blue-500';
+        mobileIcon.className = 'fa-solid fa-briefcase text-base text-blue-500';
+
         roleAlert.className = 'mb-6 bg-amber-50 border border-amber-100 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
         roleAlertText.textContent = '【PM 已登入】已解鎖產品藍圖規劃、CE 標記合規時程與商業合規審查重點。';
         logoutBtn.classList.remove('hidden');
       } else if (currentRole === 'rd') {
-        roleTextEl.textContent = '研發工程師 (RD)';
-        authBtnIcon.className = 'fa-solid fa-code text-emerald-500';
+        roleTextDesktop.textContent = '研發工程師 (RD)';
+        roleTextMobile.textContent = '研發工程師 (RD)';
+        desktopIcon.className = 'fa-solid fa-code text-emerald-500';
+        mobileIcon.className = 'fa-solid fa-code text-base text-emerald-500';
+
         roleAlert.className = 'mb-6 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
         roleAlertText.textContent = '【RD 已登入】已解鎖 SBOM 自動化生成、漏洞 24 小時通報與技術防護要求指引。';
         logoutBtn.classList.remove('hidden');
       } else if (currentRole === 'test') {
-        roleTextEl.textContent = '隨便 (Test User)';
-        authBtnIcon.className = 'fa-solid fa-user text-purple-500';
+        roleTextDesktop.textContent = '隨便 (Test User)';
+        roleTextMobile.textContent = '隨便 (Test User)';
+        desktopIcon.className = 'fa-solid fa-user text-purple-500';
+        mobileIcon.className = 'fa-solid fa-user text-base text-purple-500';
+
         roleAlert.className = 'mb-6 bg-purple-50 border border-purple-100 text-purple-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
         roleAlertText.textContent = '【一般測試帳號已登入】歡迎使用本系統進行各項功能測試。';
         logoutBtn.classList.remove('hidden');
