@@ -61,44 +61,20 @@
         </div>
       </div>
 
-      <!-- 右側按鈕群 (專家諮詢 + 權限登入) -->
+      <!-- 右側按鈕群 (專家諮詢 + 登入) -->
       <div class="flex items-center gap-2">
         <button onclick="openContactModal()"
           class="text-xs sm:text-sm bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-envelope-open-text"></i> 專家諮詢
         </button>
 
-        <!-- 權限角色按鈕 -->
-        <div class="relative">
-          <button onclick="toggleRoleDropdown()"
-            class="text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
-            id="roleBtn">
-            <i class="fa-solid fa-user-shield text-slate-500"></i>
-            <span id="currentRoleText">訪客 (Guest)</span>
-            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
-          </button>
-
-          <!-- 角色下拉選單 -->
-          <div id="roleDropdown"
-            class="absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 hidden z-50">
-            <div class="px-3 py-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">切換使用者權限</div>
-            <button onclick="switchRole('guest')"
-              class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer">
-              <span><i class="fa-regular fa-user mr-2 text-slate-400"></i>訪客 (Guest)</span>
-              <i id="check-guest" class="fa-solid fa-check text-red-600 text-xs"></i>
-            </button>
-            <button onclick="switchRole('pm')"
-              class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer">
-              <span><i class="fa-solid fa-briefcase mr-2 text-blue-500"></i>產品經理 (PM)</span>
-              <i id="check-pm" class="fa-solid fa-check text-red-600 text-xs hidden"></i>
-            </button>
-            <button onclick="switchRole('rd')"
-              class="w-full text-left px-3.5 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer">
-              <span><i class="fa-solid fa-code mr-2 text-emerald-500"></i>研發工程師 (RD)</span>
-              <i id="check-rd" class="fa-solid fa-check text-red-600 text-xs hidden"></i>
-            </button>
-          </div>
-        </div>
+        <!-- 登入按鈕 (預設未登入狀態) -->
+        <button onclick="openLoginModal()"
+          class="text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+          id="authBtn">
+          <i class="fa-solid fa-right-to-bracket text-slate-500"></i>
+          <span id="currentRoleText">登入</span>
+        </button>
       </div>
 
     </div>
@@ -109,9 +85,13 @@
 
     <!-- 權限提示條 (依身分動態顯示) -->
     <div id="roleAlert"
-      class="mb-6 bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center gap-3">
-      <i class="fa-solid fa-circle-info text-blue-500 text-base shrink-0"></i>
-      <span id="roleAlertText">目前身分為「訪客」，可瀏覽所有 CRA 常見問題與合規指引。</span>
+      class="mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-circle-info text-slate-400 text-base shrink-0"></i>
+        <span id="roleAlertText">目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。</span>
+      </div>
+      <button onclick="logout()" id="logoutBtn"
+        class="hidden text-xs underline font-medium hover:text-slate-900 cursor-pointer shrink-0">登出</button>
     </div>
 
     <!-- 搜尋區塊 -->
@@ -179,7 +159,65 @@
     </div>
   </footer>
 
-  <!-- 諮詢表單 Modal 彈窗 -->
+  <!-- 登入彈窗 Modal -->
+  <div id="loginModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-user-lock text-red-600"></i> 會員登入 (權限驗證)
+        </h3>
+        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-lg p-2 cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p class="text-slate-500 text-xs mb-4">請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。</p>
+
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">電子郵件 (信箱)</label>
+          <input type="email" id="loginEmail" required placeholder="例如：pm@cra.com"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">密碼</label>
+          <input type="password" id="loginPassword" required placeholder="請輸入密碼"
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+
+        <!-- 錯誤提示 -->
+        <div id="loginError" class="text-red-500 text-xs hidden font-medium bg-red-50 px-3 py-2 rounded-lg">
+          帳號或密碼錯誤，請重新輸入。
+        </div>
+
+        <div class="pt-1">
+          <button type="submit"
+            class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm shadow-red-200 transition-colors cursor-pointer">確認登入</button>
+        </div>
+      </form>
+
+      <!-- 快速測試帳號小幫手 -->
+      <div class="mt-5 pt-4 border-t border-slate-100">
+        <p class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">快速測試帳號一鍵帶入：</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="fillTestAccount('pm')"
+            class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium cursor-pointer transition">
+            PM 帳號
+          </button>
+          <button type="button" onclick="fillTestAccount('rd')"
+            class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium cursor-pointer transition">
+            RD 帳號
+          </button>
+          <button type="button" onclick="fillTestAccount('test')"
+            class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer transition">
+            隨便帳號
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 專家諮詢表單 Modal 彈窗 -->
   <div id="contactModal"
     class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-opacity">
     <div
@@ -230,7 +268,29 @@
 
   <!-- JavaScript 互動邏輯 -->
   <script>
-    // 完整 12 筆 QA 資料庫 (超過 10 筆，自動啟動分頁)
+    // 1. 權限帳號資料庫 JSON (包含 PM、RD 與新加入的「隨便」測試帳號)
+    const userCredentialsJSON = [
+      {
+        role: "pm",
+        name: "產品經理 (PM)",
+        email: "pm@cra.com",
+        password: "pm123"
+      },
+      {
+        role: "rd",
+        name: "研發工程師 (RD)",
+        email: "rd@cra.com",
+        password: "rd123"
+      },
+      {
+        role: "test",
+        name: "隨便 (Test User)",
+        email: "test@cra.com",
+        password: "test123"
+      }
+    ];
+
+    // 2. 完整 12 筆 QA 資料庫
     const faqData = [
       {
         category: 'product',
@@ -294,55 +354,106 @@
       }
     ];
 
-    let currentRole = 'guest'; // guest, pm, rd
+    let currentRole = null; // 預設為未登入
     let currentCategory = 'all';
     let currentPage = 1;
     const pageSize = 10;
 
-    // 角色權限切換控制
-    const roleDropdown = document.getElementById('roleDropdown');
-    function toggleRoleDropdown() {
-      roleDropdown.classList.toggle('hidden');
+    // 登入彈窗控制
+    const loginModal = document.getElementById('loginModal');
+
+    function openLoginModal() {
+      document.getElementById('loginError').classList.add('hidden');
+      document.getElementById('loginForm').reset();
+      loginModal.classList.remove('hidden');
     }
 
-    // 點擊畫布其他地方關閉下拉選單
-    window.addEventListener('click', (e) => {
-      const roleBtn = document.getElementById('roleBtn');
-      if (!roleBtn.contains(e.target) && !roleDropdown.contains(e.target)) {
-        roleDropdown.classList.add('hidden');
+    function closeLoginModal() {
+      loginModal.classList.add('hidden');
+    }
+
+    // 一鍵帶入測試帳號小幫手
+    function fillTestAccount(roleKey) {
+      const targetUser = userCredentialsJSON.find(u => u.role === roleKey);
+      if (targetUser) {
+        document.getElementById('loginEmail').value = targetUser.email;
+        document.getElementById('loginPassword').value = targetUser.password;
+        document.getElementById('loginError').classList.add('hidden');
       }
-    });
+    }
 
-    function switchRole(role) {
-      currentRole = role;
-      roleDropdown.classList.add('hidden');
+    // 處理登入提交邏輯 (比對 JSON 帳密)
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const emailInput = document.getElementById('loginEmail').value.trim();
+      const passwordInput = document.getElementById('loginPassword').value.trim();
+      const errorEl = document.getElementById('loginError');
 
-      // 更新勾選狀態圖示
-      document.getElementById('check-guest').classList.add('hidden');
-      document.getElementById('check-pm').classList.add('hidden');
-      document.getElementById('check-rd').classList.add('hidden');
-      document.getElementById(`check-${role}`).classList.remove('hidden');
+      const matchedUser = userCredentialsJSON.find(u => u.email === emailInput && u.password === passwordInput);
 
-      // 更新按鈕文字與提示訊息
+      if (matchedUser) {
+        currentRole = matchedUser.role;
+        updateRoleUI();
+        closeLoginModal();
+
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMessage').textContent = `成功登入：${matchedUser.name}`;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3500);
+      } else {
+        errorEl.textContent = '帳號或密碼錯誤，請重新輸入。';
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    // 登出功能
+    function logout() {
+      currentRole = null;
+      updateRoleUI();
+
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = '已成功登出';
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // 更新介面狀態
+    function updateRoleUI() {
       const roleTextEl = document.getElementById('currentRoleText');
       const roleAlert = document.getElementById('roleAlert');
       const roleAlertText = document.getElementById('roleAlertText');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const authBtnIcon = document.querySelector('#authBtn i');
 
-      if (role === 'guest') {
-        roleTextEl.textContent = '訪客 (Guest)';
-        roleAlert.className = 'mb-6 bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center gap-3';
-        roleAlertText.textContent = '目前身分為「訪客」，可瀏覽所有 CRA 常見問題與合規指引。';
-      } else if (role === 'pm') {
+      if (currentRole === null) {
+        roleTextEl.textContent = '登入';
+        authBtnIcon.className = 'fa-solid fa-right-to-bracket text-slate-500';
+        roleAlert.className = 'mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+        roleAlertText.textContent = '目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。';
+        logoutBtn.classList.add('hidden');
+      } else if (currentRole === 'pm') {
         roleTextEl.textContent = '產品經理 (PM)';
-        roleAlert.className = 'mb-6 bg-amber-50 border border-amber-100 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center gap-3';
-        roleAlertText.textContent = '【PM 視角】已解鎖產品藍圖規劃、CE 標記合規時程與商業合規審查重點。';
-      } else if (role === 'rd') {
+        authBtnIcon.className = 'fa-solid fa-briefcase text-blue-500';
+        roleAlert.className = 'mb-6 bg-amber-50 border border-amber-100 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+        roleAlertText.textContent = '【PM 已登入】已解鎖產品藍圖規劃、CE 標記合規時程與商業合規審查重點。';
+        logoutBtn.classList.remove('hidden');
+      } else if (currentRole === 'rd') {
         roleTextEl.textContent = '研發工程師 (RD)';
-        roleAlert.className = 'mb-6 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center gap-3';
-        roleAlertText.textContent = '【RD 視角】已解鎖 SBOM 自動化生成、漏洞 24 小時通報與技術防護要求指引。';
+        authBtnIcon.className = 'fa-solid fa-code text-emerald-500';
+        roleAlert.className = 'mb-6 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+        roleAlertText.textContent = '【RD 已登入】已解鎖 SBOM 自動化生成、漏洞 24 小時通報與技術防護要求指引。';
+        logoutBtn.classList.remove('hidden');
+      } else if (currentRole === 'test') {
+        roleTextEl.textContent = '隨便 (Test User)';
+        authBtnIcon.className = 'fa-solid fa-user text-purple-500';
+        roleAlert.className = 'mb-6 bg-purple-50 border border-purple-100 text-purple-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+        roleAlertText.textContent = '【一般測試帳號已登入】歡迎使用本系統進行各項功能測試。';
+        logoutBtn.classList.remove('hidden');
       }
-
-      renderFaqs();
     }
 
     // 搜尋與篩選邏輯
@@ -361,7 +472,7 @@
         btn.classList.add('bg-red-600', 'text-white', 'shadow-sm');
 
         currentCategory = btn.getAttribute('data-category');
-        currentPage = 1; // 切換分類重置回第一頁
+        currentPage = 1;
         renderFaqs();
       });
     });
@@ -373,7 +484,7 @@
       } else {
         clearSearchBtn.classList.add('hidden');
       }
-      currentPage = 1; // 搜尋重置回第一頁
+      currentPage = 1;
       renderFaqs();
     });
 
@@ -411,7 +522,6 @@
 
       noResultsDiv.classList.add('hidden');
 
-      // 計算分頁
       const totalPages = Math.ceil(filtered.length / pageSize);
       if (currentPage > totalPages) currentPage = totalPages || 1;
 
@@ -419,9 +529,7 @@
       const endIndex = startIndex + pageSize;
       const pageData = filtered.slice(startIndex, endIndex);
 
-      // 產生 DOM
       pageData.forEach((item, index) => {
-        const globalIndex = startIndex + index + 1;
         const itemHtml = `
           <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
             <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer">
@@ -439,10 +547,8 @@
         faqListEl.insertAdjacentHTML('beforeend', itemHtml);
       });
 
-      // 綁定手風琴展開收合事件
       bindAccordionEvents();
 
-      // 處理分頁控制列
       if (filtered.length > pageSize) {
         paginationContainer.classList.remove('hidden');
         document.getElementById('paginationInfo').textContent = `顯示第 ${startIndex + 1} - ${Math.min(endIndex, filtered.length)} 筆，共 ${filtered.length} 筆`;
@@ -483,7 +589,6 @@
       const container = document.getElementById('paginationButtons');
       container.innerHTML = '';
 
-      // 上一頁按鈕
       const prevDisabled = currentPage === 1;
       container.insertAdjacentHTML('beforeend', `
         <button onclick="changePage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''}
@@ -492,7 +597,6 @@
         </button>
       `);
 
-      // 頁碼按鈕
       for (let i = 1; i <= totalPages; i++) {
         const active = i === currentPage;
         container.insertAdjacentHTML('beforeend', `
@@ -503,7 +607,6 @@
         `);
       }
 
-      // 下一頁按鈕
       const nextDisabled = currentPage === totalPages;
       container.insertAdjacentHTML('beforeend', `
         <button onclick="changePage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''}
@@ -519,7 +622,7 @@
       window.scrollTo({ top: 200, behavior: 'smooth' });
     }
 
-    // Modal 視窗控制
+    // 專家諮詢 Modal 控制
     const contactModal = document.getElementById('contactModal');
 
     function openContactModal() {
@@ -530,7 +633,6 @@
       contactModal.classList.add('hidden');
     }
 
-    // 表單提交
     function handleContactSubmit(event) {
       event.preventDefault();
       closeContactModal();
