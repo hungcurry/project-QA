@@ -42,6 +42,23 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* 骨架屏閃爍動畫 */
+    @keyframes pulse-custom {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .skeleton-pulse {
+      animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
   </style>
 </head>
 
@@ -116,22 +133,63 @@
         class="hidden text-xs underline font-medium hover:text-slate-900 cursor-pointer shrink-0">登出</button>
     </div>
 
-    <!-- 搜尋區塊 -->
+    <!-- 搜尋區塊與標題 -->
     <div class="text-center mb-8">
       <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">CRA 規範與合規要求查詢</h2>
       <p class="text-slate-500 mb-5 text-xs sm:text-base">快速查找產品要求、漏洞處理流程及 CE 標記與資訊標示規範</p>
+    </div>
+  </main>
 
-      <div class="relative max-w-xl mx-auto">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
-          <i class="fa-solid fa-magnifying-glass text-base"></i>
-        </span>
-        <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理、CE標誌...）"
-          class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base text-slate-700 transition">
-        <button id="clearSearch"
-          class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden">
-          <i class="fa-solid fa-circle-xmark text-lg"></i>
-        </button>
+  <!-- 3 個骨架屏 (未來放影片用)：手機版滿版左右滑動，桌面版三欄網格 -->
+  <div class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8">
+    <div class="max-w-4xl mx-auto px-0 sm:px-6">
+      <div class="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto no-scrollbar px-4 sm:px-0">
+
+        <!-- 骨架屏 1 -->
+        <div
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
+            <i class="fa-solid fa-film text-2xl"></i>
+          </div>
+          <div class="h-4 bg-slate-200 rounded-md w-3/4 mb-2"></div>
+          <div class="h-3 bg-slate-100 rounded-md w-1/2"></div>
+        </div>
+
+        <!-- 骨架屏 2 -->
+        <div
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
+            <i class="fa-solid fa-film text-2xl"></i>
+          </div>
+          <div class="h-4 bg-slate-200 rounded-md w-3/4 mb-2"></div>
+          <div class="h-3 bg-slate-100 rounded-md w-1/2"></div>
+        </div>
+
+        <!-- 骨架屏 3 -->
+        <div
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
+            <i class="fa-solid fa-film text-2xl"></i>
+          </div>
+          <div class="h-4 bg-slate-200 rounded-md w-3/4 mb-2"></div>
+          <div class="h-3 bg-slate-100 rounded-md w-1/2"></div>
+        </div>
+
       </div>
+    </div>
+  </div>
+
+  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 flex-grow">
+    <div class="relative max-w-xl mx-auto mb-8">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+        <i class="fa-solid fa-magnifying-glass text-base"></i>
+      </span>
+      <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理、CE標誌...）"
+        class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base text-slate-700 transition">
+      <button id="clearSearch"
+        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden">
+        <i class="fa-solid fa-circle-xmark text-lg"></i>
+      </button>
     </div>
 
     <!-- 分類標籤篩選 (對應官方三大主軸) -->
@@ -460,7 +518,6 @@
       }, 3000);
     }
 
-    // 更新桌面與手機版介面狀態
     function updateRoleUI() {
       const roleTextDesktop = document.getElementById('currentRoleTextDesktop');
       const roleTextMobile = document.getElementById('currentRoleTextMobile');
