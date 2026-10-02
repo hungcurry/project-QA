@@ -73,8 +73,8 @@
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">CRA 合規指引中心</h1>
-          <p class="text-[11px] text-slate-400">Cyber Resilience Act 實務問答集</p>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">CRA 網路韌性法案</h1>
+          <p class="text-[11px] text-slate-400">Cyber Resilience Act</p>
         </div>
       </div>
 
@@ -345,421 +345,422 @@
     <i class="fa-solid fa-circle-check text-emerald-400 text-base shrink-0"></i>
     <span id="toastMessage">已成功送出！</span>
   </div>
+</body>
 
-  <!-- JavaScript 互動邏輯 -->
-  <script>
-    // 1. 權限帳號資料庫 JSON
-    const userCredentialsJSON = [
-      {
-        role: "pm",
-        name: "產品經理 (PM)",
-        email: "pm@cra.com",
-        password: "pm123"
-      },
-      {
-        role: "rd",
-        name: "研發工程師 (RD)",
-        email: "rd@cra.com",
-        password: "rd123"
-      },
-      {
-        role: "test",
-        name: "隨便 (Test User)",
-        email: "test@cra.com",
-        password: "test123"
-      }
-    ];
-
-    // 2. 完整 12 筆 QA 資料庫
-    const faqData = [
-      {
-        category: 'product',
-        question: 'CRA 對於上市產品在「產品要求」上有哪些核心規範？',
-        answer: '依據 CRA 規範，產品必須具備適當級別的安全性，且<b>交付的產品必須沒有已知漏洞</b>。根據風險與適用情況，製造商須落實：預設安全、啟用充分的安全更新、防範未經授權的存取、保障數據與程式碼的機密性及完整性、數據最小化、確保基本功能可用性、最大程度降低對其他裝置的負面影響、限制攻擊面、降低事件影響、記錄與監控安全相關事件，以及安全且永久地刪除及/或傳輸數據與設定。'
-      },
-      {
-        category: 'vulnerability',
-        question: '製造商在「漏洞處理流程」中必須執行哪些關鍵步驟？',
-        answer: '漏洞處理流程涵蓋完整的生命週期管理：<br>• 識別並記錄依賴項與漏洞（包含產出與維護 SBOM）<br>• 追蹤漏洞並消除已知漏洞、立即處理新發現漏洞<br>• 測試數位產品的安全性<br>• 公開揭露已修復漏洞的相關資訊、建立協調漏洞揭露政策<br>• 促進潛在漏洞資訊的共享<br>• 及時提供免費修補程式並附帶安全公告'
-      },
-      {
-        category: 'label',
-        question: '在「資訊和標記」部分，製造商需要準備哪些合規檔案與聲明？',
-        answer: '資訊和標記要求包括：<br>• CE 標誌認證與歐盟符合性聲明 (DoC)<br>• 任命授權代表，指定安全聯絡窗口<br>• 技術文件（包含網路安全風險評估）<br>• 提供安全更新可用性資訊、明確定義技術支援範圍與支援週期的技術文件<br>• 涵蓋頂層依賴項的 SBOM（軟體物料清單）<br>• 提供可存取修訂版本的公開軟體存儲庫、提供使用者操作說明集與產品識別資訊'
-      },
-      {
-        category: 'vulnerability',
-        question: '為什麼 SBOM（軟體物料清單）在 CRA 漏洞處理中如此重要？',
-        answer: 'SBOM 能夠協助製造商精確識別產品中包含的所有第三方與開源軟體依賴項。當供應鏈或套件庫爆發安全漏洞時，開發團隊能透過 SBOM 在最短時間內追蹤受影響範圍，並進行漏洞修補與公告，確保符合 CRA 對供應鏈透明度的嚴格要求。'
-      },
-      {
-        category: 'product',
-        question: 'CRA 產品要求中的「預設安全 (Security by Default)」具體指什麼？',
-        answer: '「預設安全」要求產品在出廠或剛啟用時，必須具備最高安全密度的預設配置。例如：不預設使用高風險的弱密碼、預設關閉不必要的通訊埠或遠端服務，讓使用者在不需進行繁雜資安設定的情況下，也能享有基本的安全防護。'
-      },
-      {
-        category: 'label',
-        question: '技術文件中必須包含哪些關於安全支援週期的資訊？',
-        answer: '製造商必須在技術文件與使用者說明中，明確揭露產品預期的<b>支援週期（通常至少 5 年或配合產品實際生命週期）</b>。在此期間內，製造商必須承諾提供安全更新、修補程式及相應支援，確保使用者清楚了解軟體維護的期限。'
-      },
-      {
-        category: 'product',
-        question: '非重要類別的數位產品（Class I / Class II）該如何進行合規評估？',
-        answer: '多數預设標準的物聯網與數位產品屬於預设 Class I 或 Class II，製造商通常可透過內部控制評估（自我宣告）或交由歐盟指定機構 (Notified Body) 進行型式檢驗，具體取決於產品的複雜度與聯網風險級別。'
-      },
-      {
-        category: 'vulnerability',
-        question: '發現漏洞後，向歐盟 ENISA 通報的法定期限是多久？',
-        answer: '依據 CRA 規定，製造商一旦發現產品遭受主動利用的漏洞（Actively exploited vulnerability）或重大資安事件，必須在 **24 小時內** 向 ENISA（歐盟網路安全局）及相關成員國 CSIRTs 提交早期預警，並在 72 小時內提交完整通報。'
-      },
-      {
-        category: 'label',
-        question: 'CE 標記必須以什麼形式展示在硬體或軟體產品上？',
-        answer: 'CE 標記通常應清晰、易讀且永久地貼在實體產品、包裝或隨附文件中。若為純軟體或數位產品，則可在軟體安裝畫面、關於頁面或官方下載網站中顯著展示 CE 標誌與數位合規證明。'
-      },
-      {
-        category: 'product',
-        question: '開源軟體開發者（Open Source Stewards）是否需要負擔 CRA 合規責任？',
-        answer: '為了保護開源生態系，歐盟 CRA 對「純開源開發與協作」採取豁免。然而，若開源專案被用於商業化數位產品供應鏈，且具備明顯的經濟實體或頻繁的商業發行行為，則可能需要符合對應的商業供應商義務。'
-      },
-      {
-        category: 'vulnerability',
-        question: 'RD 研發團隊在日常開發中如何自動化產出符合 CRA 標準的 SBOM？',
-        answer: 'RD 團隊可透過 CI/CD 管道整合開源或商業工具（如 Syft、CycloneDX、Trivy 等），在每一次建置 (Build) 階段自動掃描專案依賴套件，並輸出標準格式的 SBOM JSON/XML 檔案，作為技術合規檔案的一部分。'
-      },
-      {
-        category: 'label',
-        question: 'PM 產品經理在規劃產品藍圖時，需將哪些 CRA 時程納入考量？',
-        answer: 'PM 必須注意 CRA 通過後的過渡期（通常為生效後 36 個月內全面強制執行）。產品藍圖需提前預留 6-12 個月進行網路安全風險評估、技術文件編撰、SBOM 導入以及第三方驗證時間，避免產品上市受阻。'
-      }
-    ];
-
-    let currentRole = null;
-    let currentCategory = 'all';
-    let currentPage = 1;
-    const pageSize = 10;
-
-    // 手機版漢堡選單控制
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mobileMenuIcon = document.getElementById('mobileMenuIcon');
-
-    function toggleMobileMenu() {
-      const isOpen = !mobileMenu.classList.contains('hidden');
-      if (isOpen) {
-        mobileMenu.classList.add('hidden');
-        mobileMenuIcon.className = 'fa-solid fa-bars';
-      } else {
-        mobileMenu.classList.remove('hidden');
-        mobileMenuIcon.className = 'fa-solid fa-xmark';
-      }
+<!-- JavaScript 互動邏輯 -->
+<script>
+  // 1. 權限帳號資料庫 JSON
+  const userCredentialsJSON = [
+    {
+      role: "pm",
+      name: "產品經理 (PM)",
+      email: "pm@cra.com",
+      password: "pm123"
+    },
+    {
+      role: "rd",
+      name: "研發工程師 (RD)",
+      email: "rd@cra.com",
+      password: "rd123"
+    },
+    {
+      role: "test",
+      name: "隨便 (Test User)",
+      email: "test@cra.com",
+      password: "test123"
     }
+  ];
 
-    function closeMobileMenu() {
+  // 2. 完整 12 筆 QA 資料庫
+  const faqData = [
+    {
+      category: 'product',
+      question: 'CRA 對於上市產品在「產品要求」上有哪些核心規範？',
+      answer: '依據 CRA 規範，產品必須具備適當級別的安全性，且<b>交付的產品必須沒有已知漏洞</b>。根據風險與適用情況，製造商須落實：預設安全、啟用充分的安全更新、防範未經授權的存取、保障數據與程式碼的機密性及完整性、數據最小化、確保基本功能可用性、最大程度降低對其他裝置的負面影響、限制攻擊面、降低事件影響、記錄與監控安全相關事件，以及安全且永久地刪除及/或傳輸數據與設定。'
+    },
+    {
+      category: 'vulnerability',
+      question: '製造商在「漏洞處理流程」中必須執行哪些關鍵步驟？',
+      answer: '漏洞處理流程涵蓋完整的生命週期管理：<br>• 識別並記錄依賴項與漏洞（包含產出與維護 SBOM）<br>• 追蹤漏洞並消除已知漏洞、立即處理新發現漏洞<br>• 測試數位產品的安全性<br>• 公開揭露已修復漏洞的相關資訊、建立協調漏洞揭露政策<br>• 促進潛在漏洞資訊的共享<br>• 及時提供免費修補程式並附帶安全公告'
+    },
+    {
+      category: 'label',
+      question: '在「資訊和標記」部分，製造商需要準備哪些合規檔案與聲明？',
+      answer: '資訊和標記要求包括：<br>• CE 標誌認證與歐盟符合性聲明 (DoC)<br>• 任命授權代表，指定安全聯絡窗口<br>• 技術文件（包含網路安全風險評估）<br>• 提供安全更新可用性資訊、明確定義技術支援範圍與支援週期的技術文件<br>• 涵蓋頂層依賴項的 SBOM（軟體物料清單）<br>• 提供可存取修訂版本的公開軟體存儲庫、提供使用者操作說明集與產品識別資訊'
+    },
+    {
+      category: 'vulnerability',
+      question: '為什麼 SBOM（軟體物料清單）在 CRA 漏洞處理中如此重要？',
+      answer: 'SBOM 能夠協助製造商精確識別產品中包含的所有第三方與開源軟體依賴項。當供應鏈或套件庫爆發安全漏洞時，開發團隊能透過 SBOM 在最短時間內追蹤受影響範圍，並進行漏洞修補與公告，確保符合 CRA 對供應鏈透明度的嚴格要求。'
+    },
+    {
+      category: 'product',
+      question: 'CRA 產品要求中的「預設安全 (Security by Default)」具體指什麼？',
+      answer: '「預設安全」要求產品在出廠或剛啟用時，必須具備最高安全密度的預設配置。例如：不預設使用高風險的弱密碼、預設關閉不必要的通訊埠或遠端服務，讓使用者在不需進行繁雜資安設定的情況下，也能享有基本的安全防護。'
+    },
+    {
+      category: 'label',
+      question: '技術文件中必須包含哪些關於安全支援週期的資訊？',
+      answer: '製造商必須在技術文件與使用者說明中，明確揭露產品預期的<b>支援週期（通常至少 5 年或配合產品實際生命週期）</b>。在此期間內，製造商必須承諾提供安全更新、修補程式及相應支援，確保使用者清楚了解軟體維護的期限。'
+    },
+    {
+      category: 'product',
+      question: '非重要類別的數位產品（Class I / Class II）該如何進行合規評估？',
+      answer: '多數預设標準的物聯網與數位產品屬於預设 Class I 或 Class II，製造商通常可透過內部控制評估（自我宣告）或交由歐盟指定機構 (Notified Body) 進行型式檢驗，具體取決於產品的複雜度與聯網風險級別。'
+    },
+    {
+      category: 'vulnerability',
+      question: '發現漏洞後，向歐盟 ENISA 通報的法定期限是多久？',
+      answer: '依據 CRA 規定，製造商一旦發現產品遭受主動利用的漏洞（Actively exploited vulnerability）或重大資安事件，必須在 **24 小時內** 向 ENISA（歐盟網路安全局）及相關成員國 CSIRTs 提交早期預警，並在 72 小時內提交完整通報。'
+    },
+    {
+      category: 'label',
+      question: 'CE 標記必須以什麼形式展示在硬體或軟體產品上？',
+      answer: 'CE 標記通常應清晰、易讀且永久地貼在實體產品、包裝或隨附文件中。若為純軟體或數位產品，則可在軟體安裝畫面、關於頁面或官方下載網站中顯著展示 CE 標誌與數位合規證明。'
+    },
+    {
+      category: 'product',
+      question: '開源軟體開發者（Open Source Stewards）是否需要負擔 CRA 合規責任？',
+      answer: '為了保護開源生態系，歐盟 CRA 對「純開源開發與協作」採取豁免。然而，若開源專案被用於商業化數位產品供應鏈，且具備明顯的經濟實體或頻繁的商業發行行為，則可能需要符合對應的商業供應商義務。'
+    },
+    {
+      category: 'vulnerability',
+      question: 'RD 研發團隊在日常開發中如何自動化產出符合 CRA 標準的 SBOM？',
+      answer: 'RD 團隊可透過 CI/CD 管道整合開源或商業工具（如 Syft、CycloneDX、Trivy 等），在每一次建置 (Build) 階段自動掃描專案依賴套件，並輸出標準格式的 SBOM JSON/XML 檔案，作為技術合規檔案的一部分。'
+    },
+    {
+      category: 'label',
+      question: 'PM 產品經理在規劃產品藍圖時，需將哪些 CRA 時程納入考量？',
+      answer: 'PM 必須注意 CRA 通過後的過渡期（通常為生效後 36 個月內全面強制執行）。產品藍圖需提前預留 6-12 個月進行網路安全風險評估、技術文件編撰、SBOM 導入以及第三方驗證時間，避免產品上市受阻。'
+    }
+  ];
+
+  let currentRole = null;
+  let currentCategory = 'all';
+  let currentPage = 1;
+  const pageSize = 10;
+
+  // 手機版漢堡選單控制
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuIcon = document.getElementById('mobileMenuIcon');
+
+  function toggleMobileMenu() {
+    const isOpen = !mobileMenu.classList.contains('hidden');
+    if (isOpen) {
       mobileMenu.classList.add('hidden');
       mobileMenuIcon.className = 'fa-solid fa-bars';
+    } else {
+      mobileMenu.classList.remove('hidden');
+      mobileMenuIcon.className = 'fa-solid fa-xmark';
     }
+  }
 
-    // 登入彈窗控制
-    const loginModal = document.getElementById('loginModal');
+  function closeMobileMenu() {
+    mobileMenu.classList.add('hidden');
+    mobileMenuIcon.className = 'fa-solid fa-bars';
+  }
 
-    function openLoginModal() {
+  // 登入彈窗控制
+  const loginModal = document.getElementById('loginModal');
+
+  function openLoginModal() {
+    document.getElementById('loginError').classList.add('hidden');
+    document.getElementById('loginForm').reset();
+    loginModal.classList.remove('hidden');
+  }
+
+  function closeLoginModal() {
+    loginModal.classList.add('hidden');
+  }
+
+  function fillTestAccount(roleKey) {
+    const targetUser = userCredentialsJSON.find(u => u.role === roleKey);
+    if (targetUser) {
+      document.getElementById('loginEmail').value = targetUser.email;
+      document.getElementById('loginPassword').value = targetUser.password;
       document.getElementById('loginError').classList.add('hidden');
-      document.getElementById('loginForm').reset();
-      loginModal.classList.remove('hidden');
     }
+  }
 
-    function closeLoginModal() {
-      loginModal.classList.add('hidden');
-    }
+  function handleLoginSubmit(event) {
+    event.preventDefault();
+    const emailInput = document.getElementById('loginEmail').value.trim();
+    const passwordInput = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
 
-    function fillTestAccount(roleKey) {
-      const targetUser = userCredentialsJSON.find(u => u.role === roleKey);
-      if (targetUser) {
-        document.getElementById('loginEmail').value = targetUser.email;
-        document.getElementById('loginPassword').value = targetUser.password;
-        document.getElementById('loginError').classList.add('hidden');
-      }
-    }
+    const matchedUser = userCredentialsJSON.find(u => u.email === emailInput && u.password === passwordInput);
 
-    function handleLoginSubmit(event) {
-      event.preventDefault();
-      const emailInput = document.getElementById('loginEmail').value.trim();
-      const passwordInput = document.getElementById('loginPassword').value.trim();
-      const errorEl = document.getElementById('loginError');
-
-      const matchedUser = userCredentialsJSON.find(u => u.email === emailInput && u.password === passwordInput);
-
-      if (matchedUser) {
-        currentRole = matchedUser.role;
-        updateRoleUI();
-        closeLoginModal();
-
-        const toast = document.getElementById('toast');
-        document.getElementById('toastMessage').textContent = `成功登入：${matchedUser.name}`;
-        toast.classList.remove('translate-y-20', 'opacity-0');
-        setTimeout(() => {
-          toast.classList.add('translate-y-20', 'opacity-0');
-        }, 3500);
-      } else {
-        errorEl.textContent = '帳號或密碼錯誤，請重新輸入。';
-        errorEl.classList.remove('hidden');
-      }
-    }
-
-    function logout() {
-      currentRole = null;
+    if (matchedUser) {
+      currentRole = matchedUser.role;
       updateRoleUI();
+      closeLoginModal();
 
       const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = '已成功登出';
+      document.getElementById('toastMessage').textContent = `成功登入：${matchedUser.name}`;
       toast.classList.remove('translate-y-20', 'opacity-0');
       setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
+      }, 3500);
+    } else {
+      errorEl.textContent = '帳號或密碼錯誤，請重新輸入。';
+      errorEl.classList.remove('hidden');
     }
+  }
 
-    function updateRoleUI() {
-      const roleTextDesktop = document.getElementById('currentRoleTextDesktop');
-      const roleTextMobile = document.getElementById('currentRoleTextMobile');
-      const roleAlert = document.getElementById('roleAlert');
-      const roleAlertText = document.getElementById('roleAlertText');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const desktopIcon = document.querySelector('#authBtnDesktop i');
-      const mobileIcon = document.getElementById('authBtnMobileIcon');
+  function logout() {
+    currentRole = null;
+    updateRoleUI();
 
-      if (currentRole === null) {
-        roleTextDesktop.textContent = '登入';
-        roleTextMobile.textContent = '會員登入';
-        desktopIcon.className = 'fa-solid fa-right-to-bracket text-slate-500';
-        mobileIcon.className = 'fa-solid fa-right-to-bracket text-base text-slate-500';
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMessage').textContent = '已成功登出';
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3000);
+  }
 
-        roleAlert.className = 'mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
-        roleAlertText.textContent = '目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。';
-        logoutBtn.classList.add('hidden');
-      } else if (currentRole === 'pm') {
-        roleTextDesktop.textContent = '產品經理 (PM)';
-        roleTextMobile.textContent = '產品經理 (PM)';
-        desktopIcon.className = 'fa-solid fa-briefcase text-blue-500';
-        mobileIcon.className = 'fa-solid fa-briefcase text-base text-blue-500';
+  function updateRoleUI() {
+    const roleTextDesktop = document.getElementById('currentRoleTextDesktop');
+    const roleTextMobile = document.getElementById('currentRoleTextMobile');
+    const roleAlert = document.getElementById('roleAlert');
+    const roleAlertText = document.getElementById('roleAlertText');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const desktopIcon = document.querySelector('#authBtnDesktop i');
+    const mobileIcon = document.getElementById('authBtnMobileIcon');
 
-        roleAlert.className = 'mb-6 bg-amber-50 border border-amber-100 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
-        roleAlertText.textContent = '【PM 已登入】已解鎖產品藍圖規劃、CE 標記合規時程與商業合規審查重點。';
-        logoutBtn.classList.remove('hidden');
-      } else if (currentRole === 'rd') {
-        roleTextDesktop.textContent = '研發工程師 (RD)';
-        roleTextMobile.textContent = '研發工程師 (RD)';
-        desktopIcon.className = 'fa-solid fa-code text-emerald-500';
-        mobileIcon.className = 'fa-solid fa-code text-base text-emerald-500';
+    if (currentRole === null) {
+      roleTextDesktop.textContent = '登入';
+      roleTextMobile.textContent = '會員登入';
+      desktopIcon.className = 'fa-solid fa-right-to-bracket text-slate-500';
+      mobileIcon.className = 'fa-solid fa-right-to-bracket text-base text-slate-500';
 
-        roleAlert.className = 'mb-6 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
-        roleAlertText.textContent = '【RD 已登入】已解鎖 SBOM 自動化生成、漏洞 24 小時通報與技術防護要求指引。';
-        logoutBtn.classList.remove('hidden');
-      } else if (currentRole === 'test') {
-        roleTextDesktop.textContent = '隨便 (Test User)';
-        roleTextMobile.textContent = '隨便 (Test User)';
-        desktopIcon.className = 'fa-solid fa-user text-purple-500';
-        mobileIcon.className = 'fa-solid fa-user text-base text-purple-500';
+      roleAlert.className = 'mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+      roleAlertText.textContent = '目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。';
+      logoutBtn.classList.add('hidden');
+    } else if (currentRole === 'pm') {
+      roleTextDesktop.textContent = '產品經理 (PM)';
+      roleTextMobile.textContent = '產品經理 (PM)';
+      desktopIcon.className = 'fa-solid fa-briefcase text-blue-500';
+      mobileIcon.className = 'fa-solid fa-briefcase text-base text-blue-500';
 
-        roleAlert.className = 'mb-6 bg-purple-50 border border-purple-100 text-purple-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
-        roleAlertText.textContent = '【一般測試帳號已登入】歡迎使用本系統進行各項功能測試。';
-        logoutBtn.classList.remove('hidden');
-      }
+      roleAlert.className = 'mb-6 bg-amber-50 border border-amber-100 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+      roleAlertText.textContent = '【PM 已登入】已解鎖產品藍圖規劃、CE 標記合規時程與商業合規審查重點。';
+      logoutBtn.classList.remove('hidden');
+    } else if (currentRole === 'rd') {
+      roleTextDesktop.textContent = '研發工程師 (RD)';
+      roleTextMobile.textContent = '研發工程師 (RD)';
+      desktopIcon.className = 'fa-solid fa-code text-emerald-500';
+      mobileIcon.className = 'fa-solid fa-code text-base text-emerald-500';
+
+      roleAlert.className = 'mb-6 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+      roleAlertText.textContent = '【RD 已登入】已解鎖 SBOM 自動化生成、漏洞 24 小時通報與技術防護要求指引。';
+      logoutBtn.classList.remove('hidden');
+    } else if (currentRole === 'test') {
+      roleTextDesktop.textContent = '隨便 (Test User)';
+      roleTextMobile.textContent = '隨便 (Test User)';
+      desktopIcon.className = 'fa-solid fa-user text-purple-500';
+      mobileIcon.className = 'fa-solid fa-user text-base text-purple-500';
+
+      roleAlert.className = 'mb-6 bg-purple-50 border border-purple-100 text-purple-800 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between';
+      roleAlertText.textContent = '【一般測試帳號已登入】歡迎使用本系統進行各項功能測試。';
+      logoutBtn.classList.remove('hidden');
     }
+  }
 
-    // 搜尋與篩選邏輯
-    const searchInput = document.getElementById('searchInput');
-    const clearSearchBtn = document.getElementById('clearSearch');
-    const categoryBtns = document.querySelectorAll('.category-btn');
+  // 搜尋與篩選邏輯
+  const searchInput = document.getElementById('searchInput');
+  const clearSearchBtn = document.getElementById('clearSearch');
+  const categoryBtns = document.querySelectorAll('.category-btn');
 
-    categoryBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        categoryBtns.forEach(b => {
-          b.classList.remove('bg-red-600', 'text-white', 'shadow-sm');
-          b.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-        });
-
-        btn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-        btn.classList.add('bg-red-600', 'text-white', 'shadow-sm');
-
-        currentCategory = btn.getAttribute('data-category');
-        currentPage = 1;
-        renderFaqs();
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoryBtns.forEach(b => {
+        b.classList.remove('bg-red-600', 'text-white', 'shadow-sm');
+        b.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
       });
-    });
 
-    searchInput.addEventListener('input', (e) => {
-      const value = e.target.value.trim();
-      if (value.length > 0) {
-        clearSearchBtn.classList.remove('hidden');
-      } else {
-        clearSearchBtn.classList.add('hidden');
-      }
+      btn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+      btn.classList.add('bg-red-600', 'text-white', 'shadow-sm');
+
+      currentCategory = btn.getAttribute('data-category');
       currentPage = 1;
       renderFaqs();
     });
+  });
 
-    clearSearchBtn.addEventListener('click', () => {
-      searchInput.value = '';
+  searchInput.addEventListener('input', (e) => {
+    const value = e.target.value.trim();
+    if (value.length > 0) {
+      clearSearchBtn.classList.remove('hidden');
+    } else {
       clearSearchBtn.classList.add('hidden');
-      currentPage = 1;
-      renderFaqs();
-      searchInput.focus();
-    });
+    }
+    currentPage = 1;
+    renderFaqs();
+  });
 
-    // 核心渲染與分頁邏輯
-    function getFilteredData() {
-      const keyword = searchInput.value.toLowerCase().trim();
-      return faqData.filter(item => {
-        const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
-        const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
-        return matchesCategory && matchesKeyword;
-      });
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearchBtn.classList.add('hidden');
+    currentPage = 1;
+    renderFaqs();
+    searchInput.focus();
+  });
+
+  // 核心渲染與分頁邏輯
+  function getFilteredData() {
+    const keyword = searchInput.value.toLowerCase().trim();
+    return faqData.filter(item => {
+      const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
+      const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
+      return matchesCategory && matchesKeyword;
+    });
+  }
+
+  function renderFaqs() {
+    const filtered = getFilteredData();
+    const faqListEl = document.getElementById('faqList');
+    const noResultsDiv = document.getElementById('noResults');
+    const paginationContainer = document.getElementById('paginationContainer');
+
+    faqListEl.innerHTML = '';
+
+    if (filtered.length === 0) {
+      noResultsDiv.classList.remove('hidden');
+      paginationContainer.classList.add('hidden');
+      return;
     }
 
-    function renderFaqs() {
-      const filtered = getFilteredData();
-      const faqListEl = document.getElementById('faqList');
-      const noResultsDiv = document.getElementById('noResults');
-      const paginationContainer = document.getElementById('paginationContainer');
+    noResultsDiv.classList.add('hidden');
 
-      faqListEl.innerHTML = '';
+    const totalPages = Math.ceil(filtered.length / pageSize);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
 
-      if (filtered.length === 0) {
-        noResultsDiv.classList.remove('hidden');
-        paginationContainer.classList.add('hidden');
-        return;
-      }
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const pageData = filtered.slice(startIndex, endIndex);
 
-      noResultsDiv.classList.add('hidden');
-
-      const totalPages = Math.ceil(filtered.length / pageSize);
-      if (currentPage > totalPages) currentPage = totalPages || 1;
-
-      const startIndex = (currentPage - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const pageData = filtered.slice(startIndex, endIndex);
-
-      pageData.forEach((item, index) => {
-        const itemHtml = `
+    pageData.forEach((item, index) => {
+      const itemHtml = `
           <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
             <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer">
               <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-2.5 pr-2 leading-snug">
                 <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+                <span>Q：</span>
                 ${item.question}
               </span>
               <i class="fa-solid fa-chevron-down text-slate-400 rotate-icon shrink-0"></i>
             </button>
-            <div class="faq-answer px-4 sm:px-6 pb-4 sm:pb-5 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100 pt-3">
+            <div class="faq-answer px-4 sm:px-6 pb-4 sm:pb-5 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-3">
               ${item.answer}
             </div>
           </div>
         `;
-        faqListEl.insertAdjacentHTML('beforeend', itemHtml);
-      });
+      faqListEl.insertAdjacentHTML('beforeend', itemHtml);
+    });
 
-      bindAccordionEvents();
+    bindAccordionEvents();
 
-      if (filtered.length > pageSize) {
-        paginationContainer.classList.remove('hidden');
-        document.getElementById('paginationInfo').textContent = `顯示第 ${startIndex + 1} - ${Math.min(endIndex, filtered.length)} 筆，共 ${filtered.length} 筆`;
-        renderPaginationButtons(totalPages);
-      } else {
-        paginationContainer.classList.add('hidden');
-      }
+    if (filtered.length > pageSize) {
+      paginationContainer.classList.remove('hidden');
+      document.getElementById('paginationInfo').textContent = `顯示第 ${startIndex + 1} - ${Math.min(endIndex, filtered.length)} 筆，共 ${filtered.length} 筆`;
+      renderPaginationButtons(totalPages);
+    } else {
+      paginationContainer.classList.add('hidden');
     }
+  }
 
-    function bindAccordionEvents() {
-      const faqItems = document.querySelectorAll('.faq-item');
-      faqItems.forEach(item => {
-        const questionBtn = item.querySelector('.faq-question');
-        const answerDiv = item.querySelector('.faq-answer');
+  function bindAccordionEvents() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const questionBtn = item.querySelector('.faq-question');
+      const answerDiv = item.querySelector('.faq-answer');
 
-        questionBtn.addEventListener('click', () => {
-          const isActive = item.classList.contains('active');
+      questionBtn.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
 
-          faqItems.forEach(otherItem => {
-            if (otherItem !== item) {
-              otherItem.classList.remove('active');
-              otherItem.querySelector('.faq-answer').classList.remove('active');
-            }
-          });
-
-          if (isActive) {
-            item.classList.remove('active');
-            answerDiv.classList.remove('active');
-          } else {
-            item.classList.add('active');
-            answerDiv.classList.add('active');
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-answer').classList.remove('active');
           }
         });
+
+        if (isActive) {
+          item.classList.remove('active');
+          answerDiv.classList.remove('active');
+        } else {
+          item.classList.add('active');
+          answerDiv.classList.add('active');
+        }
       });
-    }
+    });
+  }
 
-    function renderPaginationButtons(totalPages) {
-      const container = document.getElementById('paginationButtons');
-      container.innerHTML = '';
+  function renderPaginationButtons(totalPages) {
+    const container = document.getElementById('paginationButtons');
+    container.innerHTML = '';
 
-      const prevDisabled = currentPage === 1;
-      container.insertAdjacentHTML('beforeend', `
+    const prevDisabled = currentPage === 1;
+    container.insertAdjacentHTML('beforeend', `
         <button onclick="changePage(${currentPage - 1})" ${prevDisabled ? 'disabled' : ''}
           class="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
           <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
       `);
 
-      for (let i = 1; i <= totalPages; i++) {
-        const active = i === currentPage;
-        container.insertAdjacentHTML('beforeend', `
+    for (let i = 1; i <= totalPages; i++) {
+      const active = i === currentPage;
+      container.insertAdjacentHTML('beforeend', `
           <button onclick="changePage(${i})"
             class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${active ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
             ${i}
           </button>
         `);
-      }
+    }
 
-      const nextDisabled = currentPage === totalPages;
-      container.insertAdjacentHTML('beforeend', `
+    const nextDisabled = currentPage === totalPages;
+    container.insertAdjacentHTML('beforeend', `
         <button onclick="changePage(${currentPage + 1})" ${nextDisabled ? 'disabled' : ''}
           class="px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
           <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       `);
-    }
+  }
 
-    function changePage(page) {
-      currentPage = page;
-      renderFaqs();
-      window.scrollTo({ top: 200, behavior: 'smooth' });
-    }
-
-    // 專家諮詢 Modal 控制
-    const contactModal = document.getElementById('contactModal');
-
-    function openContactModal() {
-      contactModal.classList.remove('hidden');
-    }
-
-    function closeContactModal() {
-      contactModal.classList.add('hidden');
-    }
-
-    function handleContactSubmit(event) {
-      event.preventDefault();
-      closeContactModal();
-      document.getElementById('contactForm').reset();
-
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = '諮詢需求已送出，專家將盡快與您聯繫！';
-      toast.classList.remove('translate-y-20', 'opacity-0');
-
-      setTimeout(() => {
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3500);
-    }
-
-    // 初始化渲染
+  function changePage(page) {
+    currentPage = page;
     renderFaqs();
-  </script>
-</body>
+    window.scrollTo({ top: 200, behavior: 'smooth' });
+  }
+
+  // 專家諮詢 Modal 控制
+  const contactModal = document.getElementById('contactModal');
+
+  function openContactModal() {
+    contactModal.classList.remove('hidden');
+  }
+
+  function closeContactModal() {
+    contactModal.classList.add('hidden');
+  }
+
+  function handleContactSubmit(event) {
+    event.preventDefault();
+    closeContactModal();
+    document.getElementById('contactForm').reset();
+
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMessage').textContent = '諮詢需求已送出，專家將盡快與您聯繫！';
+    toast.classList.remove('translate-y-20', 'opacity-0');
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3500);
+  }
+
+  // 初始化渲染
+  renderFaqs();
+</script>
 
 </html>
