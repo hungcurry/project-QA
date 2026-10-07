@@ -642,6 +642,14 @@
     searchInput.focus();
   });
 
+  // 關鍵字高亮邏輯 (接在搜尋與篩選邏輯後面)
+  function highlightText(text, keyword) {
+    if (!keyword) return text;
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return text.replace(regex, '<span class="bg-primary-50 text-primary-700 font-semibold px-1 rounded">$1</span>');
+  }
+
   // 核心渲染與分頁邏輯
   function getFilteredData() {
     const keyword = searchInput.value.toLowerCase().trim();
@@ -652,8 +660,10 @@
     });
   }
 
+  // 渲染 Q&A 畫面
   function renderFaqs() {
     const filtered = getFilteredData();
+    const keyword = searchInput.value.trim();
     const faqListEl = document.getElementById('faqList');
     const noResultsDiv = document.getElementById('noResults');
     const paginationContainer = document.getElementById('paginationContainer');
@@ -676,18 +686,22 @@
     const pageData = filtered.slice(startIndex, endIndex);
 
     pageData.forEach((item, index) => {
+      // 套用關鍵字高亮處理
+      const highlightedQuestion = highlightText(item.question, keyword);
+      const highlightedAnswer = highlightText(item.answer, keyword);
+
       const itemHtml = `
           <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
             <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer">
               <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-2.5 pr-2 leading-snug">
                 <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
                 <span>Q：</span>
-                ${item.question}
+                ${highlightedQuestion}
               </span>
               <i class="fa-solid fa-chevron-down text-slate-400 rotate-icon shrink-0"></i>
             </button>
             <div class="faq-answer px-4 sm:px-6 pb-4 sm:pb-5 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-3">
-              ${item.answer}
+              ${highlightedAnswer}
             </div>
           </div>
         `;
@@ -705,6 +719,7 @@
     }
   }
 
+  // 展開收合互動繫結
   function bindAccordionEvents() {
     const faqItems = document.querySelectorAll('.faq-item');
     faqItems.forEach(item => {

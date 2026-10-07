@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CRA 搜尋與篩選邏輯獨立展示</title>
+  <!-- 引入 Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 自訂主題顏色配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              600: '#dc2626',
+              700: '#b91c1c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- 引入 FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<style>
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+  }
+
+  .faq-answer.active {
+    max-height: 800px;
+    opacity: 1;
+  }
+
+  .rotate-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .active .rotate-icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-item {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item:hover {
+    border-color: rgba(220, 38, 38, 0.3);
+  }
+
+  .faq-item.active {
+    border-color: #dc2626;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.08), 0 8px 10px -6px rgba(220, 38, 38, 0.08);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased">
+
+  <!-- 主內容區：專注於搜尋與篩選介面 -->
+  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 flex-grow">
+
+    <!-- 標題區 -->
+    <!-- <div class="text-center mb-8">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">CRA 規範搜尋與篩選測試</h2>
+      <p class="text-slate-500 mb-5 text-xs sm:text-base">獨立呈現搜尋、分類切換及關鍵字高亮互動邏輯</p>
+    </div> -->
+
+    <!-- 搜尋輸入框 -->
+    <div class="relative max-w-xl mx-auto mb-6">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+        <i class="fa-solid fa-magnifying-glass text-base"></i>
+      </span>
+      <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）"
+        class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm sm:text-base text-slate-700 transition">
+      <button id="clearSearch"
+        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
+        <i class="fa-solid fa-circle-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- 分類標籤篩選 -->
+    <div class="flex items-center sm:justify-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 px-1"
+      id="categoryFilters">
+      <button data-category="all"
+        class="category-btn active shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-primary-600 text-white shadow-sm transition-all cursor-pointer">全部問題</button>
+      <button data-category="product"
+        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">產品要求</button>
+      <button data-category="vulnerability"
+        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">漏洞處理流程</button>
+      <button data-category="label"
+        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">資訊和標記</button>
+    </div>
+
+    <!-- Q&A 列表清單 -->
+    <div class="space-y-3 sm:space-y-4" id="faqList"></div>
+
+    <!-- 找不到結果提示 -->
+    <div id="noResults" class="hidden text-center py-12">
+      <div class="text-slate-300 text-4xl sm:text-5xl mb-3">
+        <i class="fa-regular fa-face-frown"></i>
+      </div>
+      <h3 class="text-base sm:text-lg font-semibold text-slate-700">找不到相關的 CRA 規範解答</h3>
+      <p class="text-slate-400 text-xs sm:text-sm mt-1">您可以嘗試更換關鍵字或重設分類條件。</p>
+    </div>
+  </main>
+
+  <!-- 頁尾 -->
+  <footer class="bg-white border-t border-slate-100 py-5">
+    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400">
+      &copy; 2026 CRA 歐盟網路韌性法案諮詢中心 (搜尋邏輯獨立展示)
+    </div>
+  </footer>
+</body>
+
+<!-- JavaScript 互動邏輯 -->
+<script>
+  // 簡化版的 QA 資料庫供測試用
+  const faqData = [
+    {
+      category: 'product',
+      question: '什麼是歐盟網路韌性法案(CRA)?',
+      answer: '歐盟《網路韌性法案》(CRA)是一項歐盟法規，為所有在歐盟市場銷售，內含數位元件的產品（包括硬體與軟體）制定強制性的網路安全要求。'
+    },
+    {
+      category: 'product',
+      question: 'CRA 對於上市產品在「產品要求」上有哪些核心規範？',
+      answer: '依據 CRA 規範，產品必須具備適當級別的安全性，且交付的產品必須沒有已知漏洞。製造商須落實預設安全、啟用充分的安全更新等。'
+    },
+    {
+      category: 'vulnerability',
+      question: '製造商在「漏洞處理流程」中必須執行哪些關鍵步驟？',
+      answer: '漏洞處理流程涵蓋完整的生命週期管理：包含產出與維護 SBOM、追蹤漏洞並消除已知漏洞、立即處理新發現漏洞等。'
+    },
+    {
+      category: 'label',
+      question: '在「資訊和標記」部分，製造商需要準備哪些合規檔案與聲明？',
+      answer: '資訊和標記要求包括 CE 標誌認證與歐盟符合性聲明 (DoC)、任命授權代表、技術文件（包含網路安全風險評估）與 SBOM 等。'
+    },
+    {
+      category: 'vulnerability',
+      question: '為什麼 SBOM（軟體物料清單）在 CRA 漏洞處理中如此重要？',
+      answer: 'SBOM 能夠協助製造商精確識別產品中包含的所有第三方與開源軟體依賴項，當漏洞爆發時能在最短時間內追蹤受影響範圍。'
+    }
+  ];
+
+  let currentCategory = 'all';
+
+  // 搜尋與篩選邏輯
+  const searchInput = document.getElementById('searchInput');
+  const clearSearchBtn = document.getElementById('clearSearch');
+  const categoryBtns = document.querySelectorAll('.category-btn');
+
+  categoryBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoryBtns.forEach(b => {
+        b.classList.remove('bg-red-600', 'text-white', 'shadow-sm');
+        b.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+      });
+
+      btn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+      btn.classList.add('bg-red-600', 'text-white', 'shadow-sm');
+
+      currentCategory = btn.getAttribute('data-category');
+      renderFaqs();
+    });
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    const value = e.target.value.trim();
+    if (value.length > 0) {
+      clearSearchBtn.classList.remove('hidden');
+    } else {
+      clearSearchBtn.classList.add('hidden');
+    }
+    renderFaqs();
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearchBtn.classList.add('hidden');
+    renderFaqs();
+    searchInput.focus();
+  });
+
+  // 關鍵字高亮邏輯 (接在搜尋與篩選邏輯後面)
+  function highlightText(text, keyword) {
+    if (!keyword) return text;
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return text.replace(regex, '<span class="bg-primary-50 text-primary-700 font-semibold px-1 rounded">$1</span>');
+  }
+
+  // 篩選資料計算
+  function getFilteredData() {
+    const keyword = searchInput.value.toLowerCase().trim();
+    return faqData.filter(item => {
+      const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
+      const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
+      return matchesCategory && matchesKeyword;
+    });
+  }
+
+  // 渲染 Q&A 畫面
+  function renderFaqs() {
+    const filtered = getFilteredData();
+    const keyword = searchInput.value.trim();
+    const faqListEl = document.getElementById('faqList');
+    const noResultsDiv = document.getElementById('noResults');
+
+    faqListEl.innerHTML = '';
+
+    if (filtered.length === 0) {
+      noResultsDiv.classList.remove('hidden');
+      return;
+    }
+
+    noResultsDiv.classList.add('hidden');
+
+    filtered.forEach((item) => {
+      const highlightedQuestion = highlightText(item.question, keyword);
+      const highlightedAnswer = highlightText(item.answer, keyword);
+
+      const itemHtml = `
+        <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
+          <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer">
+            <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-2.5 pr-2 leading-snug">
+              <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
+              <span>Q：</span>
+              ${highlightedQuestion}
+            </span>
+            <i class="fa-solid fa-chevron-down text-slate-400 rotate-icon shrink-0"></i>
+          </button>
+          <div class="faq-answer px-4 sm:px-6 pb-4 sm:pb-5 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-3">
+            ${highlightedAnswer}
+          </div>
+        </div>
+      `;
+      faqListEl.insertAdjacentHTML('beforeend', itemHtml);
+    });
+
+    bindAccordionEvents();
+  }
+
+  // 展開收合互動繫結
+  function bindAccordionEvents() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const questionBtn = item.querySelector('.faq-question');
+      const answerDiv = item.querySelector('.faq-answer');
+
+      questionBtn.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-answer').classList.remove('active');
+          }
+        });
+
+        if (isActive) {
+          item.classList.remove('active');
+          answerDiv.classList.remove('active');
+        } else {
+          item.classList.add('active');
+          answerDiv.classList.add('active');
+        }
+      });
+    });
+  }
+
+  // 初始化渲染
+  renderFaqs();
+</script>
+
+</html>
