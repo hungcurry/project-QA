@@ -75,19 +75,31 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* 分類按鈕共用基礎樣式 */
+  .category-btn {
+    background-color: #ffffff;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
+
+  .category-btn:hover {
+    background-color: #f1f5f9;
+  }
+
+  /* 啟用狀態的樣式 */
+  .category-btn.category-btn-active {
+    background-color: #dc2626;
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
 </style>
 
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased">
 
   <!-- 主內容區：專注於搜尋與篩選介面 -->
   <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 flex-grow">
-
-    <!-- 標題區 -->
-    <!-- <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">CRA 規範搜尋與篩選測試</h2>
-      <p class="text-slate-500 mb-5 text-xs sm:text-base">獨立呈現搜尋、分類切換及關鍵字高亮互動邏輯</p>
-    </div> -->
-
     <!-- 搜尋輸入框 -->
     <div class="relative max-w-xl mx-auto mb-6">
       <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
@@ -101,18 +113,9 @@
       </button>
     </div>
 
-    <!-- 分類標籤篩選 -->
-    <div class="flex items-center sm:justify-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 px-1"
-      id="categoryFilters">
-      <button data-category="all"
-        class="category-btn active shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-primary-600 text-white shadow-sm transition-all cursor-pointer">全部問題</button>
-      <button data-category="product"
-        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">產品要求</button>
-      <button data-category="vulnerability"
-        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">漏洞處理流程</button>
-      <button data-category="label"
-        class="category-btn shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer">資訊和標記</button>
-    </div>
+    <!-- 分類標籤篩選容器 -->
+    <div id="categoryFilters"
+      class="flex items-center sm:justify-center gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 px-1"></div>
 
     <!-- Q&A 列表清單 -->
     <div class="space-y-3 sm:space-y-4" id="faqList"></div>
@@ -127,17 +130,25 @@
     </div>
   </main>
 
-  <!-- 頁尾 -->
-  <footer class="bg-white border-t border-slate-100 py-5">
-    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400">
-      &copy; 2026 CRA 歐盟網路韌性法案諮詢中心 (搜尋邏輯獨立展示)
-    </div>
-  </footer>
 </body>
 
 <!-- JavaScript 互動邏輯 -->
 <script>
-  // 簡化版的 QA 資料庫供測試用
+  // 搜尋與篩選邏輯
+  const searchInput = document.getElementById('searchInput');
+  const clearSearchBtn = document.getElementById('clearSearch');
+  const categoryFilters = document.getElementById('categoryFilters');
+  const faqList = document.getElementById('faqList');
+  let currentCategory = 'all';
+
+  // 定義分類資料陣列
+  const categoryData = [
+    { category: 'all', label: '全部問題' },
+    { category: 'product', label: '產品要求' },
+    { category: 'vulnerability', label: '漏洞處理流程' },
+    { category: 'label', label: '資訊和標記' }
+  ];
+  // Q&A 資料庫
   const faqData = [
     {
       category: 'product',
@@ -166,63 +177,26 @@
     }
   ];
 
-  let currentCategory = 'all';
+  // 渲染 分類按鈕 畫面
+  function renderCategories() {
+    const container = document.getElementById('categoryFilters');
+    container.innerHTML = '';
 
-  // 搜尋與篩選邏輯
-  const searchInput = document.getElementById('searchInput');
-  const clearSearchBtn = document.getElementById('clearSearch');
-  const categoryBtns = document.querySelectorAll('.category-btn');
+    categoryData.forEach(item => {
+      const isActive = item.category === currentCategory;
 
-  categoryBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      categoryBtns.forEach(b => {
-        b.classList.remove('bg-red-600', 'text-white', 'shadow-sm');
-        b.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-      });
+      const btnHtml = `
+      <button
+        data-category="${item.category}"
+        class="category-btn ${isActive ? 'category-btn-active' : ''} shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer"
+      >
+        ${item.label}
+      </button>
+    `;
 
-      btn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
-      btn.classList.add('bg-red-600', 'text-white', 'shadow-sm');
-
-      currentCategory = btn.getAttribute('data-category');
-      renderFaqs();
-    });
-  });
-
-  searchInput.addEventListener('input', (e) => {
-    const value = e.target.value.trim();
-    if (value.length > 0) {
-      clearSearchBtn.classList.remove('hidden');
-    } else {
-      clearSearchBtn.classList.add('hidden');
-    }
-    renderFaqs();
-  });
-
-  clearSearchBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearSearchBtn.classList.add('hidden');
-    renderFaqs();
-    searchInput.focus();
-  });
-
-  // 關鍵字高亮邏輯 (接在搜尋與篩選邏輯後面)
-  function highlightText(text, keyword) {
-    if (!keyword) return text;
-    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escaped})`, 'gi');
-    return text.replace(regex, '<span class="bg-primary-50 text-primary-700 font-semibold px-1 rounded">$1</span>');
-  }
-
-  // 篩選資料計算
-  function getFilteredData() {
-    const keyword = searchInput.value.toLowerCase().trim();
-    return faqData.filter(item => {
-      const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
-      const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
-      return matchesCategory && matchesKeyword;
+      container.insertAdjacentHTML('beforeend', btnHtml);
     });
   }
-
   // 渲染 Q&A 畫面
   function renderFaqs() {
     const filtered = getFilteredData();
@@ -260,40 +234,89 @@
       `;
       faqListEl.insertAdjacentHTML('beforeend', itemHtml);
     });
+  }
+  // 篩選 資料計算
+  function getFilteredData() {
+    const keyword = searchInput.value.toLowerCase().trim();// 轉成小寫
+    const filteredList = faqData.filter(item => {
+      // 條件 A：分類有沒有符合？
+      const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
 
-    bindAccordionEvents();
+      // 條件 B：關鍵字有沒有符合？
+      // 檢查「問題」或「答案」之中是否包含關鍵字
+      const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
+      // 回傳 true 代表保留這筆資料，false 代表過濾掉
+      const iskeep = matchesCategory && matchesKeyword;
+      return iskeep;
+    });
+    // console.log(`filteredList`, filteredList);
+    return filteredList;
+  }
+  // 關鍵字高亮邏輯 (接在搜尋與篩選邏輯後面)
+  function highlightText(text, keyword) {
+    if (!keyword) return text;
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return text.replace(regex, '<span class="bg-primary-50 text-primary-700 font-semibold px-1 rounded">$1</span>');
   }
 
+  categoryFilters.addEventListener('click', handleCategoryFilter);
+  searchInput.addEventListener('input', handleSearch);
+  clearSearchBtn.addEventListener('click', handleClearSearch);
+  faqList.addEventListener('click', handleAccordion);
+
+  // 分類篩選事件
+  function handleCategoryFilter(e) {
+    const btn = e.target.closest('.category-btn');
+    if (!btn) return;
+
+    currentCategory = btn.dataset.category;
+    currentPage = 1;
+    renderCategories();
+    renderFaqs();
+  }
+  // 搜尋事件
+  function handleSearch(e) {
+    const value = e.target.value.trim();
+    clearSearchBtn.classList.toggle('hidden', value.length === 0);
+    renderFaqs();
+  }
+  // 清除搜尋事件
+  function handleClearSearch() {
+    searchInput.value = '';
+    clearSearchBtn.classList.add('hidden');
+    renderFaqs();
+    searchInput.focus();
+  }
   // 展開收合互動繫結
-  function bindAccordionEvents() {
-    const faqItems = document.querySelectorAll('.faq-item');
-    faqItems.forEach(item => {
-      const questionBtn = item.querySelector('.faq-question');
-      const answerDiv = item.querySelector('.faq-answer');
+  function handleAccordion(e) {
+    const questionBtn = e.target.closest('.faq-question');
+    if (!questionBtn) return;
 
-      questionBtn.addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
+    const item = questionBtn.closest('.faq-item');
+    const answerDiv = item.querySelector('.faq-answer');
+    const isActive = item.classList.contains('active');
 
-        faqItems.forEach(otherItem => {
-          if (otherItem !== item) {
-            otherItem.classList.remove('active');
-            otherItem.querySelector('.faq-answer').classList.remove('active');
-          }
-        });
-
-        if (isActive) {
-          item.classList.remove('active');
-          answerDiv.classList.remove('active');
-        } else {
-          item.classList.add('active');
-          answerDiv.classList.add('active');
-        }
-      });
+    // 全部關閉
+    faqList.querySelectorAll('.faq-item').forEach(item => {
+      item.classList.remove('active');
+      item.querySelector('.faq-answer').classList.remove('active');
     });
+
+    // 如果原本是關閉的，就打開目前這個
+    if (!isActive) {
+      item.classList.add('active');
+      answerDiv.classList.add('active');
+    }
+  }
+
+  function initialize() {
+    renderCategories();
+    renderFaqs();
   }
 
   // 初始化渲染
-  renderFaqs();
+  initialize();
 </script>
 
 </html>
