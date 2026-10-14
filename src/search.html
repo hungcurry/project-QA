@@ -191,8 +191,6 @@
   // ===================
   // 渲染 Q&A 畫面
   function renderFaqs() {
-    // 取得篩選後的資料
-    getFilterData();
     if (filterData.length === 0) {
       noResultsDiv.classList.remove('hidden');
       document.getElementById('paginationContainer').classList.add('hidden');
@@ -268,22 +266,28 @@
     if (!btn) return;
 
     currentCategory = btn.dataset.category;
-    currentPage = 1; // 切換分類時重置回第一頁
     renderCategories();
+
+    currentPage = 1; // 切換分類時重置回第一頁
+    getFilterData();
     renderFaqs();
   }
   // 搜尋事件
   function handleSearch(e) {
     const value = e.target.value.trim();
     clearSearchBtn.classList.toggle('hidden', value.length === 0);
+
     currentPage = 1; // 搜尋時重置回第一頁
+    getFilterData();
     renderFaqs();
   }
   // 清除搜尋事件
   function handleClearSearch(e) {
     searchInput.value = '';
     clearSearchBtn.classList.add('hidden');
+
     currentPage = 1; // 清除搜尋時重置回第一頁
+    getFilterData();
     renderFaqs();
     searchInput.focus();
   }
@@ -357,7 +361,7 @@
 
     if (filterData.length > dataNum) {
       paginationContainer.classList.remove('hidden');
-      paginationInfoEl.textContent = `顯示第 ${startIndex + 1} - ${endIndex} 筆，共 ${filterData.length} 筆`;
+      paginationInfoEl.textContent = `顯示第 ${startIndex + 1}-${endIndex} 筆，共 ${filterData.length} 筆`;
       renderButtons(totalPages);
     }
     else {
@@ -417,7 +421,8 @@
     // 確保目標頁碼有效，且不是當前頁面
     if (targetPage && targetPage !== currentPage) {
       currentPage = targetPage;
-      renderFaqs(); // 重新渲染內容與分頁按鈕
+      // 重新渲染內容與分頁按鈕
+      renderFaqs();
       window.scrollTo({ top: 200, behavior: 'smooth' });
     }
   }
@@ -430,6 +435,7 @@
     faqData = getFaqs()
     categoryData = getCategories()
 
+    getFilterData()
     renderFaqs();
     renderCategories();
   }
