@@ -46,7 +46,7 @@ async function fetchCategories() {
   try {
     state.categories = await fetchCategoriesApi()
     // console.log('API 回傳 categoryData 成功:', state.categories);
-  } 
+  }
   catch (error) {
     console.error('取得資料失敗', error)
     throw error
@@ -58,12 +58,12 @@ export async function fetchAllData() {
   try {
     await Promise.all([
       fetchFaqs(),
-      fetchCategories(), 
+      fetchCategories(),
     ])
 
     state.isLoaded = true
     console.log('Store 所有資料初始化成功')
-  } 
+  }
   catch (error) {
     console.error('Store 載入失敗', error)
   }

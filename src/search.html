@@ -161,6 +161,7 @@
   let filterData = [];
   let currentCategory = 'all';
   let categoryData = [];
+  let searchTimer = null;
 
   // ===================
   // ... Data ...
@@ -194,6 +195,7 @@
     if (filterData.length === 0) {
       noResultsDiv.classList.remove('hidden');
       document.getElementById('paginationContainer').classList.add('hidden');
+      faqList.innerHTML = '';
       return;
     }
 
@@ -266,7 +268,11 @@
     if (!btn) return;
 
     currentCategory = btn.dataset.category;
-    renderCategories();
+    // 優化：直接操作 DOM Class 切換 Active 狀態，避免整塊重新渲染
+    categoryFilters.querySelectorAll('.category-btn').forEach(b => {
+      const isActive = b.dataset.category === currentCategory;
+      b.classList.toggle('category-btn-active', isActive);
+    });
 
     currentPage = 1; // 切換分類時重置回第一頁
     getFilterData();
@@ -277,9 +283,13 @@
     const value = e.target.value.trim();
     clearSearchBtn.classList.toggle('hidden', value.length === 0);
 
-    currentPage = 1; // 搜尋時重置回第一頁
-    getFilterData();
-    renderFaqs();
+    // Debounce 防抖動優化效能,過度觸發
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      currentPage = 1; // 搜尋時重置回第一頁
+      getFilterData();
+      renderFaqs();
+    }, 300);
   }
   // 清除搜尋事件
   function handleClearSearch(e) {
