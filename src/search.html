@@ -149,7 +149,7 @@
 
 <!-- JavaScript 互動邏輯 -->
 <script type="module">
-  import { categoryData as category, faqData as faq } from './data/index.js';
+  import { fetchAllData, getFaqs, getCategories } from '../store/useFetchStore.js'
 
   // 搜尋與篩選邏輯
   const searchInput = document.getElementById('searchInput');
@@ -157,49 +157,13 @@
   const categoryFilters = document.getElementById('categoryFilters');
   const faqList = document.getElementById('faqList');
   let faqData = [];
+  let filterData = [];
   let currentCategory = 'all';
   let categoryData = [];
-  let filterData = [];
 
   // ===================
   // ... Data ...
   // ===================
-  async function getFaqData() {
-    try {
-      // 模擬網路延遲 0.8 秒
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const res = {
-        status: 200,
-        data: faq
-      };
-
-      // console.log('API 回傳 faqData 成功:', res.data);
-      return faqData = res.data;
-    }
-    catch (error) {
-      console.error('取得資料失敗', error);
-      throw error;
-    }
-  }
-
-  async function getCategoryData() {
-    try {
-      // 模擬網路延遲 0.5 秒
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const res = {
-        status: 200,
-        data: category
-      };
-
-      // console.log('API 回傳 categoryData 成功:', res.data);
-      return categoryData = res.data;
-    }
-    catch (error) {
-      console.error('取得資料失敗', error);
-      throw error;
-    }
-  }
-
   // computed 篩選 
   function getFilterData() {
     const keyword = searchInput.value.toLowerCase().trim();// 轉成小寫
@@ -241,7 +205,6 @@
       container.insertAdjacentHTML('beforeend', btnHtml);
     });
   }
-
   // 渲染 Q&A 畫面
   function renderFaqs() {
     filterData = getFilterData();
@@ -288,7 +251,6 @@
     // 每次渲染完列表後，一併更新分頁按鈕狀態
     renderPagination();
   }
-
   // 關鍵字高亮
   function highlightText(text, keyword) {
     if (!keyword) return text;
@@ -310,7 +272,6 @@
     renderCategories();
     renderFaqs();
   }
-
   // 搜尋事件
   function handleSearch(e) {
     const value = e.target.value.trim();
@@ -318,7 +279,6 @@
     currentPage = 1; // 搜尋時重置回第一頁
     renderFaqs();
   }
-
   // 清除搜尋事件
   function handleClearSearch() {
     searchInput.value = '';
@@ -327,7 +287,6 @@
     renderFaqs();
     searchInput.focus();
   }
-
   // 展開收合事件
   function handleAccordion(e) {
     const questionBtn = e.target.closest('.faq-question');
@@ -457,16 +416,14 @@
   // init
   async function initialize() {
     // data
-    await getFaqData();
-    await getCategoryData();
+    await fetchAllData()
+    faqData = getFaqs()
+    categoryData = getCategories()
+    filterData = getFilterData();
 
-    console.log('faqData', faqData);
-    console.log('categoryData', categoryData);
-
-    getFilterData();
     // render
-    renderCategories();
     renderFaqs();
+    renderCategories();
   }
 
   // 初始化渲染

@@ -58,8 +58,8 @@ CRA 法規適用於於歐盟市場供應之具有數位元素的產品與组件�
 > 網址
 
 ```jsx
-http://127.0.0.1:5500/index.html
+http://127.0.0.1:5500/src/index.html
 
-http://127.0.0.1:5500/search.html
+http://127.0.0.1:5500/src/search.html
 
 ```
