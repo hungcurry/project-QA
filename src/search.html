@@ -167,7 +167,7 @@
   // computed 篩選 
   function getFilterData() {
     const keyword = searchInput.value.toLowerCase().trim();// 轉成小寫
-    const filteredList = faqData.filter(item => {
+    filterData = faqData.filter(item => {
       // 條件 A：分類有沒有符合？
       const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
 
@@ -178,8 +178,7 @@
       const iskeep = matchesCategory && matchesKeyword;
       return iskeep;
     });
-    // console.log(`filteredList`, filteredList);
-    return filteredList;
+    // console.log(`filterData`, filterData);
   }
 
   // ===================
@@ -207,7 +206,9 @@
   }
   // 渲染 Q&A 畫面
   function renderFaqs() {
-    filterData = getFilterData();
+    if (!faqData || faqData.length === 0) return;
+    getFilterData(); // 先取得篩選後的資料
+
     const keyword = searchInput.value.trim();
     const faqListEl = document.getElementById('faqList');
     const noResultsDiv = document.getElementById('noResults');
@@ -419,7 +420,6 @@
     await fetchAllData()
     faqData = getFaqs()
     categoryData = getCategories()
-    filterData = getFilterData();
 
     // render
     renderFaqs();
