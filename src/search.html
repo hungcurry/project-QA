@@ -156,6 +156,7 @@
   const clearSearchBtn = document.getElementById('clearSearch');
   const categoryFilters = document.getElementById('categoryFilters');
   const faqList = document.getElementById('faqList');
+  const noResultsDiv = document.getElementById('noResults');
   let faqData = [];
   let filterData = [];
   let currentCategory = 'all';
@@ -166,64 +167,43 @@
   // ===================
   // computed 篩選 
   function getFilterData() {
+    if (!faqData || faqData.length === 0) return;
+
     const keyword = searchInput.value.toLowerCase().trim();// 轉成小寫
     filterData = faqData.filter(item => {
       // 條件 A：分類有沒有符合？
       const matchesCategory = (currentCategory === 'all' || item.category === currentCategory);
 
-      // 條件 B：關鍵字有沒有符合？
+      // 條件 B：關鍵字有沒有符合？ 
       // 檢查「問題」或「答案」之中是否包含關鍵字
+      // 預設 任何字串都包含空字串 ("")
       const matchesKeyword = (item.question.toLowerCase().includes(keyword) || item.answer.toLowerCase().includes(keyword));
       // 回傳 true 代表保留這筆資料，false 代表過濾掉
       const iskeep = matchesCategory && matchesKeyword;
       return iskeep;
     });
-    // console.log(`filterData`, filterData);
+
+    console.log(`filterData`, filterData);
   }
 
   // ===================
   // ... Render ...
   // ===================
-  // 渲染 分類按鈕 畫面
-  function renderCategories() {
-    const container = document.getElementById('categoryFilters');
-    container.innerHTML = '';
-
-    categoryData.forEach(item => {
-      const isActive = item.category === currentCategory;
-
-      const btnHtml = `
-      <button
-        data-category="${item.category}"
-        class="category-btn ${isActive ? 'category-btn-active' : ''} shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer"
-      >
-        ${item.label}
-      </button>
-    `;
-
-      container.insertAdjacentHTML('beforeend', btnHtml);
-    });
-  }
   // 渲染 Q&A 畫面
   function renderFaqs() {
-    if (!faqData || faqData.length === 0) return;
-    getFilterData(); // 先取得篩選後的資料
-
-    const keyword = searchInput.value.trim();
-    const faqListEl = document.getElementById('faqList');
-    const noResultsDiv = document.getElementById('noResults');
-
-    faqListEl.innerHTML = '';
-
+    // 取得篩選後的資料
+    getFilterData();
     if (filterData.length === 0) {
       noResultsDiv.classList.remove('hidden');
       document.getElementById('paginationContainer').classList.add('hidden');
       return;
     }
 
+    faqList.innerHTML = '';
+    const keyword = searchInput.value.trim();
     noResultsDiv.classList.add('hidden');
 
-    // 透過共用函式取得當前頁面資料片段
+    // 從篩選資料再轉換成分頁資料
     const { pageData } = getPaginationState();
 
     // 渲染當前頁面的資料
@@ -246,11 +226,30 @@
           </div>
         </div>
       `;
-      faqListEl.insertAdjacentHTML('beforeend', itemHtml);
+      faqList.insertAdjacentHTML('beforeend', itemHtml);
     });
 
     // 每次渲染完列表後，一併更新分頁按鈕狀態
     renderPagination();
+  }
+  // 渲染 分類按鈕 畫面
+  function renderCategories() {
+    categoryFilters.innerHTML = '';
+
+    categoryData.forEach(item => {
+      const isActive = item.category === currentCategory;
+
+      const btnHtml = `
+      <button
+        data-category="${item.category}"
+        class="category-btn ${isActive ? 'category-btn-active' : ''} shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer"
+      >
+        ${item.label}
+      </button>
+    `;
+
+      categoryFilters.insertAdjacentHTML('beforeend', btnHtml);
+    });
   }
   // 關鍵字高亮
   function highlightText(text, keyword) {
@@ -281,7 +280,7 @@
     renderFaqs();
   }
   // 清除搜尋事件
-  function handleClearSearch() {
+  function handleClearSearch(e) {
     searchInput.value = '';
     clearSearchBtn.classList.add('hidden');
     currentPage = 1; // 清除搜尋時重置回第一頁
@@ -319,7 +318,8 @@
   // ... Pagination ...
   // ===================
   let currentPage = 1;
-  const dataNum = 10;  // 取幾筆資料
+  // 取幾筆資料
+  const dataNum = 10;
   const paginationContainer = document.getElementById('paginationContainer');
   const paginationInfoEl = document.getElementById('paginationInfo');
   const paginationButtonsEl = document.getElementById('paginationButtons');
@@ -359,74 +359,81 @@
       paginationContainer.classList.remove('hidden');
       paginationInfoEl.textContent = `顯示第 ${startIndex + 1} - ${endIndex} 筆，共 ${filterData.length} 筆`;
       renderButtons(totalPages);
-    } else {
+    }
+    else {
       paginationContainer.classList.add('hidden');
     }
   }
 
   function renderButtons(totalPages) {
-    const container = document.getElementById('paginationButtons');
-    container.innerHTML = '';
-
-    const prevDisabled = currentPage === 1;
-    container.insertAdjacentHTML('beforeend', `
-        <button data-page="${currentPage - 1}" ${prevDisabled ? 'disabled' : ''}
-          class="pagination-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
-          <i class="fa-solid fa-chevron-left text-[10px]"></i>
-        </button>
-      `);
-
-    for (let i = 1; i <= totalPages; i++) {
-      const active = i === currentPage;
-      container.insertAdjacentHTML('beforeend', `
-          <button data-page="${i}"
-            class="pagination-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${active ? 'bg-red-600 text-white border-red-600 shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
-            ${i}
-          </button>
-        `);
+    if (totalPages <= 0) {
+      paginationButtonsEl.innerHTML = '';
+      return;
     }
 
+    const baseBtnClass = 'pagination-btn px-3 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors';
+    const disabledStyle = 'disabled:opacity-40 disabled:cursor-not-allowed';
+    const activeStyle = 'bg-red-600 text-white border-red-600 shadow-sm'
+    const defaultStyle = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+
+    // 產生頁碼按鈕的 HTML / totalPages = 2
+    let pageButtonsHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+      const isActive = i === currentPage;
+      const addStyle = isActive ? activeStyle : defaultStyle;
+
+      pageButtonsHTML += `
+      <button data-page="${i}" class="${baseBtnClass} ${addStyle}">
+        ${i}
+      </button>
+      `;
+    }
+
+    const prevDisabled = currentPage === 1;
     const nextDisabled = currentPage === totalPages;
-    container.insertAdjacentHTML('beforeend', `
-        <button data-page="${currentPage + 1}" ${nextDisabled ? 'disabled' : ''}
-          class="pagination-btn px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
-          <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        </button>
-      `);
+
+    // 組合全部並寫入 DOM
+    paginationButtonsEl.innerHTML = `
+    <button data-page="${Math.max(1, currentPage - 1)}" ${prevDisabled ? 'disabled' : ''}
+      class="${baseBtnClass} ${defaultStyle} ${disabledStyle}">
+      <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    </button>
+
+    ${pageButtonsHTML}
+
+    <button data-page="${Math.min(totalPages, currentPage + 1)}" ${nextDisabled ? 'disabled' : ''}
+      class="${baseBtnClass} ${defaultStyle} ${disabledStyle}">
+      <i class="fa-solid fa-chevron-right text-[10px]"></i>
+    </button>
+  `;
   }
 
-  // 分頁按鈕事件
-  function handlePagination(e) {
+  function handleChangePage(e) {
     const btn = e.target.closest('.pagination-btn');
     if (!btn || btn.disabled) return;
 
     const targetPage = Number(btn.dataset.page);
+
+    // 確保目標頁碼有效，且不是當前頁面
     if (targetPage && targetPage !== currentPage) {
-      changePage(targetPage);
+      currentPage = targetPage;
+      renderFaqs(); // 重新渲染內容與分頁按鈕
+      window.scrollTo({ top: 200, behavior: 'smooth' });
     }
   }
 
-  function changePage(page) {
-    currentPage = page;
-    renderFaqs(); // 裡面會包含切片渲染並會重新整理分頁按鈕
-    window.scrollTo({ top: 200, behavior: 'smooth' });
-  }
-
-  paginationButtonsEl.addEventListener('click', handlePagination);
+  paginationButtonsEl.addEventListener('click', handleChangePage);
 
   // init
   async function initialize() {
-    // data
     await fetchAllData()
     faqData = getFaqs()
     categoryData = getCategories()
 
-    // render
     renderFaqs();
     renderCategories();
   }
 
-  // 初始化渲染
   initialize();
 </script>
 
