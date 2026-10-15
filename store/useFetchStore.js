@@ -1,7 +1,6 @@
 // ===================
-// ... API 請求層 (純靜態網頁使用全域 axios)
+// ... API ...
 // ===================
-
 async function fetchFaqsApi() {
   try {
     const res = await axios.get("../data/faq.json");
@@ -12,7 +11,6 @@ async function fetchFaqsApi() {
     throw error;
   }
 }
-
 async function fetchCategoriesApi() {
   try {
     const res = await axios.get("../data/categories.json");
@@ -32,15 +30,13 @@ let state = {
   categories: [],
   isLoaded: false,
 };
-
 async function fetchFaqs() {
   state.faqs = await fetchFaqsApi();
 }
-
 async function fetchCategories() {
   state.categories = await fetchCategoriesApi();
 }
-
+// 初始化所有資料（呼叫API）
 export async function fetchAllData() {
   if (state.isLoaded) return;
   try {
@@ -56,11 +52,10 @@ export async function fetchAllData() {
     console.error("Store 載入失敗", error);
   }
 }
-
+// Getter
 export function getFaqs() {
   return state.faqs;
 }
-
 export function getCategories() {
   return state.categories;
 }
