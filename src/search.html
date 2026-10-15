@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>CRA 搜尋與篩選邏輯獨立展示</title>
+  <!-- 引入 Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- 引入 Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- 自訂主題顏色配置 -->
@@ -441,11 +443,12 @@
 
   // init
   async function initialize() {
+    // data
     await fetchAllData()
     faqData = getFaqs()
     categoryData = getCategories()
-
     getFilterData()
+
     renderFaqs();
     renderCategories();
   }

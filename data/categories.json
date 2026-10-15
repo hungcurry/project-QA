@@ -1,0 +1,18 @@
+[
+  {
+    "category": "all",
+    "label": "全部問題"
+  },
+  {
+    "category": "product",
+    "label": "產品要求"
+  },
+  {
+    "category": "vulnerability",
+    "label": "漏洞處理流程"
+  },
+  {
+    "category": "label",
+    "label": "資訊和標記"
+  }
+]
