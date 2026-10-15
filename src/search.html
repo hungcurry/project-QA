@@ -180,7 +180,7 @@
     if (!btn) return;
 
     currentCategory = btn.dataset.category;
-    // 優化：直接操作 DOM Class 切換 Active 狀態，避免整塊重新渲染
+    // 切換 Active 狀態，避免整塊重新渲染
     categoryFilters.querySelectorAll('.category-btn').forEach(b => {
       const isActive = b.dataset.category === currentCategory;
       b.classList.toggle('category-btn-active', isActive);
@@ -243,8 +243,7 @@
   const paginationContainer = document.getElementById('paginationContainer');
   const paginationInfoEl = document.getElementById('paginationInfo');
   const paginationButtonsEl = document.getElementById('paginationButtons');
-  // 取幾筆資料
-  const dataNum = 10;
+  const dataNum = 10; // 取幾筆資料
   let currentPage = 1;
 
   // 取得分頁計算狀態
@@ -366,6 +365,8 @@
   function updateView() {
     filterData = getFilterData();
 
+    // renderFaqs(filterData);
+    // 或
     const state = getPaginationState(filterData);
     renderFaqs(state.pageData);
     renderPagination(state);
