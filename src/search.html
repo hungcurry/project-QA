@@ -102,14 +102,15 @@
     });
 
     console.log(`filterData`, filterData);
+    return filterData;
   }
 
   // ===================
   // ... Render ...
   // ===================
   // 渲染 Q&A 畫面
-  function renderFaqs() {
-    if (filterData.length === 0) {
+  function renderFaqs(pageData) {
+    if (pageData.length === 0) {
       noResultsDiv.classList.remove('hidden');
       document.getElementById('paginationContainer').classList.add('hidden');
       faqList.innerHTML = '';
@@ -119,9 +120,6 @@
     faqList.innerHTML = '';
     const keyword = searchInput.value.trim();
     noResultsDiv.classList.add('hidden');
-
-    // 從篩選資料再轉換成分頁資料
-    const { pageData } = getPaginationState();
 
     // 渲染當前頁面的資料
     pageData.forEach((item) => {
@@ -145,9 +143,6 @@
       `;
       faqList.insertAdjacentHTML('beforeend', itemHtml);
     });
-
-    // 每次渲染完列表後，一併更新分頁按鈕狀態
-    renderPagination();
   }
   // 渲染 分類按鈕 畫面
   function renderCategories() {
@@ -192,8 +187,7 @@
     });
 
     currentPage = 1; // 切換分類時重置回第一頁
-    getFilterData();
-    renderFaqs();
+    updateView();
   }
   // 搜尋事件
   function handleSearch(e) {
@@ -204,8 +198,7 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
       currentPage = 1; // 搜尋時重置回第一頁
-      getFilterData();
-      renderFaqs();
+      updateView();
     }, 300);
   }
   // 清除搜尋事件
@@ -214,8 +207,7 @@
     clearSearchBtn.classList.add('hidden');
 
     currentPage = 1; // 清除搜尋時重置回第一頁
-    getFilterData();
-    renderFaqs();
+    updateView();
     searchInput.focus();
   }
   // 展開收合事件
@@ -248,24 +240,25 @@
   // ===================
   // ... Pagination ...
   // ===================
-  let currentPage = 1;
-  // 取幾筆資料
-  const dataNum = 10;
   const paginationContainer = document.getElementById('paginationContainer');
   const paginationInfoEl = document.getElementById('paginationInfo');
   const paginationButtonsEl = document.getElementById('paginationButtons');
+  // 取幾筆資料
+  const dataNum = 10;
+  let currentPage = 1;
 
   // 取得分頁計算狀態
-  function getPaginationState() {
+  function getPaginationState(data) {
+    const dataLength = data.length;
     // Math.ceil(13 / 10) 等於 Math.ceil(1.3)，無條件進位後得到 totalPages = 2
-    const totalPages = Math.ceil(filterData.length / dataNum);
+    const totalPages = Math.ceil(dataLength / dataNum);
     // 防呆: 大於頁數降回最後一頁,小於頁數返回第一頁
     if (currentPage > totalPages) currentPage = totalPages || 1;
 
     const startIndex = (currentPage - 1) * dataNum;
-    const endIndex = Math.min(startIndex + dataNum, filterData.length);
+    const endIndex = Math.min(startIndex + dataNum, dataLength);
 
-    const pageData = filterData.slice(startIndex, endIndex);
+    const pageData = data.slice(startIndex, endIndex);
     // 確保你的結束索引永遠不會超出陣列的最大長度 13
     // 在第 1 頁時：Math.min(10, 13) 取比較小的 10。
     // 在第 2 頁時：Math.min(20, 13) 取比較小的 13（而不是超出範圍的 20）
@@ -280,19 +273,20 @@
     // endIndex = Math.min(10 + 10, 13) => 取最小值 13
     // filterData.slice(10, 13) 抓 11-13 筆資料
 
-    return { totalPages, startIndex, endIndex, pageData };
+    return { dataLength, totalPages, startIndex, endIndex, pageData };
   }
 
-  function renderPagination() {
-    const { totalPages, startIndex, endIndex, pageData } = getPaginationState();
+  function renderPagination(state) {
+    const { dataLength, totalPages, startIndex, endIndex } = state
 
-    if (filterData.length > dataNum) {
+    if (dataLength > dataNum) {
       paginationContainer.classList.remove('hidden');
-      paginationInfoEl.textContent = `顯示第 ${startIndex + 1}-${endIndex} 筆，共 ${filterData.length} 筆`;
+      paginationInfoEl.textContent = `顯示第 ${startIndex + 1}-${endIndex} 筆，共 ${dataLength} 筆`;
       renderButtons(totalPages);
     }
     else {
       paginationContainer.classList.add('hidden');
+      paginationButtonsEl.innerHTML = '';
     }
   }
 
@@ -349,7 +343,9 @@
     if (targetPage && targetPage !== currentPage) {
       currentPage = targetPage;
       // 重新渲染內容與分頁按鈕
-      renderFaqs();
+      const state = getPaginationState(filterData);
+      renderFaqs(state.pageData);
+      renderPagination(state);
       window.scrollTo({ top: 200, behavior: 'smooth' });
     }
   }
@@ -362,10 +358,17 @@
     await fetchAllData()
     faqData = getFaqs()
     categoryData = getCategories()
-    getFilterData()
 
-    renderFaqs();
+    updateView();
     renderCategories();
+  }
+  // 更新畫面
+  function updateView() {
+    filterData = getFilterData();
+
+    const state = getPaginationState(filterData);
+    renderFaqs(state.pageData);
+    renderPagination(state);
   }
 
   initialize();
