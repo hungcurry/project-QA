@@ -58,10 +58,47 @@ CRA 法規適用於於歐盟市場供應之具有數位元素的產品與组件�
 > 網址
 
 ```jsx
+// CDN 
+<script src="https://cdn.tailwindcss.com"></script>
+
+// 網址
 http://127.0.0.1:5500/src/index.html
 
 http://127.0.0.1:5500/src/search.html
 
+```
+
+> 架構
+
+```jsx
+QA/
+├── data/
+│   ├── categories.json
+│   └── faq.json
+├── src/
+│   ├── css/
+│   │   └── style.css
+│   ├── all.css
+│   ├── index.html
+│   └── search.html
+├── store/
+│   ├── useFetchStore.js
+├── package-lock.json
+├── package.json
+├── README.md
+└── tailwind.config.js
+```
+
+> 指令
+
+```jsx
+// 開發階段（自動監聽並即時編譯）
+npx tailwindcss -i ./src/css/style.css -o ./src/all.css --watch
+=> npm run dev
+
+// 上線打包（壓縮產出 Minify CSS）
+npx tailwindcss -i ./src/css/style.css -o ./src/all.css --minify
+=> npm run build
 ```
 
 > 測試資料

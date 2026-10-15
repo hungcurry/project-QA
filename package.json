@@ -1,0 +1,17 @@
+{
+  "name": "qa",
+  "version": "1.0.0",
+  "description": "> 網址",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./src/css/style.css -o ./src/all.css --watch",
+    "build": "npx tailwindcss -i ./src/css/style.css -o ./src/all.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

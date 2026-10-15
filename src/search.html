@@ -8,95 +8,10 @@
   <!-- 引入 Axios CDN -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- 引入 Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- 自訂主題顏色配置 -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#fef2f2',
-              100: '#fee2e2',
-              600: '#dc2626',
-              700: '#b91c1c',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link href="../src/all.css" rel="stylesheet">
   <!-- 引入 FontAwesome 圖示 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
-<style>
-  * {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease-in-out, opacity 0.3s ease-in-out;
-    opacity: 0;
-  }
-
-  .faq-answer.active {
-    max-height: 800px;
-    opacity: 1;
-  }
-
-  .rotate-icon {
-    transition: transform 0.3s ease;
-  }
-
-  .active .rotate-icon {
-    transform: rotate(180deg);
-  }
-
-  .faq-item {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .faq-item:hover {
-    border-color: rgba(220, 38, 38, 0.3);
-  }
-
-  .faq-item.active {
-    border-color: #dc2626;
-    background-color: #ffffff;
-    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.08), 0 8px 10px -6px rgba(220, 38, 38, 0.08);
-  }
-
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* 分類按鈕共用基礎樣式 */
-  .category-btn {
-    background-color: #ffffff;
-    color: #475569;
-    border: 1px solid #e2e8f0;
-  }
-
-  .category-btn:hover {
-    background-color: #f1f5f9;
-  }
-
-  /* 啟用狀態的樣式 */
-  .category-btn.category-btn-active {
-    background-color: #dc2626;
-    color: #ffffff;
-    border-color: transparent;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  }
-</style>
 
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased">
 
