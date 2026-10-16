@@ -18,12 +18,11 @@
   <!-- header -->
   <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100">
 
-    <!-- 導覽列容器：手機下拉選單的定位基準 -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between relative">
 
       <!-- 左側：品牌 Logo 與標題區塊 -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white text-xl shadow-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white text-xl shadow-sm">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
@@ -32,23 +31,17 @@
         </div>
       </div>
 
-      <!-- 右側：共用導覽選單（桌面版橫向排列，手機版點擊漢堡後絕對定位下拉） -->
+      <!-- 右側：共用導覽選單 -->
       <div id="navMenu" class="hidden sm:flex items-center sm:justify-end gap-2
         absolute sm:relative top-[68px] sm:top-full left-0 right-0 bg-white sm:bg-transparent
         border-b sm:border-none border-slate-100 p-4 sm:p-0
         flex-col sm:flex-row shadow-lg sm:shadow-none transition-all">
 
-        <!-- 新增：太陽 / 月亮主題切換按鈕 -->
+        <!-- 主題切換按鈕 -->
         <button id="themeToggleBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer">
           <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
           <span class="sm:hidden">切換主題</span>
-        </button>
-
-        <!-- 專家諮詢按鈕 -->
-        <button id="contactBtn"
-          class="w-full sm:w-auto text-xs sm:text-sm bg-primary-50 hover:bg-primary-100 active:scale-95 text-primary-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-envelope-open-text"></i> 專家諮詢
         </button>
 
         <!-- 登入按鈕 -->
@@ -350,15 +343,19 @@
 
       const itemHtml = `
         <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
-          <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer">
-            <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-2.5 pr-2 leading-snug">
-              <span class="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
-              <span>Q：</span>
-              ${highlightedQuestion}
+          <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer transition-colors">
+            <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-3 pr-2 leading-snug">
+              <!-- 圓形底座的 ? 圖示 -->
+              <span class="w-7 h-7 rounded-full bg-red-300 text-white faq-q-icon flex items-center justify-center shrink-0 text-xs shadow-xs transition-colors">
+                <i class="fa-solid fa-question"></i>
+              </span>
+              <!-- 題目文字 (加上 class 方便在展開時切換文字顏色) -->
+              <span class="faq-text-title text-slate-800 transition-colors">${highlightedQuestion}</span>
             </span>
-            <i class="fa-solid fa-chevron-down text-slate-400 rotate-icon shrink-0"></i>
+            <!-- 右側圖示：未展開顯示 +，展開透過 CSS 切換為 - -->
+            <i class="fa-solid fa-plus text-slate-400 faq-icon shrink-0 text-sm transition-colors"></i>
           </button>
-          <div class="faq-answer px-4 sm:px-6 pb-4 sm:pb-5 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 pt-3">
+          <div class="faq-answer px-4 sm:px-6 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 bg-white">
             ${highlightedAnswer}
           </div>
         </div>
@@ -620,10 +617,10 @@
     // 切換圖示：暗模式顯示月亮，亮模式顯示太陽
     if (isDark) {
       themeIcon.className = 'fa-solid fa-moon text-indigo-400';
-      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('CRA-theme', 'dark');
     } else {
       themeIcon.className = 'fa-solid fa-sun text-amber-500';
-      localStorage.setItem('theme', 'light');
+      localStorage.setItem('CRA-theme', 'light');
     }
   }
 

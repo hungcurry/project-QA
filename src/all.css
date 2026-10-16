@@ -588,24 +588,9 @@ video {
   }
 }
 
-/* 定義一個共用的表頭外觀 */
+/* 共用的暗模式外觀 */
 
-.custom-dark {
-  border-bottom-width: 1px;
-  --tw-border-opacity: 1;
-  border-color: rgb(241 245 249 / var(--tw-border-opacity, 1));
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-}
-
-.custom-dark:is(.dark *) {
-  --tw-border-opacity: 1;
-  border-color: rgb(30 41 59 / var(--tw-border-opacity, 1));
-  --tw-bg-opacity: 1;
-  background-color: rgb(15 23 42 / var(--tw-bg-opacity, 1));
-}
-
-/* 定義共用的按鈕樣式 */
+/* 共用的按鈕樣式 */
 
 .pointer-events-none {
   pointer-events: none;
@@ -757,6 +742,10 @@ video {
   height: 1rem;
 }
 
+.h-7 {
+  height: 1.75rem;
+}
+
 .h-9 {
   height: 2.25rem;
 }
@@ -783,6 +772,10 @@ video {
 
 .w-3\/4 {
   width: 75%;
+}
+
+.w-7 {
+  width: 1.75rem;
 }
 
 .w-9 {
@@ -1030,12 +1023,17 @@ video {
 
 .bg-primary-600 {
   --tw-bg-opacity: 1;
-  background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
+  background-color: rgb(229 38 41 / var(--tw-bg-opacity, 1));
 }
 
 .bg-purple-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(250 245 255 / var(--tw-bg-opacity, 1));
+}
+
+.bg-red-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(252 165 165 / var(--tw-bg-opacity, 1));
 }
 
 .bg-red-50 {
@@ -1377,7 +1375,7 @@ video {
 
 .text-primary-600 {
   --tw-text-opacity: 1;
-  color: rgb(220 38 38 / var(--tw-text-opacity, 1));
+  color: rgb(229 38 41 / var(--tw-text-opacity, 1));
 }
 
 .text-primary-700 {
@@ -1528,6 +1526,12 @@ video {
   -webkit-tap-highlight-color: transparent;
 }
 
+:root {
+  --primary-600: #e52629;
+}
+
+/* FAQ 摺疊動畫與基礎樣式 */
+
 .faq-answer {
   max-height: 0;
   overflow: hidden;
@@ -1542,14 +1546,6 @@ video {
   opacity: 1;
 }
 
-.rotate-icon {
-  transition: transform 0.3s ease;
-}
-
-.active .rotate-icon {
-  transform: rotate(180deg);
-}
-
 .faq-item {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1558,12 +1554,54 @@ video {
   border-color: rgba(220, 38, 38, 0.3);
 }
 
+/* === 當 FAQ 項目展開（active）時的樣式變換 === */
+
 .faq-item.active {
-  border-color: #dc2626;
-  background-color: #ffffff;
+  border-color: var(--primary-600);
   box-shadow:
     0 10px 25px -5px rgba(220, 38, 38, 0.08),
     0 8px 10px -6px rgba(220, 38, 38, 0.08);
+}
+
+.faq-item.active .faq-question {
+  background-color: var(--primary-600);
+  color: #ffffff;
+}
+
+/* 標題文字改為白色 */
+
+.faq-item.active .faq-question .faq-text-title {
+  color: #ffffff;
+}
+
+/* ? 圖示的圓形底座與文字改為半透明白與純白 */
+
+.faq-item.active .faq-question .faq-q-icon {
+  background-color: #ffffff;
+  color: var(--primary-600);
+}
+
+.faq-item.active .faq-answer {
+  padding-top: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+/* 右側圖示為白色 */
+
+.faq-item.active .faq-icon {
+  color: #ffffff !important;
+}
+
+/* 將右側圖示從 + (\f067) 變成 - (\f068) */
+
+.faq-item.active .faq-icon::before {
+  content: "\f068" !important;
+}
+
+/* 未展開時滑入按鈕的微底色 */
+
+.faq-item:not(.active) .faq-question:hover {
+  background-color: #f8fafc;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -1590,7 +1628,7 @@ video {
 /* 啟用狀態的樣式 */
 
 .category-btn.category-btn-active {
-  background-color: #dc2626;
+  background-color: var(--primary-600);
   color: #ffffff;
   border-color: transparent;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -1658,7 +1696,7 @@ video {
 
 .focus\:border-primary-600:focus {
   --tw-border-opacity: 1;
-  border-color: rgb(220 38 38 / var(--tw-border-opacity, 1));
+  border-color: rgb(229 38 41 / var(--tw-border-opacity, 1));
 }
 
 .focus\:outline-none:focus {
@@ -1674,7 +1712,7 @@ video {
 
 .focus\:ring-primary-600:focus {
   --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(220 38 38 / var(--tw-ring-opacity, 1));
+  --tw-ring-color: rgb(229 38 41 / var(--tw-ring-opacity, 1));
 }
 
 .active\:scale-95:active {
