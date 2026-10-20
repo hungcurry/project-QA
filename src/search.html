@@ -13,10 +13,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased bg-dark">
 
   <!-- header -->
-  <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100">
+  <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100 bg-dark">
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between relative">
 
@@ -26,7 +26,7 @@
           <i class="fa-solid fa-shield-halved"></i>
         </div>
         <div>
-          <h1 class="font-bold text-slate-900 text-lg leading-tight">CRA 網路韌性法案</h1>
+          <h1 class="font-bold text-slate-900 text-lg leading-tight dark:text-gray-200">CRA 網路韌性法案</h1>
           <p class="text-xs text-slate-400 font-medium">Cyber Resilience Act</p>
         </div>
       </div>
@@ -35,18 +35,18 @@
       <div id="navMenu" class="hidden sm:flex items-center sm:justify-end gap-2
         absolute sm:relative top-[68px] sm:top-full left-0 right-0 bg-white sm:bg-transparent
         border-b sm:border-none border-slate-100 p-4 sm:p-0
-        flex-col sm:flex-row shadow-lg sm:shadow-none transition-all">
+        flex-col sm:flex-row shadow-lg sm:shadow-none transition-all bg-dark">
 
         <!-- 主題切換按鈕 -->
         <button id="themeToggleBtn"
-          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer">
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
           <span class="sm:hidden">切換主題</span>
         </button>
 
         <!-- 登入按鈕 -->
         <button id="authBtn"
-          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer">
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
           <span id="currentRoleText">登入</span>
         </button>
@@ -55,7 +55,7 @@
       <!-- 手機版漢堡選單按鈕 -->
       <div class="flex sm:hidden items-center">
         <button id="mobileMenuToggleBtn" type="button" aria-controls="navMenu" aria-expanded="false"
-          class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-base transition active:scale-95 cursor-pointer">
+          class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-base transition active:scale-95 cursor-pointer github-dark">
           <i id="mobileMenuIcon" class="fa-solid fa-bars"></i>
         </button>
       </div>
@@ -68,7 +68,7 @@
 
     <!-- 權限提示條 -->
     <div id="roleAlert"
-      class="mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between">
+      class="mb-6 bg-slate-100 border border-slate-200 text-slate-700 px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center justify-between github-dark">
       <div class="flex items-center gap-3">
         <i class="fa-solid fa-circle-info text-slate-400 text-base shrink-0"></i>
         <span id="roleAlertText">目前為「未登入」狀態，可瀏覽一般 CRA 常見問題與合規指引。點擊右上角進行登入。</span>
@@ -79,19 +79,20 @@
 
     <!-- 搜尋區塊與標題 -->
     <div class="text-center mb-8">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">CRA 規範與合規要求查詢</h2>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight dark:text-gray-200">CRA
+        規範與合規要求查詢</h2>
       <p class="text-slate-500 mb-5 text-xs sm:text-base">快速查找產品要求、漏洞處理流程及 CE 標記與資訊標示規範</p>
     </div>
   </div>
 
   <!-- 骨架屏區 -->
-  <div class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8">
+  <div class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8 bg-dark">
     <div class="max-w-4xl mx-auto px-0 sm:px-6">
       <div class="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto no-scrollbar px-4 sm:px-0">
 
         <!-- 骨架屏 1 -->
         <div
-          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto github-dark">
           <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
             <i class="fa-solid fa-film text-2xl"></i>
           </div>
@@ -101,7 +102,7 @@
 
         <!-- 骨架屏 2 -->
         <div
-          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto github-dark">
           <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
             <i class="fa-solid fa-film text-2xl"></i>
           </div>
@@ -111,7 +112,7 @@
 
         <!-- 骨架屏 3 -->
         <div
-          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto">
+          class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-xs skeleton-pulse shrink-0 w-[80%] sm:w-auto github-dark">
           <div class="w-full h-36 bg-slate-200 rounded-xl mb-3 flex items-center justify-center text-slate-400">
             <i class="fa-solid fa-film text-2xl"></i>
           </div>
@@ -126,12 +127,12 @@
   <!-- 主內容區 -->
   <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 flex-grow">
     <!-- 搜尋輸入框 -->
-    <div class="relative max-w-xl mx-auto mb-6">
+    <div class="relative max-w-xl mx-auto mb-6 ">
       <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
         <i class="fa-solid fa-magnifying-glass text-base"></i>
       </span>
       <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）"
-        class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm sm:text-base text-slate-700 transition">
+        class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm sm:text-base text-slate-700 transition github-dark">
       <button id="clearSearch"
         class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
         <i class="fa-solid fa-circle-xmark text-lg"></i>
@@ -163,8 +164,8 @@
   </main>
 
   <!-- footer -->
-  <footer class="bg-white border-t border-slate-100 py-5 mt-10">
-    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400">
+  <footer class="bg-white border-t border-slate-100 py-5 mt-10 bg-dark">
+    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400 dark:text-gray-200">
       &copy; 2026 CRA 歐盟網路韌性法案諮詢中心. All rights reserved.
     </div>
   </footer>
@@ -342,7 +343,7 @@
       const highlightedAnswer = highlightText(item.answer, keyword);
 
       const itemHtml = `
-        <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all" data-category="${item.category}">
+        <div class="faq-item bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all github-dark" data-category="${item.category}">
           <button class="faq-question w-full px-4 sm:px-6 py-3.5 sm:py-4 text-left flex items-center justify-between focus:outline-none cursor-pointer transition-colors">
             <span class="font-semibold text-slate-800 text-sm sm:text-base flex items-center gap-3 pr-2 leading-snug">
               <!-- 圓形底座的 ? 圖示 -->
@@ -350,12 +351,12 @@
                 <i class="fa-solid fa-question"></i>
               </span>
               <!-- 題目文字 (加上 class 方便在展開時切換文字顏色) -->
-              <span class="faq-text-title text-slate-800 transition-colors">${highlightedQuestion}</span>
+              <span class="faq-text-title text-slate-800 transition-colors dark:text-gray-200">${highlightedQuestion}</span>
             </span>
             <!-- 右側圖示：未展開顯示 +，展開透過 CSS 切換為 - -->
             <i class="fa-solid fa-plus text-slate-400 faq-icon shrink-0 text-sm transition-colors"></i>
           </button>
-          <div class="faq-answer px-4 sm:px-6 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 bg-white">
+          <div class="faq-answer px-4 sm:px-6 text-slate-600 text-sm sm:text-base leading-relaxed border-t border-slate-100 bg-white github-dark">
             ${highlightedAnswer}
           </div>
         </div>
@@ -373,7 +374,7 @@
       const btnHtml = `
       <button
         data-category="${item.category}"
-        class="category-btn ${isActive ? 'category-btn-active' : ''} shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer"
+        class="category-btn ${isActive ? 'category-btn-active' : ''} shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer github-dark"
       >
         ${item.label}
       </button>
@@ -517,7 +518,7 @@
     const baseBtnClass = 'pagination-btn px-3 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-colors';
     const disabledStyle = 'disabled:opacity-40 disabled:cursor-not-allowed';
     const activeStyle = 'bg-red-600 text-white border-red-600 shadow-sm'
-    const defaultStyle = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+    const defaultStyle = 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 github-dark';
 
     // 產生頁碼按鈕的 HTML / totalPages = 2
     let pageButtonsHTML = '';

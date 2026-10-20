@@ -2,28 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 自己寫的 CSS */
+/* =================== */
+/* ... base ...
+/* =================== */
 @layer components {
-  /* 共用的暗模式外觀 */
-  .custom-dark {
-    @apply bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800;
+  /* 共用的暗模式 */
+  /* dark:text-gray-200 */
+  .bg-dark {
+    @apply dark:bg-dark-800  dark:border-dark-500 dark:text-gray-200;
   }
+  .github-dark {
+    @apply dark:bg-dark-500 dark:hover:bg-dark-500 dark:border-dark-500 dark:text-gray-200;
+  }
+}
 
-  /* 共用的按鈕樣式 */
-  .custom-btn {
-    @apply bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200;
-  }
+:root {
+  --white: #fff;
+  /* border */
+  --white-100: #e2e8f0;
+  /* hover */
+  --white-200: #f8fafc;
+  /* primary */
+  --primary-600: #e52629;
+  /* 方塊色 */
+  --github-dark: #24292e;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
 }
-
-:root {
-  --primary-600: #e52629;
+/* =================== */
+/* ... category...
+/* =================== */
+.category-btn {
+  background-color: var(--white);
+  color: #475569;
+  border: 1px solid var(--white-100);
 }
 
-/* FAQ 摺疊動畫與基礎樣式 */
+.category-btn:hover {
+  background-color: var(--white-200);
+}
+
+.category-btn.category-btn-active {
+  background-color: var(--primary-600) !important;
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* =================== */
+/* ... FAQ 摺疊...
+/* =================== */
+.faq-item {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item:hover {
+  border-color: rgba(220, 38, 38, 0.3);
+}
+/* 🌙 樣式 */
+.dark .faq-item:hover {
+  border-color: var(--github-dark);
+}
+
+.faq-item.active {
+  border-color: var(--primary-600);
+  box-shadow:
+    0 10px 25px -5px rgba(220, 38, 38, 0.08),
+    0 8px 10px -6px rgba(220, 38, 38, 0.08);
+}
+/* 🌙 樣式 */
+.dark .faq-item.active {
+  border-color: var(--github-dark);
+}
+/* faq-question
+====================== */
+.faq-item.active .faq-question {
+  background-color: var(--primary-600);
+  color: var(--white);
+}
+
+.faq-item.active .faq-question .faq-text-title {
+  color: var(--white);
+}
+
+/* icon */
+.faq-item.active .faq-question .faq-q-icon {
+  background-color: var(--white);
+  color: var(--primary-600);
+}
+.faq-item.active .faq-question .faq-icon {
+  color: var(--white) !important;
+}
+/* 將圖示從 + (\f067) 變成 - (\f068) */
+.faq-item.active .faq-icon::before {
+  content: "\f068" !important;
+}
+/* faq-answer
+====================== */
 .faq-answer {
   max-height: 0;
   overflow: hidden;
@@ -33,61 +110,19 @@
   opacity: 0;
 }
 
-.faq-answer.active {
+.faq-item.active .faq-answer.active {
   max-height: 800px;
   opacity: 1;
-}
-
-.faq-item {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.faq-item:hover {
-  border-color: rgba(220, 38, 38, 0.3);
-}
-
-/* === 當 FAQ 項目展開（active）時的樣式變換 === */
-.faq-item.active {
-  border-color: var(--primary-600);
-  box-shadow:
-    0 10px 25px -5px rgba(220, 38, 38, 0.08),
-    0 8px 10px -6px rgba(220, 38, 38, 0.08);
-}
-
-.faq-item.active .faq-question {
-  background-color: var(--primary-600);
-  color: #ffffff;
-}
-
-/* 標題文字改為白色 */
-.faq-item.active .faq-question .faq-text-title {
-  color: #ffffff;
-}
-
-/* ? 圖示的圓形底座與文字改為半透明白與純白 */
-.faq-item.active .faq-question .faq-q-icon {
-  background-color: #ffffff;
-  color: var(--primary-600);
-}
-
-.faq-item.active .faq-answer {
   padding-top: 0.75rem;
   padding-bottom: 1rem;
 }
 
-/* 右側圖示為白色 */
-.faq-item.active .faq-icon {
-  color: #ffffff !important;
-}
-
-/* 將右側圖示從 + (\f067) 變成 - (\f068) */
-.faq-item.active .faq-icon::before {
-  content: "\f068" !important;
-}
-
-/* 未展開時滑入按鈕的微底色 */
 .faq-item:not(.active) .faq-question:hover {
-  background-color: #f8fafc;
+  background-color: var(--white-200);
+}
+/* 🌙 樣式 */
+.dark .faq-item:not(.active) .faq-question:hover {
+  background-color: var(--github-dark);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -97,25 +132,6 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* 分類按鈕共用基礎樣式 */
-.category-btn {
-  background-color: #ffffff;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-}
-
-.category-btn:hover {
-  background-color: #f1f5f9;
-}
-
-/* 啟用狀態的樣式 */
-.category-btn.category-btn-active {
-  background-color: var(--primary-600);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 @keyframes pulse-custom {
