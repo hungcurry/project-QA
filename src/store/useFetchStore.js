@@ -5,8 +5,7 @@ async function fetchFaqsApi() {
   try {
     const res = await axios.get("../data/faq.json");
     return res.data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error("取得 FAQ 資料失敗", error);
     throw error;
   }
@@ -15,8 +14,7 @@ async function fetchCategoriesApi() {
   try {
     const res = await axios.get("../data/categories.json");
     return res.data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error("取得 Categories 資料失敗", error);
     throw error;
   }
@@ -40,15 +38,11 @@ async function fetchCategories() {
 export async function fetchAllData() {
   if (state.isLoaded) return;
   try {
-    await Promise.all([
-      fetchFaqs(),
-      fetchCategories()
-    ]);
+    await Promise.all([fetchFaqs(), fetchCategories()]);
 
     state.isLoaded = true;
     console.log("Store 所有資料初始化成功");
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Store 載入失敗", error);
   }
 }

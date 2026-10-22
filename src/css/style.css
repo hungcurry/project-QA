@@ -23,13 +23,16 @@
   /* hover */
   --white-200: #f8fafc;
   /* primary */
-  --primary-600: #e52629;
+  --primary-600: #ff0000;
   /* 方塊色 */
   --github-dark: #24292e;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: "Inter", "Noto Sans TC", sans-serif;
 }
 /* =================== */
 /* ... category...
@@ -125,6 +128,66 @@
   background-color: var(--github-dark);
 }
 
+/* =================== */
+/* ... Hero...
+/* =================== */
+.hero-bg {
+  /* 預設（淺色模式）背景圖 */
+  background-image: url("../images/bg-dark.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+}
+/* 🌙 樣式 */
+.dark .hero-bg {
+  background-image: url("../images/bg-dark.jpg");
+}
+
+.cra-logo {
+  position: absolute;
+  left: 66%;
+  top: -14%;
+}
+@media (min-width: 960px) {
+  .cra-logo {
+    left: 64%;
+  }
+}
+
+.cra-logo-patten {
+  position: absolute;
+  right: -68%;
+  top: -126%;
+  opacity: 0.7;
+}
+
+.cra-title {
+  font-family: "Inter", sans-serif;
+  letter-spacing: 2px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  background: linear-gradient(to right, var(--primary-600, #e52629), #f43f5e, #fb7185);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero：淡紅光暈 */
+.hero-glow-red {
+  width: 10rem;
+  height: 10rem;
+  bottom: 7rem;
+  left: 25%;
+  background: rgb(254 202 202 / 35%);
+}
+
+/* =================== */
+/* ... Skeleton...
+/* =================== */
+.skeleton-pulse {
+  animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -143,8 +206,4 @@
   50% {
     opacity: 0.5;
   }
-}
-
-.skeleton-pulse {
-  animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

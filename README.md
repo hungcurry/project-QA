@@ -9,6 +9,11 @@ https://www.ti.com/zh-tw/technologies/security/cyber-resilience-act.html
 
 https://www.moxa.com/tw/about-us/policies/cyber-resilience-act-cra
 
+https://www.intertek-twn.com/frontend/HtmlEditor.aspx?lang=C&no=10607
+
+圖檔
+https://unsplash.com/photos/3d-computer-graphics-rhNff6hB41s
+
 ```
 
 > CRA 相關
