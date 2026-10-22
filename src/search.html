@@ -49,7 +49,7 @@
         <button id="themeToggleBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
-          <span class="sm:hidden">切換主題</span>
+          <span class="sm:hidden" data-i18n="nav.themeToggle">切換主題</span>
         </button>
 
         <!-- 語系下拉選單 -->
@@ -69,7 +69,7 @@
         <button id="authBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
-          <span id="currentRoleText">登入</span>
+          <span id="currentRoleText" data-i18n="nav.login">登入</span>
         </button>
       </div>
 
@@ -141,10 +141,11 @@
   <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 my-10">
     <!-- 標題與說明 -->
     <div class="mb-6">
-      <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-2">
+      <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-2"
+        data-i18n="schedule.title">
         關鍵時程為何？
       </h3>
-      <p class="text-sm sm:text-base text-center text-slate-600 dark:text-gray-200">
+      <p class="text-sm sm:text-base text-center text-slate-600 dark:text-gray-200" data-i18n="schedule.subtitle">
         CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：
       </p>
     </div>
@@ -155,35 +156,40 @@
       <table class="w-full text-left border-collapse min-w-[600px] sm:min-w-full">
         <thead>
           <tr class="bg-red-400 text-white">
-            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-1/3">日期</th>
-            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-2/3">關鍵時程</th>
+            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-1/3" data-i18n="schedule.tableHeaderDate">日期
+            </th>
+            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-2/3"
+              data-i18n="schedule.tableHeaderMilestone">關鍵時程</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200 text-sm sm:text-base text-slate-700 dark:text-gray-200 github-dark">
           <!-- 項目 1 -->
           <tr>
-            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400">
+            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
+              data-i18n="schedule.item1Date">
               2024/12/10
             </td>
-            <td class="py-4 px-4 sm:px-6">
+            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item1Desc">
               CRA 正式生效，義務分階段啟動
             </td>
           </tr>
           <!-- 項目 2 -->
           <tr>
-            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400">
+            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
+              data-i18n="schedule.item2Date">
               2026/9/11
             </td>
-            <td class="py-4 px-4 sm:px-6">
+            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item2Desc">
               通報義務上路：已遭實際利用的漏洞與重大資安事件須通報（含仍在支援週期內的既有產品）
             </td>
           </tr>
           <!-- 項目 3 -->
           <tr>
-            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400">
+            <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
+              data-i18n="schedule.item3Date">
               2027/12/11
             </td>
-            <td class="py-4 px-4 sm:px-6">
+            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item3Desc">
               全面強制生效：所有受規範產品須符合要求才能進入歐盟市場
             </td>
           </tr>
@@ -234,7 +240,8 @@
   <!-- Main區 -->
   <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 flex-grow">
 
-    <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-4">
+    <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-4"
+      data-i18n="faq.sectionTitle">
       常見問題？
     </h3>
 
@@ -244,6 +251,7 @@
         <i class="fa-solid fa-magnifying-glass text-base"></i>
       </span>
       <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）"
+        data-i18n-placeholder="faq.searchPlaceholder"
         class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm sm:text-base text-slate-700 transition github-dark">
       <button id="clearSearch"
         class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
@@ -270,14 +278,15 @@
       <div class="text-slate-300 text-4xl sm:text-5xl mb-3">
         <i class="fa-regular fa-face-frown"></i>
       </div>
-      <h3 class="text-base sm:text-lg font-semibold text-slate-700">找不到相關的 CRA 規範解答</h3>
-      <p class="text-slate-400 text-xs sm:text-sm mt-1">您可以嘗試更換關鍵字或重設分類條件。</p>
+      <h3 class="text-base sm:text-lg font-semibold text-slate-700" data-i18n="faq.noResultsTitle">找不到相關的 CRA 規範解答</h3>
+      <p class="text-slate-400 text-xs sm:text-sm mt-1" data-i18n="faq.noResultsDesc">您可以嘗試更換關鍵字或重設分類條件。</p>
     </div>
   </main>
 
   <!-- footer -->
   <footer class="bg-white border-t border-slate-100 py-5 mt-10 bg-dark">
-    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400 dark:text-gray-200">
+    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400 dark:text-gray-200"
+      data-i18n="footer.copyright">
       &copy; 2026 CRA 網路韌性法案. All rights reserved.
     </div>
   </footer>
@@ -287,7 +296,7 @@
     class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2" data-i18n="authModal.title">
           <i class="fa-solid fa-user-lock text-primary-600"></i> 會員登入 (權限驗證)
         </h3>
         <!-- 拔掉 onclick，改用 id="closeLoginModalBtn" -->
@@ -296,43 +305,52 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="text-slate-500 text-xs mb-4">請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。</p>
+      <p class="text-slate-500 text-xs mb-4" data-i18n="authModal.subtitle">請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。</p>
 
       <!-- 拔掉 onsubmit，改用 id="loginForm" -->
       <form id="loginForm" class="space-y-3.5">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">電子郵件 (信箱)</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="authModal.emailLabel">電子郵件
+            (信箱)</label>
           <input type="email" id="loginEmail" required placeholder="例如：pm@cra.com"
+            data-i18n-placeholder="authModal.emailPlaceholder"
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-600">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">密碼</label>
+          <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="authModal.passwordLabel">密碼</label>
           <input type="password" id="loginPassword" required placeholder="請輸入密碼"
+            data-i18n-placeholder="authModal.passwordPlaceholder"
             class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-600">
         </div>
 
-        <div id="loginError" class="text-red-500 text-xs hidden font-medium bg-red-50 px-3 py-2 rounded-lg">
+        <div id="loginError" class="text-red-500 text-xs hidden font-medium bg-red-50 px-3 py-2 rounded-lg"
+          data-i18n="authModal.errorMsg">
           帳號或密碼錯誤，請重新輸入。
         </div>
 
         <div class="pt-1">
           <button type="submit"
-            class="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm shadow-primary-100 transition-colors cursor-pointer">確認登入</button>
+            class="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm shadow-primary-100 transition-colors cursor-pointer"
+            data-i18n="authModal.submitBtn">確認登入</button>
         </div>
       </form>
 
       <div class="mt-5 pt-4 border-t border-slate-100">
-        <p class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider">快速測試帳號一鍵帶入：</p>
+        <p class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider"
+          data-i18n="authModal.quickTestTitle">快速測試帳號一鍵帶入：</p>
         <div class="grid grid-cols-3 gap-2">
           <!-- 拔掉 onclick，改用 data-role="pm" 與共用 class="test-account-btn" -->
           <button type="button" data-role="pm"
-            class="test-account-btn px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium cursor-pointer transition">PM
+            class="test-account-btn px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium cursor-pointer transition"
+            data-i18n="authModal.pmBtn">PM
             帳號</button>
           <button type="button" data-role="rd"
-            class="test-account-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium cursor-pointer transition">RD
+            class="test-account-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium cursor-pointer transition"
+            data-i18n="authModal.rdBtn">RD
             帳號</button>
           <button type="button" data-role="test"
-            class="test-account-btn px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer transition">隨便帳號</button>
+            class="test-account-btn px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer transition"
+            data-i18n="authModal.randomBtn">隨便帳號</button>
         </div>
       </div>
     </div>
@@ -342,7 +360,7 @@
   <div id="toast"
     class="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs sm:text-sm flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
     <i class="fa-solid fa-circle-check text-emerald-400 text-base shrink-0"></i>
-    <span id="toastMessage">已成功送出！</span>
+    <span id="toastMessage" data-i18n="toast.defaultSuccess">已成功送出！</span>
   </div>
 </body>
 

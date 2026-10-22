@@ -1,9 +1,52 @@
 export default {
-  // pages
+// pages
   index: {
     title: "Cyber Resilience Act (CRA)",
     description:
       "Quickly find product requirements,<br>vulnerability handling, CE marking and labeling information",
+  },
+  nav: {
+    themeToggle: "Toggle Theme",
+    login: "Login",
+    logout: "Logout",
+  },
+  schedule: {
+    title: "What is the key timeline?",
+    subtitle: "The CRA officially entered into force on December 10, 2024, with obligations implemented in phases:",
+    tableHeaderDate: "Date",
+    tableHeaderMilestone: "Milestone",
+    item1Date: "2024/12/10",
+    item1Desc: "CRA officially enters into force, with phased obligations kicking off.",
+    item2Date: "2026/9/11",
+    item2Desc: "Reporting obligations take effect: Actively exploited vulnerabilities and major cybersecurity incidents must be reported (including legacy products still within their support period).",
+    item3Date: "2027/12/11",
+    item3Desc: "Full mandatory enforcement: All regulated products must comply to enter the EU market.",
+  },
+  faq: {
+    sectionTitle: "FAQ",
+    searchPlaceholder: "Enter keywords (e.g., product requirements, SBOM, vulnerability...)",
+    noResultsTitle: "No matching CRA compliance answers found",
+    noResultsDesc: "Try changing your keywords or resetting category filters.",
+  },
+  footer: {
+    copyright: "&copy; 2026 Cyber Resilience Act. All rights reserved.",
+  },
+  authModal: {
+    title: "Member Login (Authorization)",
+    subtitle: "Please enter your credentials to log in, or click below for quick testing accounts.",
+    emailLabel: "Email",
+    emailPlaceholder: "e.g., pm@cra.com",
+    passwordLabel: "Password",
+    passwordPlaceholder: "Enter password",
+    errorMsg: "Invalid account or password, please try again.",
+    submitBtn: "Confirm Login",
+    quickTestTitle: "Quick Test Accounts:",
+    pmBtn: "PM Account",
+    rdBtn: "RD Account",
+    randomBtn: "Random Account",
+  },
+  toast: {
+    defaultSuccess: "Submitted successfully!",
   },
   // API
   categories: {
@@ -12,7 +55,7 @@ export default {
     vulnerability: "Vulnerability",
     label: "Information and Labeling",
   },
-  faq: {
+  faqs: {
     cra_intro: {
       question: "What is the EU Cyber Resilience Act (CRA)?",
       answer:

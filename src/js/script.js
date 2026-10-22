@@ -390,9 +390,17 @@ function getInitialLanguage() {
   return systemLang.startsWith('en') ? 'en-US' : 'zh-TW';
 }
 function renderI18n() {
+// 1. 處理一般文字與 HTML 標籤
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
+    });
+  });
+
+  // 2. 處理 input 的 placeholder 屬性
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = i18next.t(el.dataset.i18nPlaceholder, {
+      defaultValue: el.placeholder,
     });
   });
 
@@ -431,7 +439,7 @@ async function handleLanguageChange(lang) {
   renderCategories();
 }
 function getFaqText(item, field) {
-  return i18next.t(`faq.${item.translationKey}.${field}`, {
+  return i18next.t(`faqs.${item.translationKey}.${field}`, {
     defaultValue: item[field],
   });
 }

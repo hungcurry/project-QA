@@ -1,8 +1,51 @@
 export default {
-  // pages
+// pages
   index: {
     title: "《 網路韌性法案 》",
     description: "快速查找產品問題<br>漏洞處理流程及 CE 標記與資訊標示",
+  },
+  nav: {
+    themeToggle: "切換主題",
+    login: "登入",
+    logout: "登出",
+  },
+  schedule: {
+    title: "關鍵時程為何？",
+    subtitle: "CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：",
+    tableHeaderDate: "日期",
+    tableHeaderMilestone: "關鍵時程",
+    item1Date: "2024/12/10",
+    item1Desc: "CRA 正式生效，義務分階段啟動",
+    item2Date: "2026/9/11",
+    item2Desc: "通報義務上路：已遭實際利用的漏洞與重大資安事件須通報（含仍在支援週期內的既有產品）",
+    item3Date: "2027/12/11",
+    item3Desc: "全面強制生效：所有受規範產品須符合要求才能進入歐盟市場",
+  },
+  faq: {
+    sectionTitle: "常見問題？",
+    searchPlaceholder: "輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）",
+    noResultsTitle: "找不到相關的 CRA 規範解答",
+    noResultsDesc: "您可以嘗試更換關鍵字或重設分類條件。",
+  },
+  footer: {
+    copyright: "&copy; 2026 CRA 網路韌性法案. All rights reserved.",
+  },
+  authModal: {
+    title: "會員登入 (權限驗證)",
+    subtitle: "請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。",
+    emailLabel: "電子郵件 (信箱)",
+    emailPlaceholder: "例如：pm@cra.com",
+    passwordLabel: "密碼",
+    passwordPlaceholder: "請輸入密碼",
+    errorMsg: "帳號或密碼錯誤，請重新輸入。",
+    submitBtn: "確認登入",
+    quickTestTitle: "快速測試帳號一鍵帶入：",
+    pmBtn: "PM 帳號",
+    rdBtn: "RD 帳號",
+    randomBtn: "隨便帳號",
+  },
+  toast: {
+    defaultSuccess: "已成功送出！",
   },
   // API
   categories: {
@@ -11,7 +54,7 @@ export default {
     vulnerability: "漏洞",
     label: "資訊與標記",
   },
-  faq: {
+  faqs: {
     cra_intro: {
       question: "什麼是歐盟網路韌性法案(CRA)?",
       answer:
