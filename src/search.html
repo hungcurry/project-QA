@@ -55,15 +55,16 @@
         <!-- 語系下拉選單 -->
         <div class="relative w-full sm:w-auto">
           <select id="langSelect"
-            class="w-full sm:w-auto text-xs text-center sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-between gap-2 cursor-pointer github-dark border-0 outline-none appearance-none pr-8">
+            class="w-full sm:w-auto text-xs text-center sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-between gap-2 cursor-pointer github-dark border-0 outline-none appearance-none pr-10">
             <option value="zh-TW">繁體中文</option>
             <option value="en-US">English</option>
           </select>
-          <!-- 下拉小箭頭圖示 -->
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+          <!-- 下拉小箭頭圖示：加上 pointer-events-none 確保穿透，改用 right-3 保持安全距離 -->
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500">
             <i class="fa-solid fa-chevron-down text-xs"></i>
           </div>
         </div>
+
 
         <!-- 登入按鈕 -->
         <button id="authBtn"
