@@ -49,7 +49,7 @@
         <button id="themeToggleBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
-          <span class="sm:hidden" data-i18n="nav.themeToggle">切換主題</span>
+          <span class="sm:hidden" data-i18n="index.themeToggle">切換主題</span>
         </button>
 
         <!-- 語系下拉選單 -->
@@ -69,7 +69,7 @@
         <button id="authBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
-          <span id="currentRoleText" data-i18n="nav.login">登入</span>
+          <span id="currentRoleText" data-i18n="index.login">登入</span>
         </button>
       </div>
 
@@ -139,14 +139,14 @@
 
   <!-- 表格區塊 -->
   <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 my-10">
-    <p>Version01</p>
+    <p>Version02</p>
     <!-- 標題與說明 -->
     <div class="mb-6">
       <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-2"
-        data-i18n="schedule.title">
+        data-i18n="index.scheduleTitle">
         關鍵時程為何？
       </h3>
-      <p class="text-sm sm:text-base text-center text-slate-600 dark:text-gray-200" data-i18n="schedule.subtitle">
+      <p class="text-sm sm:text-base text-center text-slate-600 dark:text-gray-200" data-i18n="index.scheduleSubtitle">
         CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：
       </p>
     </div>
@@ -157,40 +157,40 @@
       <table class="w-full text-left border-collapse min-w-[600px] sm:min-w-full">
         <thead>
           <tr class="bg-red-400 text-white">
-            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-1/3" data-i18n="schedule.tableHeaderDate">日期
+            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-1/3" data-i18n="index.tableHeaderDate">日期
             </th>
-            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-2/3"
-              data-i18n="schedule.tableHeaderMilestone">關鍵時程</th>
+            <th class="py-3.5 px-4 sm:px-6 font-bold text-sm sm:text-base w-2/3" data-i18n="index.tableHeaderMilestone">
+              關鍵時程</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-200 text-sm sm:text-base text-slate-700 dark:text-gray-200 github-dark">
           <!-- 項目 1 -->
           <tr>
             <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
-              data-i18n="schedule.item1Date">
+              data-i18n="index.item1Date">
               2024/12/10
             </td>
-            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item1Desc">
+            <td class="py-4 px-4 sm:px-6" data-i18n="index.item1Desc">
               CRA 正式生效，義務分階段啟動
             </td>
           </tr>
           <!-- 項目 2 -->
           <tr>
             <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
-              data-i18n="schedule.item2Date">
+              data-i18n="index.item2Date">
               2026/9/11
             </td>
-            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item2Desc">
+            <td class="py-4 px-4 sm:px-6" data-i18n="index.item2Desc">
               通報義務上路：已遭實際利用的漏洞與重大資安事件須通報（含仍在支援週期內的既有產品）
             </td>
           </tr>
           <!-- 項目 3 -->
           <tr>
             <td class="py-4 px-4 sm:px-6 font-semibold whitespace-nowrap text-red-400 dark:text-primary-400"
-              data-i18n="schedule.item3Date">
+              data-i18n="index.item3Date">
               2027/12/11
             </td>
-            <td class="py-4 px-4 sm:px-6" data-i18n="schedule.item3Desc">
+            <td class="py-4 px-4 sm:px-6" data-i18n="index.item3Desc">
               全面強制生效：所有受規範產品須符合要求才能進入歐盟市場
             </td>
           </tr>
@@ -238,11 +238,73 @@
     </div>
   </div>
 
+  <!-- 卡片區塊 -->
+  <div class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8 bg-dark">
+    <div class="max-w-4xl mx-auto px-0 sm:px-6">
+      <div class="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto no-scrollbar px-4 sm:px-0">
+
+        <!-- 卡片 1 -->
+        <div
+          class="bg-white border border-slate-200/80  rounded-2xl p-5 shadow-xs flex flex-col items-center text-center shrink-0 w-[80%] sm:w-auto github-dark">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800
+            text-slate-600 dark:text-slate-300
+            flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+
+
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-gray-100 mb-3"
+            data-i18n="index.feature1Title">
+            系統性安全
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed" data-i18n="index.feature1Desc">
+            通過 IEC 62443-4-1 認證的安全開發生命週期 (SDLC) 與 CRA 關鍵要求相符。
+          </p>
+        </div>
+
+        <!-- 卡片 2 -->
+        <div
+          class="bg-white border border-slate-200/80  rounded-2xl p-5 shadow-xs flex flex-col items-center text-center shrink-0 w-[80%] sm:w-auto github-dark">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800
+            text-slate-600 dark:text-slate-300
+            flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-handshake-angle"></i>
+          </div>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-gray-100 mb-3"
+            data-i18n="index.feature2Title">
+            值得信賴的夥伴
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed" data-i18n="index.feature2Desc">
+            為客戶提供適當的安全更新和安全漏洞管理。
+          </p>
+        </div>
+
+        <!-- 卡片 3 -->
+        <div
+          class="bg-white  border border-slate-200/80  rounded-2xl p-5 shadow-xs flex flex-col items-center text-center shrink-0 w-[80%] sm:w-auto github-dark">
+          <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800
+            text-slate-600 dark:text-slate-300
+            flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-gray-100 mb-3"
+            data-i18n="index.feature3Title">
+            與時俱進的解決方案
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed" data-i18n="index.feature3Desc">
+            主動遵循法規要求和不斷演進的歐盟標準。
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- Main區 -->
   <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 flex-grow">
 
     <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-4"
-      data-i18n="faq.sectionTitle">
+      data-i18n="index.faqSectionTitle">
       常見問題？
     </h3>
 
@@ -252,7 +314,7 @@
         <i class="fa-solid fa-magnifying-glass text-base"></i>
       </span>
       <input type="text" id="searchInput" placeholder="輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）"
-        data-i18n-placeholder="faq.searchPlaceholder"
+        data-i18n-placeholder="index.searchPlaceholder"
         class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-2xl shadow-xs focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm sm:text-base text-slate-700 transition github-dark">
       <button id="clearSearch"
         class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
@@ -279,8 +341,9 @@
       <div class="text-slate-300 text-4xl sm:text-5xl mb-3">
         <i class="fa-regular fa-face-frown"></i>
       </div>
-      <h3 class="text-base sm:text-lg font-semibold text-slate-700" data-i18n="faq.noResultsTitle">找不到相關的 CRA 規範解答</h3>
-      <p class="text-slate-400 text-xs sm:text-sm mt-1" data-i18n="faq.noResultsDesc">您可以嘗試更換關鍵字或重設分類條件。</p>
+      <h3 class="text-base sm:text-lg font-semibold text-slate-700" data-i18n="index.noResultsTitle">找不到相關的 CRA 規範解答
+      </h3>
+      <p class="text-slate-400 text-xs sm:text-sm mt-1" data-i18n="index.noResultsDesc">您可以嘗試更換關鍵字或重設分類條件。</p>
     </div>
   </main>
 

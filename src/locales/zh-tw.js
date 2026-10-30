@@ -1,17 +1,18 @@
 export default {
-// pages
+  // Pages
   index: {
+    // 頁面標題與描述
     title: "《 網路韌性法案 》",
     description: "快速查找產品問題<br>漏洞處理流程及 CE 標記與資訊標示",
-  },
-  nav: {
+
+    // 導覽 / 通用
     themeToggle: "切換主題",
     login: "登入",
     logout: "登出",
-  },
-  schedule: {
-    title: "關鍵時程為何？",
-    subtitle: "CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：",
+
+    // 時程區塊
+    scheduleTitle: "關鍵時程為何？",
+    scheduleSubtitle: "CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：",
     tableHeaderDate: "日期",
     tableHeaderMilestone: "關鍵時程",
     item1Date: "2024/12/10",
@@ -20,9 +21,17 @@ export default {
     item2Desc: "通報義務上路：已遭實際利用的漏洞與重大資安事件須通報（含仍在支援週期內的既有產品）",
     item3Date: "2027/12/11",
     item3Desc: "全面強制生效：所有受規範產品須符合要求才能進入歐盟市場",
-  },
-  faq: {
-    sectionTitle: "常見問題？",
+
+    // 特色卡片區塊
+    feature1Title: "系統性安全",
+    feature1Desc: "通過 IEC 62443-4-1 認證的安全開發生命週期 (SDLC) 與 CRA 關鍵要求相符。",
+    feature2Title: "值得信賴的夥伴",
+    feature2Desc: "為客戶提供適當的安全更新和安全漏洞管理。",
+    feature3Title: "與時俱進的解決方案",
+    feature3Desc: "主動遵循法規要求和不斷演進的歐盟標準。",
+
+    // 常見問題區塊
+    faqSectionTitle: "常見問題？",
     searchPlaceholder: "輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）",
     noResultsTitle: "找不到相關的 CRA 規範解答",
     noResultsDesc: "您可以嘗試更換關鍵字或重設分類條件。",
