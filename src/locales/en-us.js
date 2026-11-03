@@ -4,7 +4,7 @@ export default {
     // 頁面標題與描述
     title: "Cyber Resilience Act (CRA)",
     description:
-      "Quickly find product requirements,<br>vulnerability handling, CE marking and labeling information",
+      "Quickly match product requirements,<br>master vulnerability handling, and ensure CE marking and compliance information.",
 
     // 導覽 / 通用
     themeToggle: "Toggle Theme",
@@ -30,9 +30,9 @@ export default {
     feature1Title: "Systematic Security",
     feature1Desc:
       "Complies with CRA key requirements through a Secure Development Life Cycle (SDLC) certified by IEC 62443-4-1.",
-    feature2Title: "Trusted Partner",
+    feature2Title: "Detect and Verify Vulnerabilities",
     feature2Desc:
-      "Provides customers with appropriate security updates and vulnerability management.",
+      "Quickly identify and manage security vulnerabilities within products.",
     feature3Title: "Future-Proof Solutions",
     feature3Desc: "Proactively complies with regulatory requirements and evolving EU standards.",
 

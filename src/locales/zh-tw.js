@@ -3,7 +3,7 @@ export default {
   index: {
     // 頁面標題與描述
     title: "《 網路韌性法案 》",
-    description: "快速查找產品問題<br>漏洞處理流程及 CE 標記與資訊標示",
+    description: "快速對應產品規範<br>掌握漏洞處理與 CE 標記及合規資訊",
 
     // 導覽 / 通用
     themeToggle: "切換主題",
@@ -25,10 +25,10 @@ export default {
     // 特色卡片區塊
     feature1Title: "系統性安全",
     feature1Desc: "通過 IEC 62443-4-1 認證的安全開發生命週期 (SDLC) 與 CRA 關鍵要求相符。",
-    feature2Title: "值得信賴的夥伴",
-    feature2Desc: "為客戶提供適當的安全更新和安全漏洞管理。",
+    feature2Title: "偵測與確認漏洞",
+    feature2Desc: "第一時間識別出產品中的安全漏洞<br>並進行管理。",
     feature3Title: "與時俱進的解決方案",
-    feature3Desc: "主動遵循法規要求和不斷演進的歐盟標準。",
+    feature3Desc: "主動遵循法規要求<br>不斷演進的歐盟標準。",
 
     // 常見問題區塊
     faqSectionTitle: "常見問題？",
