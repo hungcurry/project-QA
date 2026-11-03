@@ -146,7 +146,7 @@ body {
 .cra-logo {
   position: absolute;
   left: 66%;
-  top: -14%;
+  top: 2%;
 }
 @media (min-width: 960px) {
   .cra-logo {
