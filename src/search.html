@@ -66,6 +66,11 @@
         </div>
 
         <!-- 登入按鈕 -->
+        <!-- <button id="authBtn"
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
+          <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
+          <span id="currentRoleText" data-i18n="index.login">登入</span>
+        </button> -->
         <button id="authBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
@@ -85,7 +90,7 @@
   </header>
 
   <!-- Hero區 -->
-  <div class="hero hero-bg w-full relative overflow-hidden">
+  <div data-permission="HERO_READ" class="hero hero-bg w-full relative overflow-hidden">
     <!-- 🎨 背景半透明遮罩 -->
     <div class="absolute inset-0 bg-slate-900/65 dark:bg-slate-900/65 pointer-events-none z-0"></div>
     <div class="absolute hero-glow-red rounded-full blur-3xl pointer-events-none z-0"></div>
@@ -137,7 +142,7 @@
   </div>
 
   <!-- 表格區塊 -->
-  <div class="max-w-4xl w-full mx-auto px-4 sm:px-6 my-10">
+  <div data-permission="SCHEDULE_READ" class="max-w-4xl w-full mx-auto px-4 sm:px-6 my-10">
     <!-- 標題與說明 -->
     <div class="mb-6">
       <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-2"
@@ -198,7 +203,7 @@
   </div>
 
   <!-- 卡片區塊 -->
-  <div class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8 bg-dark">
+  <div data-permission="FEATURES_READ" class="w-full bg-slate-100/70 border-y border-slate-200/60 py-6 mb-8 bg-dark">
     <div class="max-w-4xl mx-auto px-0 sm:px-6">
       <div class="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto no-scrollbar px-4 sm:px-0">
 
@@ -263,7 +268,7 @@
   </div>
 
   <!-- Main區 -->
-  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 flex-grow">
+  <main data-permission="FAQ_READ" class="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 pb-10 flex-grow">
 
     <h3 class="text-xl sm:text-2xl text-center font-bold text-slate-900 dark:text-gray-200 mb-4"
       data-i18n="index.faqSectionTitle">
@@ -320,68 +325,104 @@
     </p>
   </footer>
 
-  <!-- 登入彈窗 Modal -->
-  <div id="loginModal"
-    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2" data-i18n="authModal.title">
-          <i class="fa-solid fa-user-lock text-primary-600"></i> 會員登入 (權限驗證)
-        </h3>
-        <!-- 拔掉 onclick，改用 id="closeLoginModalBtn" -->
-        <button id="closeLoginModalBtn" type="button"
-          class="text-slate-400 hover:text-slate-600 text-lg p-2 cursor-pointer">
-          <i class="fa-solid fa-xmark"></i>
+  <!-- 登入彈出視窗 (Modal) -->
+  <div id="authModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden">
+    <div
+      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 w-full max-w-md mx-4 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+
+      <!-- 關閉按鈕 -->
+      <button id="closeModalBtn"
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-2">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Modal 標題 -->
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-gray-100">選擇登入身分</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">請選擇要切換的測試角色權限</p>
+      </div>
+
+      <!-- 新增：信箱、密碼與登入按鈕區塊 -->
+      <div class="space-y-4 mb-6" id="loginFormSection">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">信箱</label>
+          <input type="email" id="loginEmail" placeholder="請輸入信箱"
+            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">密碼</label>
+          <input type="password" id="loginPassword" placeholder="請輸入密碼"
+            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+        <button id="submitLoginBtn"
+          class="w-full py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium text-sm transition cursor-pointer">
+          登入
         </button>
       </div>
-      <p class="text-slate-500 text-xs mb-4" data-i18n="authModal.subtitle">請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。</p>
 
-      <!-- 拔掉 onsubmit，改用 id="loginForm" -->
-      <form id="loginForm" class="space-y-3.5">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="authModal.emailLabel">電子郵件
-            (信箱)</label>
-          <input type="email" id="loginEmail" required placeholder="例如：pm@cra.com"
-            data-i18n-placeholder="authModal.emailPlaceholder"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-600">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1" data-i18n="authModal.passwordLabel">密碼</label>
-          <input type="password" id="loginPassword" required placeholder="請輸入密碼"
-            data-i18n-placeholder="authModal.passwordPlaceholder"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-600">
-        </div>
+      <!-- 分隔線 -->
+      <div class="relative flex py-2 items-center mb-6">
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+        <span class="flex-shrink mx-4 text-xs text-slate-400 dark:text-slate-500">快速選擇測試身分</span>
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+      </div>
 
-        <div id="loginError" class="text-red-500 text-xs hidden font-medium bg-red-50 px-3 py-2 rounded-lg"
-          data-i18n="authModal.errorMsg">
-          帳號或密碼錯誤，請重新輸入。
+      <!-- 身分選項清單 (包含 4 種角色) -->
+      <div class="space-y-3 mb-6" id="roleSelectList">
+        <!-- Super Admin -->
+        <div data-role="super_admin" data-email="superadmin@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Super Admin</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">最高權限，可管理所有內容和帳號</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-medium">全權限</span>
         </div>
 
-        <div class="pt-1">
-          <button type="submit"
-            class="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-xs sm:text-sm font-medium shadow-sm shadow-primary-100 transition-colors cursor-pointer"
-            data-i18n="authModal.submitBtn">確認登入</button>
+        <!-- Admin -->
+        <div data-role="admin" data-email="admin@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Admin</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">一般管理員，可管理內容但無法刪除帳號</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 font-medium">管理權限</span>
         </div>
-      </form>
 
-      <div class="mt-5 pt-4 border-t border-slate-100">
-        <p class="text-[11px] font-semibold text-slate-400 mb-2 uppercase tracking-wider"
-          data-i18n="authModal.quickTestTitle">快速測試帳號一鍵帶入：</p>
-        <div class="grid grid-cols-3 gap-2">
-          <!-- 拔掉 onclick，改用 data-role="pm" 與共用 class="test-account-btn" -->
-          <button type="button" data-role="pm"
-            class="test-account-btn px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium cursor-pointer transition"
-            data-i18n="authModal.pmBtn">PM
-            帳號</button>
-          <button type="button" data-role="rd"
-            class="test-account-btn px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium cursor-pointer transition"
-            data-i18n="authModal.rdBtn">RD
-            帳號</button>
-          <button type="button" data-role="test"
-            class="test-account-btn px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer transition"
-            data-i18n="authModal.randomBtn">隨便帳號</button>
+        <!-- Developer -->
+        <div data-role="developer" data-email="developer@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Developer</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">開發者，可檢視與寫入指定區塊</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium">開發權限</span>
+        </div>
+
+        <!-- Viewer -->
+        <div data-role="viewer" data-email="viewer@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Viewer</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">檢視者，可檢視指定區塊</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 font-medium">檢視權限</span>
         </div>
       </div>
+
+      <!-- 已登入時顯示的登出按鈕 -->
+      <div id="logoutSection" class="hidden">
+        <button id="logoutBtn"
+          class="w-full py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium text-sm transition cursor-pointer">
+          登出當前帳號 (切回未登入)
+        </button>
+      </div>
+
     </div>
   </div>
 

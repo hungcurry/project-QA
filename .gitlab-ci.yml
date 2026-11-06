@@ -1,0 +1,16 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public/data
+    - mkdir -p public/src
+    - mkdir -p public/src/{dist,images}
+    - cp -r data/. public/data/
+    - cp src/*.html public/src/
+    - cp -r src/dist/. public/src/dist/
+    - cp -r src/images/. public/src/images/
+
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

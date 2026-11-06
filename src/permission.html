@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CRA 搜尋與篩選邏輯獨立展示</title>
+  <!-- 引入 Tailwind CSS CDN -->
+  <link href="../src/dist/all.min.css" rel="stylesheet">
+  <!-- 引入 FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- 引入 Google Front -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased bg-dark">
+
+  <!-- header -->
+  <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100 bg-dark">
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between relative">
+
+      <!-- 左側：品牌 Logo 與標題區塊 -->
+      <div class="flex items-center gap-3">
+        <a href="#" class="block">
+          <!-- ☀️ 淺色模式顯示的 Logo -->
+          <img src="../src/images/logo-light.png" alt="MSI Logo" class="w-[102px] h-[40px] object-contain dark:hidden">
+
+          <!-- 🌙 暗黑模式顯示的 Logo -->
+          <img src="../src/images/logo-dark.png" alt="MSI Logo"
+            class="w-[102px] h-[40px] object-contain hidden dark:block">
+        </a>
+        <div>
+          <h1 class="sr-only">MSI</h1>
+          <p class="text-xs text-slate-400 font-medium hidden">Cyber Resilience Act</p>
+        </div>
+      </div>
+
+      <!-- 右側：共用導覽選單 -->
+      <div id="navMenu" class="hidden sm:flex items-center sm:justify-end gap-2
+        absolute sm:relative top-[68px] sm:top-full left-0 right-0 bg-white sm:bg-transparent
+        border-b sm:border-none border-slate-100 p-4 sm:p-0
+        flex-col sm:flex-row shadow-lg sm:shadow-none transition-all bg-dark">
+
+        <!-- 主題切換按鈕 -->
+        <button id="themeToggleBtn"
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
+          <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
+          <span class="sm:hidden" data-i18n="index.themeToggle">切換主題</span>
+        </button>
+
+        <!-- 語系下拉選單 -->
+        <div class="relative w-full sm:w-auto">
+          <select id="langSelect"
+            class="w-full sm:w-auto text-xs text-center sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-between gap-2 cursor-pointer github-dark border-0 outline-none appearance-none px-3.5 sm:px-3 pr-10 sm:pr-8">
+            <option value="zh-TW">繁體中文</option>
+            <option value="en-US">English</option>
+          </select>
+          <!-- 下拉小箭頭圖示 -->
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 sm:px-2 text-slate-500">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+        </div>
+
+        <!-- 登入按鈕 -->
+        <!-- <button id="authBtn"
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
+          <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
+          <span id="currentRoleText" data-i18n="index.login">登入</span>
+        </button> -->
+        <button id="authBtn"
+          class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
+          <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
+          <span id="currentRoleText" data-i18n="index.login">登入</span>
+        </button>
+      </div>
+
+      <!-- 手機版漢堡選單按鈕 -->
+      <div class="flex sm:hidden items-center">
+        <button id="mobileMenuToggleBtn" type="button" aria-controls="navMenu" aria-expanded="false"
+          class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-base transition active:scale-95 cursor-pointer github-dark">
+          <i id="mobileMenuIcon" class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 權限測試 ------------------------------------------------------>
+
+  <!-- 1. Hero 區塊 -->
+  <section data-permission="HERO_READ" class="permission-section">
+    <h2>🚀 Hero 區塊</h2>
+    <p>控制權限：<code>hero:read</code> (區塊顯示)</p>
+    <button data-permission="HERO_CREATE" class="p-button btn-create">新增 (hero:create)</button>
+    <button data-permission="HERO_UPDATE" class="p-button btn-update">修改 (hero:update)</button>
+    <button data-permission="HERO_DELETE" class="p-button btn-delete">刪除 (hero:delete)</button>
+  </section>
+
+  <!-- 2. 表格區塊 (關鍵時程) -->
+  <section data-permission="SCHEDULE_READ" class="permission-section">
+    <h2>📅 關鍵時程 (Schedule 區塊)</h2>
+    <p>控制權限：<code>schedule:read</code> (區塊顯示)</p>
+    <button data-permission="SCHEDULE_CREATE" class="p-button btn-create">新增 (schedule:create)</button>
+    <button data-permission="SCHEDULE_UPDATE" class="p-button btn-update">修改 (schedule:update)</button>
+    <button data-permission="SCHEDULE_DELETE" class="p-button btn-delete">刪除 (schedule:delete)</button>
+  </section>
+
+  <!-- 3. 卡片區塊 (系統特點) -->
+  <section data-permission="FEATURES_READ" class="permission-section">
+    <h2>⭐ 系統特點 (Features 區塊)</h2>
+    <p>控制權限：<code>features:read</code> (區塊顯示)</p>
+    <button data-permission="FEATURES_CREATE" class="p-button btn-create">新增 (features:create)</button>
+    <button data-permission="FEATURES_UPDATE" class="p-button btn-update">修改 (features:update)</button>
+    <button data-permission="FEATURES_DELETE" class="p-button btn-delete">刪除 (features:delete)</button>
+  </section>
+
+  <!-- 4. Main 區塊 (Q&A) -->
+  <section data-permission="FAQ_READ" class="permission-section">
+    <h2>❓ Q&A 區塊 (FAQ)</h2>
+    <p>控制權限：<code>faq:read</code> (區塊顯示)</p>
+    <button data-permission="FAQ_CREATE" class="p-button btn-create">新增 (faq:create)</button>
+    <button data-permission="FAQ_UPDATE" class="p-button btn-update">修改 (faq:update)</button>
+    <button data-permission="FAQ_DELETE" class="p-button btn-delete">刪除 (faq:delete)</button>
+  </section>
+
+  <!-- 5. Users 區塊 -->
+  <section data-permission="USERS_READ" class="permission-section">
+    <h2>👥 使用者管理 (Users 區塊)</h2>
+    <p>控制權限：<code>users:read</code> (區塊顯示)</p>
+    <button data-permission="USERS_CREATE" class="p-button btn-create">新增 (users:create)</button>
+    <button data-permission="USERS_UPDATE" class="p-button btn-update">修改 (users:update)</button>
+    <button data-permission="USERS_DELETE" class="p-button btn-delete">刪除 (users:delete)</button>
+  </section>
+
+  <!-- 權限測試 ------------------------------------------------------>
+
+  <!-- footer -->
+  <footer class="bg-white border-t border-slate-100 py-5 mt-10 bg-dark">
+    <div class="max-w-4xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400 dark:text-gray-200"
+      data-i18n="footer.copyright">
+      &copy; 2026 CRA 網路韌性法案. All rights reserved.
+    </div>
+    <p class="text-center text-sm text-white mt2" data-i18n="index.version">
+      v0.0.2
+    </p>
+  </footer>
+
+  <!-- 登入彈出視窗 (Modal) -->
+  <div id="authModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden">
+    <div
+      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 w-full max-w-md mx-4 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+
+      <!-- 關閉按鈕 -->
+      <button id="closeModalBtn"
+        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-2">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Modal 標題 -->
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-gray-100">選擇登入身分</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">請選擇要切換的測試角色權限</p>
+      </div>
+
+      <!-- 新增：信箱、密碼與登入按鈕區塊 -->
+      <div class="space-y-4 mb-6" id="loginFormSection">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">信箱</label>
+          <input type="email" id="loginEmail" placeholder="請輸入信箱"
+            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">密碼</label>
+          <input type="password" id="loginPassword" placeholder="請輸入密碼"
+            class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-400">
+        </div>
+        <button id="submitLoginBtn"
+          class="w-full py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium text-sm transition cursor-pointer">
+          登入
+        </button>
+      </div>
+
+      <!-- 分隔線 -->
+      <div class="relative flex py-2 items-center mb-6">
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+        <span class="flex-shrink mx-4 text-xs text-slate-400 dark:text-slate-500">快速選擇測試身分</span>
+        <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+      </div>
+
+      <!-- 身分選項清單 (包含 4 種角色) -->
+      <div class="space-y-3 mb-6" id="roleSelectList">
+        <!-- Super Admin -->
+        <div data-role="super_admin" data-email="superadmin@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Super Admin</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">最高權限，可管理所有內容和帳號</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-medium">全權限</span>
+        </div>
+
+        <!-- Admin -->
+        <div data-role="admin" data-email="admin@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Admin</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">一般管理員，可管理內容但無法刪除帳號</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 font-medium">管理權限</span>
+        </div>
+
+        <!-- Developer -->
+        <div data-role="developer" data-email="developer@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Developer</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">開發者，可檢視與寫入指定區塊</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 font-medium">開發權限</span>
+        </div>
+
+        <!-- Viewer -->
+        <div data-role="viewer" data-email="viewer@example.com" data-password="password123"
+          class="role-card p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-red-400 dark:hover:border-red-400 hover:bg-red-50/50 dark:hover:bg-slate-700/50 cursor-pointer transition-all flex items-center justify-between">
+          <div>
+            <div class="font-bold text-sm text-slate-800 dark:text-gray-200">Viewer</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">檢視者，可檢視指定區塊</div>
+          </div>
+          <span
+            class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 font-medium">檢視權限</span>
+        </div>
+      </div>
+
+      <!-- 已登入時顯示的登出按鈕 -->
+      <div id="logoutSection" class="hidden">
+        <button id="logoutBtn"
+          class="w-full py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium text-sm transition cursor-pointer">
+          登出當前帳號 (切回未登入)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast 通知 -->
+  <div id="toast"
+    class="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-6 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-xs sm:text-sm flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-base shrink-0"></i>
+    <span id="toastMessage" data-i18n="toast.defaultSuccess">已成功送出！</span>
+  </div>
+</body>
+
+<!-- JavaScript -->
+<script type="module" src="../src/dist/all.min.js"></script>
+
+</html>

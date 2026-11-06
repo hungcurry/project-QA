@@ -20,7 +20,12 @@ let searchTimer = null;
 function getFilterData() {
   if (!faqData || faqData.length === 0) return;
 
-  const keyword = searchInput.value.toLowerCase().trim(); // 轉成小寫
+  // 防禦性檢查：若 searchInput 不存在，直接回傳預設值或不進行關鍵字過濾
+  const keyword =
+    searchInput && searchInput.value
+      ? searchInput.value.toLowerCase().trim() // 轉成小寫
+      : "";
+
   filterData = faqData.filter((item) => {
     // 條件 A：分類有沒有符合？
     const matchesCategory = currentCategory === "all" || item.category === currentCategory;
@@ -47,6 +52,9 @@ function getFilterData() {
 // ===================
 // 渲染 Q&A 畫面
 function renderFaqs(pageData) {
+  // 如果元素不存在，直接中斷，避免報錯崩潰
+  if (!faqList) return;
+
   if (pageData.length === 0) {
     noResultsDiv.classList.remove("hidden");
     document.getElementById("paginationContainer").classList.add("hidden");
@@ -91,6 +99,9 @@ function renderFaqs(pageData) {
 }
 // 渲染 分類按鈕 畫面
 function renderCategories() {
+  // 如果元素不存在，直接中斷，避免報錯崩潰
+  if (!categoryFilters) return;
+
   categoryFilters.innerHTML = "";
 
   categoryData.forEach((item) => {
@@ -186,10 +197,28 @@ function handleAccordion(e) {
   }
 }
 
-categoryFilters.addEventListener("click", handleCategoryFilter);
-searchInput.addEventListener("input", handleSearch);
-clearSearchBtn.addEventListener("click", handleClearSearch);
-faqList.addEventListener("click", handleAccordion);
+// 封裝成函數，檢查元素是否存在
+function initFaqEventListeners() {
+  if (categoryFilters) {
+    categoryFilters.addEventListener("click", handleCategoryFilter);
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", handleSearch);
+  }
+
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", handleClearSearch);
+  }
+
+  if (faqList) {
+    faqList.addEventListener("click", handleAccordion);
+  }
+}
+// 確保 DOM 載入完成後執行
+document.addEventListener("DOMContentLoaded", () => {
+  initFaqEventListeners();
+})
 
 // ===================
 // ... Pagination ...
@@ -230,6 +259,9 @@ function getPaginationState(data) {
 }
 
 function renderPagination(state) {
+  // 如果容器不存在，直接中斷，避免報錯
+  if (!paginationContainer) return;
+
   const { dataLength, totalPages, startIndex, endIndex } = state;
 
   if (dataLength > dataNum) {
@@ -302,8 +334,16 @@ function handleChangePage(e) {
     window.scrollTo({ top: 200, behavior: "smooth" });
   }
 }
-
-paginationButtonsEl.addEventListener("click", handleChangePage);
+// 封裝成函數，檢查元素是否存在
+function initPaginationEventListeners() {
+  if (paginationButtonsEl) {
+    paginationButtonsEl.addEventListener("click", handleChangePage);
+  }
+}
+// 確保 DOM 載入完成後執行
+document.addEventListener("DOMContentLoaded", () => {
+  initPaginationEventListeners();
+})
 
 // ===================
 // ... Menu ...
@@ -373,24 +413,24 @@ function initTheme() {
   }
 }
 // 頁面載入時執行初始化
-initTheme();
+initTheme()
 
 themeToggleBtn.addEventListener("click", toggleTheme);
 
 // ===================
 // ... i18n ...
 // ===================
-let i18next = null;
+let i18next = null
 function getInitialLanguage() {
   // 取得初始語系（localStorage 優先，其次抓瀏覽器）
-  const savedLang = localStorage.getItem('preferred_lang');
+  const savedLang = localStorage.getItem("CRA-lang")
   if (savedLang) return savedLang;
 
-  const systemLang = navigator.language || navigator.userLanguage;
-  return systemLang.startsWith('en') ? 'en-US' : 'zh-TW';
+  const systemLang = navigator.language || navigator.userLanguage
+  return systemLang.startsWith("en") ? "en-US" : "zh-TW"
 }
 function renderI18n() {
-// 1. 處理一般文字與 HTML 標籤
+  // 1. 處理一般文字與 HTML 標籤
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
@@ -431,7 +471,7 @@ async function handleLanguageChange(lang) {
   await i18next.changeLanguage(lang);
 
   // 💡 關鍵：切換時把使用者的選擇存入 localStorage
-  localStorage.setItem('preferred_lang', lang);
+  localStorage.setItem("CRA-lang", lang);
 
   renderI18n();
   currentPage = 1;
@@ -443,6 +483,148 @@ function getFaqText(item, field) {
     defaultValue: item[field],
   });
 }
+
+// ===================
+// ... auth ...
+// ===================
+import {
+  loginAs,
+  logout,
+  getCurrentUser,
+  updateUIByPermission,
+  PERMISSIONS,
+  useAdminAuth,
+} from "./auth.js";
+
+// 實例化 Composable (符合現代前端架構風格)
+const { hasPermission, hasRole } = useAdminAuth();
+
+export function initAuthModal() {
+  const authBtn = document.getElementById("authBtn");
+  const authModal = document.getElementById("authModal");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const roleCards = document.querySelectorAll(".role-card");
+  const logoutSection = document.getElementById("logoutSection");
+  const roleSelectList = document.getElementById("roleSelectList");
+  const loginFormSection = document.getElementById("loginFormSection");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const loginEmailInput = document.getElementById("loginEmail");
+  const loginPasswordInput = document.getElementById("loginPassword");
+  const submitLoginBtn = document.getElementById("submitLoginBtn");
+
+  if (!authBtn || !authModal) return;
+
+  // 1. 點擊登入按鈕開啟 Modal
+  authBtn.addEventListener("click", () => {
+    const user = getCurrentUser();
+    if (user) {
+      logoutSection.classList.remove("hidden");
+      roleSelectList.classList.add("hidden");
+      loginFormSection.classList.add("hidden");
+    } else {
+      logoutSection.classList.add("hidden");
+      roleSelectList.classList.remove("hidden");
+      loginFormSection.classList.remove("hidden");
+      if (loginEmailInput) loginEmailInput.value = "";
+      if (loginPasswordInput) loginPasswordInput.value = "";
+    }
+    authModal.classList.remove("hidden");
+  });
+
+  // 2. 關閉 Modal
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener("click", () => authModal.classList.add("hidden"));
+  }
+  authModal.addEventListener("click", (e) => {
+    if (e.target === authModal) authModal.classList.add("hidden");
+  });
+
+  // 3. 點擊身分卡片自動填入信箱與密碼
+  roleCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      const email = card.getAttribute("data-email");
+      const password = card.getAttribute("data-password");
+
+      if (loginEmailInput && email) loginEmailInput.value = email;
+      if (loginPasswordInput && password) loginPasswordInput.value = password;
+    });
+  });
+
+  // 4. 點擊上方登入按鈕
+  if (submitLoginBtn) {
+    submitLoginBtn.addEventListener("click", () => {
+      const email = loginEmailInput ? loginEmailInput.value : "";
+      const matchedCard = Array.from(roleCards).find(
+        (card) => card.getAttribute("data-email") === email,
+      );
+      if (matchedCard) {
+        const roleKey = matchedCard.getAttribute("data-role");
+        loginAs(roleKey);
+        authModal.classList.add("hidden");
+      } else {
+        alert("請選擇或輸入有效的測試帳號");
+      }
+    });
+  }
+
+  // 5. 點擊登出
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      logout();
+      if (loginEmailInput) loginEmailInput.value = "";
+      if (loginPasswordInput) loginPasswordInput.value = "";
+      authModal.classList.add("hidden");
+    });
+  }
+}
+
+function initPermissionActions() {
+  // 監聽整個文件的點擊事件 (事件委派)
+  document.addEventListener("click", (e) => {
+    // 尋找被點擊的目標，或往上找是否有帶有 data-permission 的元素
+    const target = e.target.closest("[data-permission]");
+
+    // 如果點擊的元素沒有設定 data-permission，就直接跳過
+    if (!target) return;
+
+    const permissionKey = target.getAttribute("data-permission");
+    const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
+
+    // 1. 檢查權限
+    if (!hasPermission(permissionValue)) {
+      // 阻止預設行為 (例如超連結跳轉或表單送出)
+      e.preventDefault();
+      e.stopPropagation();
+
+      alert(`權限不足：您的身分沒有執行 ${permissionValue} 的權限！`);
+      return;
+    }
+
+    // 2. 權限檢查通過，根據屬性或 class 執行對應動作
+    const permLower = permissionKey.toLowerCase();
+    const classList = target.className;
+
+    if (permLower.includes("create") || classList.includes("create")) {
+      alert("新增成功！");
+    } else if (permLower.includes("update") || classList.includes("update")) {
+      alert("修改成功！");
+    } else if (permLower.includes("delete") || classList.includes("delete")) {
+      alert("刪除成功！");
+    } else {
+      // 如果是一般區塊或讀取權限被點擊，可以視需求處理
+      console.log(`執行操作：${permissionValue}`);
+    }
+  });
+}
+
+// 頁面載入時初始化 Modal、綁定事件，並根據 localStorage 恢復的身分執行第一次權限掃描更新畫面
+document.addEventListener("DOMContentLoaded", () => {
+  initAuthModal();
+  initPermissionActions();
+  // 此時會自動讀取 localStorage 中的身分進行介面套用
+  updateUIByPermission();
+});
 
 // ===================
 // ... init ...
@@ -471,6 +653,9 @@ async function initialize() {
 
   updateView();
   renderCategories();
-}
-initialize();
 
+  // ✅ 權限檢查
+  initAuthModal();
+  updateUIByPermission();
+}
+initialize()

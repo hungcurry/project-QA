@@ -106,6 +106,38 @@ npx tailwindcss -i ./src/css/style.css -o ./src/all.css --minify
 => npm run build
 ```
 
+> 權限檢查範例
+
+```jsx
+// 前端
+const { hasPermission, hasRole } = useAdminAuth()
+const canEdit = hasPermission('projects:write')
+const isSuperAdmin = hasRole('super_admin')
+
+// 範例程式碼
+const { hasPermission } = useAdminAuth()
+// 檢查權限
+if (!hasPermission('skills:read')) {
+  navigateTo('/admin/dashboard')
+}
+<button 
+v-if="hasPermission('skills:write')" 
+class="add-button" @click="openAddModal">
+  新增技能分類
+</button>
+
+
+// 後端
+const user = await getCurrentUser(event)
+if (!hasPermission(user, 'projects:write')) {
+  throw createError({ statusCode: 403, message: '無權限執行此操作' })
+}
+
+data-permission="FEATURES_CREATE"
+data-permission="FEATURES_UPDATE"
+data-permission="FEATURES_DELETE"
+```
+
 > 測試資料
 
 ```jsx
