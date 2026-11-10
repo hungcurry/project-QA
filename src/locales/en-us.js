@@ -61,6 +61,8 @@ export default {
   },
   toast: {
     defaultSuccess: "Submitted successfully!",
+    logout: "Successfully logged out, currently not logged in",
+    loginAs: "Successfully logged in as [{{roleName}}]!",
   },
   // API
   categories: {

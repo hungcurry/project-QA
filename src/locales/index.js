@@ -3,9 +3,9 @@ import i18next from "i18next";
 import zhTW from "./zh-tw.js";
 import enUS from "./en-us.js";
 
-async function initI18n() {
+export async function initI18n() {
   await i18next.init({
-    lng: "zh-TW",
+    lng: localStorage.getItem("lang") || "zh-TW",
     fallbackLng: "zh-TW",
 
     resources: {
@@ -24,4 +24,6 @@ async function initI18n() {
   return i18next;
 }
 
-export default initI18n;
+// 💡 關鍵：直接預設匯出 i18next 實例，
+// 這樣其他檔案 import 時才能用 .t()
+export default i18next;

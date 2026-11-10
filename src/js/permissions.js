@@ -1,7 +1,4 @@
-// permissions.js
-// 權限與角色定義 (permissions.js)
-// ---------
-// 1. 權限定義
+// 權限定義
 // prettier-ignore
 export const PERMISSIONS = {
   // Hero 區權限
@@ -37,7 +34,7 @@ export const PERMISSIONS = {
   // 全部權限
   ALL: "*",
 }
-// 2. 角色定義
+// 角色定義
 // prettier-ignore
 export const ROLES = {
   super_admin: {
@@ -108,6 +105,7 @@ export const ROLES = {
       PERMISSIONS.HERO_CREATE],
   },
 }
+// 使用者帳號資訊 (模擬資料)
 // prettier-ignore
 export const userCredentialsJSON = [
   { role: "super_admin", name: "超級管理員", email: "super@cra.com", password: "123" },
@@ -115,12 +113,80 @@ export const userCredentialsJSON = [
   { role: "developer", name: "開發者", email: "dev@cra.com", password: "123" },
   { role: "viewer", name: "檢視者", email: "viewer@cra.com", password: "123" },
   { role: "default", name: "未登入", email: "", password: "" },
-];
-
-// 3. 狀態持久化：從 localStorage 初始化 currentRoleKey
+]
+// ===================
+// ... 權限控制 ...
+// ===================
 const STORAGE_KEY = "CRA-role";
 let currentRoleKey = localStorage.getItem(STORAGE_KEY) || "default";
+// 取得身分
+function getCurrentRoleKey() {
+  // "admin"、"editor" 或 "default"
+  return currentRoleKey;
+}
+// 取得使用者資訊
+function getCurrentUser() {
+  if (currentRoleKey === "default") return null;
+  return userCredentialsJSON.find((u) => u.role === currentRoleKey) || null;
+}
+// 檢查權限
+function hasPermission(permission, targetRoleKey = currentRoleKey) {
+  // 第二參數可選平常用不到,測試的時候才會需要 測試角色
+  // 假如外層傳 hasPermission("features:read", "admin")
+  const roleConfig = ROLES[targetRoleKey] || ROLES.default;
+  // 如果是最高權限角色，直接回傳 true
+  if (roleConfig.permissions.includes(PERMISSIONS.ALL)) return true;
 
+  // 檢查權限"features:read" 如果有就回傳 true，沒有就回傳 false
+  return roleConfig.permissions.includes(permission);
+}
+// 檢查身分
+function hasRole(roleName, targetRoleKey = currentRoleKey) {
+  // 第二參數可選平常用不到,測試的時候才會需要 測試角色
+  // hasRole("admin")
+  return targetRoleKey === roleName;
+}
+// Composable
+export function useAdminAuth() {
+  return {
+    getCurrentRoleKey,
+    getCurrentUser,
+    // 這邊再多封裝一層，是隱藏內部的 targetRoleKey 參數，
+    // 讓外部使用者不需要知道這個參數
+    hasPermission: (permission) => hasPermission(permission),
+    hasRole: (roleName) => hasRole(roleName),
+  };
+}
+
+// --------
+import i18next from '../locales/index.js'; // 引入剛才的 i18next
+
+export function loginAs(roleKey) {
+  console.log("目前收到的 roleKey 是：", roleKey); // 👈 加上這行來除錯
+
+  if (ROLES[roleKey]) {
+    currentRoleKey = roleKey;
+    // 儲存到 localStorage
+    localStorage.setItem(STORAGE_KEY, roleKey);
+    updateUIByPermission();
+
+    const roleName = ROLES[roleKey].name;
+    // prettier-ignore
+    if (roleKey === "default") {
+      showToast(i18next.t('toast.logout'));
+    }
+    else {
+      showToast(i18next.t('toast.loginAs', { roleName }));
+    }
+  }
+}
+export function logout() {
+  currentRoleKey = "default";
+  // 清除 localStorage
+  localStorage.removeItem(STORAGE_KEY);
+  updateUIByPermission();
+  showToast(i18next.t('toast.logout'));
+}
 function showToast(message) {
   const toast = document.getElementById("toast");
   const toastMessage = document.getElementById("toastMessage");
@@ -134,58 +200,6 @@ function showToast(message) {
     toast.classList.remove("translate-y-0", "opacity-100");
     toast.classList.add("translate-y-20", "opacity-0");
   }, 3000);
-}
-
-export function getCurrentUser() {
-  if (currentRoleKey === "default") return null;
-  return userCredentialsJSON.find((u) => u.role === currentRoleKey) || null;
-}
-
-export function getCurrentRoleKey() {
-  return currentRoleKey;
-}
-
-// 支援傳入 targetUser 或用全域狀態判斷 (方便前後端共用邏輯思維)
-export function hasPermission(permission, targetRoleKey = currentRoleKey) {
-  const roleConfig = ROLES[targetRoleKey] || ROLES.default;
-  if (roleConfig.permissions.includes(PERMISSIONS.ALL)) return true;
-  return roleConfig.permissions.includes(permission);
-}
-
-export function hasRole(roleName, targetRoleKey = currentRoleKey) {
-  return targetRoleKey === roleName;
-}
-
-export function loginAs(roleKey) {
-  if (ROLES[roleKey]) {
-    currentRoleKey = roleKey;
-    localStorage.setItem(STORAGE_KEY, roleKey); // 儲存到 localStorage
-    updateUIByPermission();
-
-    const roleName = ROLES[roleKey].name;
-    if (roleKey === "default") {
-      showToast("已成功登出，目前為未登入狀態");
-    } else {
-      showToast(`已成功以【${roleName}】身分登入！`);
-    }
-  }
-}
-
-export function logout() {
-  currentRoleKey = "default";
-  localStorage.removeItem(STORAGE_KEY); // 清除持久化
-  updateUIByPermission();
-  showToast("已成功登出當前帳號");
-}
-
-// 4. Composable 風格的 hook 封裝 (符合優化 2 需求)
-export function useAdminAuth() {
-  return {
-    getCurrentUser,
-    getCurrentRoleKey,
-    hasPermission: (perm) => hasPermission(perm, currentRoleKey),
-    hasRole: (role) => hasRole(role, currentRoleKey),
-  };
 }
 
 // UI 自動掃描更新
@@ -202,17 +216,25 @@ export function updateUIByPermission() {
 
     // 💡 關鍵判斷：如果是 READ 權限，視為外層容器，控制「顯示 / 隱藏」
     // 如果是 CREATE / UPDATE / DELETE 等動作權限，視為互動元素，控制「啟用 / 禁用」
-    const isReadPermission = requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
+    const isReadPermission =
+      requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
 
+    // prettier-ignore
     if (isReadPermission) {
       // 區塊級容器：控制顯示與隱藏
       el.style.display = allowed ? "" : "none";
-    } else {
+    }
+    else {
       // 動作級元素（不限標籤 button, a, div, tr...）：控制禁用樣式與防護
       if (allowed) {
         el.removeAttribute("disabled");
         el.removeAttribute("aria-disabled");
-        el.classList.remove("is-disabled", "opacity-50", "cursor-not-allowed", "pointer-events-none");
+        el.classList.remove(
+          "is-disabled",
+          "opacity-50",
+          "cursor-not-allowed",
+          "pointer-events-none",
+        );
       } else {
         // 如果是原生表單元素加上 disabled，非表單元素則透過 pointer-events-none 與樣式阻擋
         if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {

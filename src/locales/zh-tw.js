@@ -55,6 +55,8 @@ export default {
   },
   toast: {
     defaultSuccess: "已成功送出！",
+    logout: "已成功登出，目前為未登入狀態",
+    loginAs: "已成功以【{{roleName}}】身分登入！",
   },
   // API
   categories: {

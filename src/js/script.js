@@ -1,5 +1,4 @@
 import { fetchAllData, getFaqs, getCategories } from "../store/useFetchStore.js";
-import initI18n from "../locales/index.js";
 
 // 搜尋與篩選邏輯
 const searchInput = document.getElementById("searchInput");
@@ -218,7 +217,7 @@ function initFaqEventListeners() {
 // 確保 DOM 載入完成後執行
 document.addEventListener("DOMContentLoaded", () => {
   initFaqEventListeners();
-})
+});
 
 // ===================
 // ... Pagination ...
@@ -343,7 +342,7 @@ function initPaginationEventListeners() {
 // 確保 DOM 載入完成後執行
 document.addEventListener("DOMContentLoaded", () => {
   initPaginationEventListeners();
-})
+});
 
 // ===================
 // ... Menu ...
@@ -413,31 +412,30 @@ function initTheme() {
   }
 }
 // 頁面載入時執行初始化
-initTheme()
+initTheme();
 
 themeToggleBtn.addEventListener("click", toggleTheme);
 
 // ===================
 // ... i18n ...
 // ===================
-let i18next = null
+import i18next, { initI18n } from "../locales/index.js";
+
 function getInitialLanguage() {
-  // 取得初始語系（localStorage 優先，其次抓瀏覽器）
-  const savedLang = localStorage.getItem("CRA-lang")
+  const savedLang = localStorage.getItem("CRA-lang");
   if (savedLang) return savedLang;
 
-  const systemLang = navigator.language || navigator.userLanguage
-  return systemLang.startsWith("en") ? "en-US" : "zh-TW"
+  const systemLang = navigator.language || navigator.userLanguage;
+  return systemLang.startsWith("en") ? "en-US" : "zh-TW";
 }
 function renderI18n() {
-  // 1. 處理一般文字與 HTML 標籤
+  // 這裡直接使用 import 進來的 i18next 進行翻譯
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
     });
   });
 
-  // 2. 處理 input 的 placeholder 屬性
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     el.placeholder = i18next.t(el.dataset.i18nPlaceholder, {
       defaultValue: el.placeholder,
@@ -455,7 +453,7 @@ function updateLogoVisibility() {
 }
 function syncLangSelectUI() {
   const langSelect = document.querySelector("#langSelect");
-  if (langSelect && i18next) {
+  if (langSelect) {
     langSelect.value = i18next.language.startsWith("en") ? "en-US" : "zh-TW";
   }
 }
@@ -469,8 +467,6 @@ function bindEvents() {
 }
 async function handleLanguageChange(lang) {
   await i18next.changeLanguage(lang);
-
-  // 💡 關鍵：切換時把使用者的選擇存入 localStorage
   localStorage.setItem("CRA-lang", lang);
 
   renderI18n();
@@ -487,17 +483,10 @@ function getFaqText(item, field) {
 // ===================
 // ... auth ...
 // ===================
-import {
-  loginAs,
-  logout,
-  getCurrentUser,
-  updateUIByPermission,
-  PERMISSIONS,
-  useAdminAuth,
-} from "./auth.js";
+import { loginAs, logout, updateUIByPermission, PERMISSIONS, useAdminAuth } from "./permissions.js";
 
 // 實例化 Composable (符合現代前端架構風格)
-const { hasPermission, hasRole } = useAdminAuth();
+const { getCurrentRoleKey, getCurrentUser, hasPermission, hasRole } = useAdminAuth();
 
 export function initAuthModal() {
   const authBtn = document.getElementById("authBtn");
@@ -557,12 +546,15 @@ export function initAuthModal() {
       const email = loginEmailInput ? loginEmailInput.value : "";
       const matchedCard = Array.from(roleCards).find(
         (card) => card.getAttribute("data-email") === email,
-      );
+      )
+      // prettier-ignore
       if (matchedCard) {
+        // data-role="admin"
         const roleKey = matchedCard.getAttribute("data-role");
-        loginAs(roleKey);
+        loginAs(roleKey); // admin
         authModal.classList.add("hidden");
-      } else {
+      }
+      else {
         alert("請選擇或輸入有效的測試帳號");
       }
     });
@@ -588,7 +580,9 @@ function initPermissionActions() {
     // 如果點擊的元素沒有設定 data-permission，就直接跳過
     if (!target) return;
 
+    // 假設抓data-permission="FEATURES_READ"
     const permissionKey = target.getAttribute("data-permission");
+    // 回傳 "features:read" || FEATURES_READ
     const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
 
     // 1. 檢查權限
@@ -600,6 +594,10 @@ function initPermissionActions() {
       alert(`權限不足：您的身分沒有執行 ${permissionValue} 的權限！`);
       return;
     }
+
+    // 2.檢查身分
+    // const isAdmin = hasRole('admin')
+    // console.log(`[Auth Status] 當前身分 : 是否為 admin: ${isAdmin}`);
 
     // 2. 權限檢查通過，根據屬性或 class 執行對應動作
     const permLower = permissionKey.toLowerCase();
@@ -647,7 +645,7 @@ async function initialize() {
 
   // 註冊語言切換事件
   const initialLng = getInitialLanguage();
-  i18next = await initI18n(initialLng);
+  await initI18n(initialLng);
   renderI18n();
   bindEvents();
 
@@ -658,4 +656,4 @@ async function initialize() {
   initAuthModal();
   updateUIByPermission();
 }
-initialize()
+initialize();
