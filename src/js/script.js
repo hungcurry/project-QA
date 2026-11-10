@@ -444,6 +444,43 @@ function initAuthModal() {
     });
   }
 }
+// 登入/登出
+// ----------
+function loginAs(roleKey) {
+  console.log("目前收到的 roleKey 是：", roleKey);
+
+  if (setCurrentRoleKey(roleKey)) {
+    updateUIByPermission();
+
+    const roleName = ROLES[roleKey].name;
+    // prettier-ignore
+    if (roleKey === "default") {
+      showToast(i18next.t('toast.logout'));
+    }
+    else {
+      showToast(i18next.t('toast.loginAs', { roleName }));
+    }
+  }
+}
+function logout() {
+  setCurrentRoleKey("default");
+  updateUIByPermission();
+  showToast(i18next.t("toast.logout"));
+}
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  const toastMessage = document.getElementById("toastMessage");
+  if (!toast || !toastMessage) return;
+
+  toastMessage.textContent = message;
+  toast.classList.remove("translate-y-20", "opacity-0");
+  toast.classList.add("translate-y-0", "opacity-100");
+
+  setTimeout(() => {
+    toast.classList.remove("translate-y-0", "opacity-100");
+    toast.classList.add("translate-y-20", "opacity-0");
+  }, 3000);
+}
 function initPermissionActions() {
   // 監聽整個文件的點擊事件 (事件委派)
   document.addEventListener("click", (e) => {
@@ -570,47 +607,6 @@ function initTheme() {
 }
 
 themeToggleBtn.addEventListener("click", toggleTheme);
-
-// 登入/登出
-// ----------
-// import { useAdminAuth } from "./permissions.js";
-// const { setCurrentRoleKey } = useAdminAuth();
-
-function loginAs(roleKey) {
-  console.log("目前收到的 roleKey 是：", roleKey);
-
-  if (setCurrentRoleKey(roleKey)) {
-    updateUIByPermission();
-
-    const roleName = ROLES[roleKey].name;
-    // prettier-ignore
-    if (roleKey === "default") {
-      showToast(i18next.t('toast.logout'));
-    }
-    else {
-      showToast(i18next.t('toast.loginAs', { roleName }));
-    }
-  }
-}
-function logout() {
-  setCurrentRoleKey("default");
-  updateUIByPermission();
-  showToast(i18next.t("toast.logout"));
-}
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-  if (!toast || !toastMessage) return;
-
-  toastMessage.textContent = message;
-  toast.classList.remove("translate-y-20", "opacity-0");
-  toast.classList.add("translate-y-0", "opacity-100");
-
-  setTimeout(() => {
-    toast.classList.remove("translate-y-0", "opacity-100");
-    toast.classList.add("translate-y-20", "opacity-0");
-  }, 3000);
-}
 
 // ===================
 // ... i18n ...
