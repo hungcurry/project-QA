@@ -175,6 +175,68 @@ export function useAdminAuth() {
   };
 }
 // UI 權限更新
+// export function updateUIByPermission() {
+//   const permissionElements = document.querySelectorAll("[data-permission]");
+
+//   permissionElements.forEach((el) => {
+//     const requiredPermissionKey = el.getAttribute("data-permission");
+//     const permissionValue = PERMISSIONS[requiredPermissionKey] || requiredPermissionKey;
+
+//     if (!permissionValue) return;
+
+//     const allowed = hasPermission(permissionValue);
+
+//     // 💡 關鍵判斷：如果是 READ 權限，視為外層容器，控制「顯示 / 隱藏」
+//     // 如果是 CREATE / UPDATE / DELETE 等動作權限，視為互動元素，控制「啟用 / 禁用」
+//     const isReadPermission =
+//       requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
+
+//     // prettier-ignore
+//     if (isReadPermission) {
+//       // 區塊級容器：控制顯示與隱藏
+//       el.style.display = allowed ? "" : "none";
+//     }
+//     else {
+//       // 動作級元素（不限標籤 button, a, div, tr...）：控制禁用樣式與防護
+//       if (allowed) {
+//         el.removeAttribute("disabled");
+//         el.removeAttribute("aria-disabled");
+//         el.classList.remove(
+//           "is-disabled",
+//           "opacity-50",
+//           "cursor-not-allowed",
+//           "pointer-events-none",
+//         );
+//       } else {
+//         // 如果是原生表單元素加上 disabled，非表單元素則透過 pointer-events-none 與樣式阻擋
+//         if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {
+//           el.setAttribute("disabled", "true");
+//         } else {
+//           el.setAttribute("aria-disabled", "true");
+//         }
+//         el.classList.add("is-disabled", "opacity-50", "cursor-not-allowed", "pointer-events-none");
+//       }
+//     }
+//   });
+
+//   // 更新導覽列登入文字與圖示
+//   const roleTextSpan = document.getElementById("currentRoleText");
+//   const authIcon = document.getElementById("authIcon");
+//   const isLogged = currentRoleKey !== "default";
+
+//   if (roleTextSpan) {
+//     roleTextSpan.textContent = isLogged ? ROLES[currentRoleKey].name : "登入";
+//   }
+//   if (authIcon) {
+//     authIcon.className = isLogged
+//       ? "fa-solid fa-user-check text-green-500"
+//       : "fa-solid fa-right-to-bracket text-slate-500";
+//   }
+// }
+
+
+//--------
+import i18next from "../locales/index.js";
 export function updateUIByPermission() {
   const permissionElements = document.querySelectorAll("[data-permission]");
 
@@ -185,19 +247,12 @@ export function updateUIByPermission() {
     if (!permissionValue) return;
 
     const allowed = hasPermission(permissionValue);
-
-    // 💡 關鍵判斷：如果是 READ 權限，視為外層容器，控制「顯示 / 隱藏」
-    // 如果是 CREATE / UPDATE / DELETE 等動作權限，視為互動元素，控制「啟用 / 禁用」
     const isReadPermission =
       requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
 
-    // prettier-ignore
     if (isReadPermission) {
-      // 區塊級容器：控制顯示與隱藏
       el.style.display = allowed ? "" : "none";
-    }
-    else {
-      // 動作級元素（不限標籤 button, a, div, tr...）：控制禁用樣式與防護
+    } else {
       if (allowed) {
         el.removeAttribute("disabled");
         el.removeAttribute("aria-disabled");
@@ -208,7 +263,6 @@ export function updateUIByPermission() {
           "pointer-events-none",
         );
       } else {
-        // 如果是原生表單元素加上 disabled，非表單元素則透過 pointer-events-none 與樣式阻擋
         if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {
           el.setAttribute("disabled", "true");
         } else {
@@ -219,17 +273,40 @@ export function updateUIByPermission() {
     }
   });
 
-  // 更新導覽列登入文字與圖示
+  // ==========================================
+  // ✅ 獨立切換「登入按鈕」與「已登入身分區塊」
+  // ==========================================
+  const authBtn = document.getElementById("authBtn");
+  const loggedUserSection = document.getElementById("loggedUserSection");
   const roleTextSpan = document.getElementById("currentRoleText");
-  const authIcon = document.getElementById("authIcon");
+  const roleIcon = document.getElementById("roleIcon");
+
   const isLogged = currentRoleKey !== "default";
 
-  if (roleTextSpan) {
-    roleTextSpan.textContent = isLogged ? ROLES[currentRoleKey].name : "登入";
-  }
-  if (authIcon) {
-    authIcon.className = isLogged
-      ? "fa-solid fa-user-check text-green-500"
-      : "fa-solid fa-right-to-bracket text-slate-500";
+  if (authBtn && loggedUserSection) {
+    if (isLogged) {
+      // 已登入：隱藏登入按鈕，顯示身分區塊
+      authBtn.classList.add("hidden");
+      loggedUserSection.classList.remove("hidden");
+
+      // 設定身分名稱（優先使用多國語言翻譯，沒有則fallback到預設名稱）
+      if (roleTextSpan) {
+        const translatedRoleName = i18next.t(`roles.${currentRoleKey}`, {
+          defaultValue: ROLES[currentRoleKey]?.name || currentRoleKey
+        });
+        roleTextSpan.textContent = translatedRoleName;
+      }
+
+      // 可依據不同角色賦予不同圖示顏色或樣式
+      if (roleIcon) {
+        roleIcon.className = currentRoleKey === "admin"
+          ? "fa-solid fa-user-shield text-amber-500"
+          : "fa-solid fa-user-check text-green-500";
+      }
+    } else {
+      // 未登入：顯示登入按鈕，隱藏身分區塊
+      authBtn.classList.remove("hidden");
+      loggedUserSection.classList.add("hidden");
+    }
   }
 }

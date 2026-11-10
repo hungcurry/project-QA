@@ -66,11 +66,31 @@
         </div>
 
         <!-- 登入按鈕 -->
-        <button id="authBtn"
+        <!-- <button id="authBtn"
           class="w-full sm:w-auto text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-medium px-3.5 py-2.5 sm:py-2 rounded-xl transition-all flex items-center justify-center sm:justify-start gap-2 sm:gap-1.5 cursor-pointer github-dark">
           <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
           <span id="currentRoleText" data-i18n="index.login">登入</span>
-        </button>
+        </button> -->
+
+
+        <!-- 右側登入 / 身分區塊 -->
+        <div class="flex items-center gap-3">
+          <!-- 1. 未登入狀態：登入按鈕 -->
+          <button id="authBtn"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 hover:bg-slate-750 transition-colors">
+            <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
+            <span data-i18n="index.login">登入</span>
+          </button>
+          <!-- 2. 已登入狀態：獨立的身分顯示區塊（平時預設 hidden） -->
+          <!-- 2. 已登入狀態：可點擊的身分顯示按鈕 -->
+          <button id="loggedUserSection"
+            class="hidden flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-200 hover:bg-slate-700 transition-colors cursor-pointer">
+            <i id="roleIcon" class="fa-solid fa-user-shield text-amber-500"></i>
+            <span id="currentRoleText">Admin</span>
+          </button>
+        </div>
+
+
       </div>
 
       <!-- 手機版漢堡選單按鈕 -->

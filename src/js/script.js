@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===================
-// ... auth ...
+// ... Permission ...
 // ===================
 // prettier-ignore
 import {
@@ -362,117 +362,106 @@ const {
   hasRole
 } = useAdminAuth();
 
-function initAuthModal() {
-  const authBtn = document.getElementById("authBtn");
-  const authModal = document.getElementById("authModal");
-  const closeModalBtn = document.getElementById("closeModalBtn");
-  const roleCards = document.querySelectorAll(".role-card");
-  const logoutSection = document.getElementById("logoutSection");
-  const roleSelectList = document.getElementById("roleSelectList");
-  const loginFormSection = document.getElementById("loginFormSection");
-  const logoutBtn = document.getElementById("logoutBtn");
+// Modal
+// ----------
+function openAuthModal(authModal) {
+  authModal.classList.remove("hidden");
+}
+function closeAuthModal(authModal) {
+  authModal.classList.add("hidden");
+}
+// 根據登入狀態切換 Modal 畫面
+function updateAuthModalContent() {
+  const isLoggedIn = Boolean(getCurrentUser());
 
-  const loginEmailInput = document.getElementById("loginEmail");
-  const loginPasswordInput = document.getElementById("loginPassword");
-  const submitLoginBtn = document.getElementById("submitLoginBtn");
+  // 💡 加上 console.log 檢查抓到的元素是否存在
+  // console.log("當前登入狀態 isLoggedIn:", isLoggedIn);
+  // console.log("loginFormSection 元素:", document.getElementById("loginFormSection"));
+  // console.log("roleSelectList 元素:", document.getElementById("roleSelectList"));
+  // console.log("logoutSection 元素:", document.getElementById("logoutSection"));
 
-  if (!authBtn || !authModal) return;
+  // 登入表單與身分清單
+  document.getElementById("loginFormSection")?.classList.toggle("hidden", isLoggedIn);
+  document.getElementById("roleSelectList")?.classList.toggle("hidden", isLoggedIn);
+  document.getElementById("logoutSection")?.classList.toggle("hidden", !isLoggedIn);
 
-  // 1. 點擊登入按鈕開啟 Modal
-  authBtn.addEventListener("click", () => {
-    const user = getCurrentUser();
-    if (user) {
-      logoutSection.classList.remove("hidden");
-      roleSelectList.classList.add("hidden");
-      loginFormSection.classList.add("hidden");
-    } else {
-      logoutSection.classList.add("hidden");
-      roleSelectList.classList.remove("hidden");
-      loginFormSection.classList.remove("hidden");
-      if (loginEmailInput) loginEmailInput.value = "";
-      if (loginPasswordInput) loginPasswordInput.value = "";
-    }
-    authModal.classList.remove("hidden");
-  });
-
-  // 2. 關閉 Modal
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener("click", () => authModal.classList.add("hidden"));
-  }
-  authModal.addEventListener("click", (e) => {
-    if (e.target === authModal) authModal.classList.add("hidden");
-  });
-
-  // 3. 點擊身分卡片自動填入信箱與密碼
-  roleCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      const email = card.getAttribute("data-email");
-      const password = card.getAttribute("data-password");
-
-      if (loginEmailInput && email) loginEmailInput.value = email;
-      if (loginPasswordInput && password) loginPasswordInput.value = password;
-    });
-  });
-
-  // 4. 點擊上方登入按鈕
-  if (submitLoginBtn) {
-    submitLoginBtn.addEventListener("click", () => {
-      const email = loginEmailInput ? loginEmailInput.value : "";
-      const matchedCard = Array.from(roleCards).find(
-        (card) => card.getAttribute("data-email") === email,
-      );
-      // prettier-ignore
-      if (matchedCard) {
-        // data-role="admin"
-        const roleKey = matchedCard.getAttribute("data-role");
-        loginAs(roleKey); // admin
-        authModal.classList.add("hidden");
-      }
-      else {
-        alert("請選擇或輸入有效的測試帳號");
-      }
-    });
-  }
-
-  // 5. 點擊登出
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      logout();
-      if (loginEmailInput) loginEmailInput.value = "";
-      if (loginPasswordInput) loginPasswordInput.value = "";
-      authModal.classList.add("hidden");
-    });
+  // 未登入時清空表單
+  if (!isLoggedIn) {
+    resetLoginForm();
   }
 }
-// 登入/登出
+
+// 表單管理
 // ----------
+// 清空登入表單
+function resetLoginForm() {
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginPassword").value = "";
+}
+// 填入測試帳號
+function fillLoginForm(card) {
+  // console.log("填入測試帳號:", card);
+  document.getElementById("loginEmail").value = card.dataset.email || "";
+  document.getElementById("loginPassword").value = card.dataset.password || "";
+}
+
+// 登入與登出
+// ----------
+function handleLogin() {
+  const email = document.getElementById("loginEmail")?.value.trim() || "";
+  const password = document.getElementById("loginPassword")?.value || "";
+  const roleCards = document.querySelectorAll(".role-card");
+
+  // 比對測試帳號
+  const matchedCard = Array.from(roleCards).find(
+    (card) => card.dataset.email === email && card.dataset.password === password,
+  );
+
+  if (!matchedCard) {
+    alert("請選擇或輸入有效的測試帳號");
+    return;
+  }
+
+  const roleKey = matchedCard.dataset.role;
+
+  // 執行登入
+  loginAs(roleKey); // admin
+
+  // 關閉 Modal
+  closeAuthModal(document.getElementById("authModal"));
+}
+function handleLogout() {
+  logout();
+
+  resetLoginForm();
+  closeAuthModal(document.getElementById("authModal"));
+}
 function loginAs(roleKey) {
   console.log("目前收到的 roleKey 是：", roleKey);
 
-  if (setCurrentRoleKey(roleKey)) {
-    updateUIByPermission();
+  if (!applyRole(roleKey)) return;
 
-    const roleName = ROLES[roleKey].name;
-    // prettier-ignore
-    if (roleKey === "default") {
-      showToast(i18next.t('toast.logout'));
-    }
-    else {
-      showToast(i18next.t('toast.loginAs', { roleName }));
-    }
+  const roleName = ROLES[roleKey].name;
+
+  if (roleKey === "default") {
+    showToast(i18next.t("toast.logout"));
+  } else {
+    showToast(i18next.t("toast.loginAs", { roleName }));
   }
 }
 function logout() {
-  setCurrentRoleKey("default");
-  updateUIByPermission();
+  if (!applyRole("default")) return;
+
   showToast(i18next.t("toast.logout"));
 }
 function showToast(message) {
   const toast = document.getElementById("toast");
   const toastMessage = document.getElementById("toastMessage");
+
   if (!toast || !toastMessage) return;
 
   toastMessage.textContent = message;
+
   toast.classList.remove("translate-y-20", "opacity-0");
   toast.classList.add("translate-y-0", "opacity-100");
 
@@ -481,23 +470,99 @@ function showToast(message) {
     toast.classList.add("translate-y-20", "opacity-0");
   }, 3000);
 }
+// 套用角色
+function applyRole(roleKey) {
+  if (!setCurrentRoleKey(roleKey)) return false;
+
+  updateUIByPermission();
+
+  return true;
+}
+// Modal 初始化事件
+function initAuthModal() {
+  const authBtn = document.getElementById("authBtn");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const authModal = document.getElementById("authModal");
+  // 權限身分List
+  const roleCards = document.querySelectorAll(".role-card");
+  // 登入/登出
+  const submitLoginBtn = document.getElementById("submitLoginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // 必要 DOM authBtn/authModal 不存在就不初始化
+  if (!authModal) return;
+
+  // 1. 點擊「登入」按鈕開啟 Modal
+  authBtn?.addEventListener("click", () => {
+    openAuthModal(authModal);
+    updateAuthModalContent();
+  });
+
+  // ✅ 1-1. 點擊右上角已登入的「身分區塊」也能開啟 Modal（進行登出或切換）
+  loggedUserSection?.addEventListener("click", () => {
+    openAuthModal(authModal);
+    updateAuthModalContent(); // 這會自動切換顯示 logoutSection 讓你按登出
+  });
+
+  // 2. 點擊關閉按鈕
+  closeModalBtn?.addEventListener("click", () => {
+    closeAuthModal(authModal);
+  });
+
+  // 3. 點擊 Modal 背景關閉
+  authModal.addEventListener("click", (e) => {
+    if (e.target === authModal) {
+      closeAuthModal(authModal);
+    }
+  });
+
+  // 4. 選擇身分卡片
+  roleCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      fillLoginForm(card);
+    });
+  });
+
+  // 5. 點擊登入
+  submitLoginBtn?.addEventListener("click", handleLogin);
+
+  // 6. 點擊登出
+  logoutBtn?.addEventListener("click", handleLogout);
+}
+
+// 權限操作管理
+// ----------
+function handlePermissionAction(target, permissionKey, permissionValue) {
+  const permLower = permissionKey.toLowerCase();
+  const classList = target.classList;
+
+  if (permLower.includes("create") || classList.contains("create")) {
+    alert("新增成功！");
+  } else if (permLower.includes("update") || classList.contains("update")) {
+    alert("修改成功！");
+  } else if (permLower.includes("delete") || classList.contains("delete")) {
+    alert("刪除成功！");
+  } else {
+    console.log(`執行操作：${permissionValue}`);
+  }
+}
 function initPermissionActions() {
-  // 監聽整個文件的點擊事件 (事件委派)
   document.addEventListener("click", (e) => {
-    // 尋找被點擊的目標，或往上找是否有帶有 data-permission 的元素
+    // 確認事件目標是 Element
+    if (!(e.target instanceof Element)) return;
+
+    // 尋找 data-permission 元素
     const target = e.target.closest("[data-permission]");
 
-    // 如果點擊的元素沒有設定 data-permission，就直接跳過
     if (!target) return;
 
-    // 假設抓data-permission="FEATURES_READ"
-    const permissionKey = target.getAttribute("data-permission");
-    // 回傳 "features:read" || FEATURES_READ
+    const permissionKey = target.dataset.permission;
+
+    // 取得對應權限值
     const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
 
-    // 1. 檢查權限
+    // 檢查權限
     if (!hasPermission(permissionValue)) {
-      // 阻止預設行為 (例如超連結跳轉或表單送出)
       e.preventDefault();
       e.stopPropagation();
 
@@ -505,34 +570,10 @@ function initPermissionActions() {
       return;
     }
 
-    // 2.檢查身分
-    // const isAdmin = hasRole('admin')
-    // console.log(`[Auth Status] 當前身分 : 是否為 admin: ${isAdmin}`);
-
-    // 2. 權限檢查通過，根據屬性或 class 執行對應動作
-    const permLower = permissionKey.toLowerCase();
-    const classList = target.className;
-
-    if (permLower.includes("create") || classList.includes("create")) {
-      alert("新增成功！");
-    } else if (permLower.includes("update") || classList.includes("update")) {
-      alert("修改成功！");
-    } else if (permLower.includes("delete") || classList.includes("delete")) {
-      alert("刪除成功！");
-    } else {
-      // 如果是一般區塊或讀取權限被點擊，可以視需求處理
-      console.log(`執行操作：${permissionValue}`);
-    }
+    // 權限通過，執行操作
+    handlePermissionAction(target, permissionKey, permissionValue);
   });
 }
-// 頁面載入時初始化 Modal、綁定事件，並根據 localStorage
-// 恢復的身分執行第一次權限掃描更新畫面
-document.addEventListener("DOMContentLoaded", () => {
-  initAuthModal();
-  initPermissionActions();
-  // 此時會自動讀取 localStorage 中的身分進行介面套用
-  updateUIByPermission();
-});
 
 // ===================
 // ... Menu ...
@@ -670,6 +711,9 @@ async function handleLanguageChange(lang) {
   currentPage = 1;
   updateView();
   renderCategories();
+
+  // ✅ 切換語系時同步更新身分顯示區塊的翻譯文字
+  updateUIByPermission();
 }
 
 // ===================
@@ -686,10 +730,6 @@ function updateView() {
   renderPagination(state);
 }
 async function initialize() {
-  // ✅ 權限檢查
-  initAuthModal();
-  updateUIByPermission();
-
   // 亮/暗模式
   initTheme();
   // 語言切換模式
@@ -706,5 +746,14 @@ async function initialize() {
   // 新更畫面
   updateView();
   renderCategories();
+
+  // ✅ 權限檢查
+  // 確保所有渲染、i18n 翻譯都結束後，
+  // 才最後根據身分更新介面與導覽列文字
+  initAuthModal();
+  initPermissionActions();
+  updateUIByPermission();
 }
-initialize();
+document.addEventListener("DOMContentLoaded", () => {
+  initialize();
+});
