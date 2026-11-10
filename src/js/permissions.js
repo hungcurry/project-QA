@@ -124,6 +124,22 @@ function getCurrentRoleKey() {
   // "admin"、"editor" 或 "default"
   return currentRoleKey;
 }
+// 更新身分
+function setCurrentRoleKey(roleKey) {
+  if (!ROLES[roleKey]) return false;
+
+  currentRoleKey = roleKey;
+
+  // prettier-ignore
+  if (roleKey === "default") {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+  else {
+    localStorage.setItem(STORAGE_KEY, roleKey);
+  }
+
+  return true;
+}
 // 取得使用者資訊
 function getCurrentUser() {
   if (currentRoleKey === "default") return null;
@@ -150,6 +166,7 @@ function hasRole(roleName, targetRoleKey = currentRoleKey) {
 export function useAdminAuth() {
   return {
     getCurrentRoleKey,
+    setCurrentRoleKey,
     getCurrentUser,
     // 這邊再多封裝一層，是隱藏內部的 targetRoleKey 參數，
     // 讓外部使用者不需要知道這個參數
@@ -157,52 +174,7 @@ export function useAdminAuth() {
     hasRole: (roleName) => hasRole(roleName),
   };
 }
-
-// --------
-import i18next from '../locales/index.js'; // 引入剛才的 i18next
-
-export function loginAs(roleKey) {
-  console.log("目前收到的 roleKey 是：", roleKey); // 👈 加上這行來除錯
-
-  if (ROLES[roleKey]) {
-    currentRoleKey = roleKey;
-    // 儲存到 localStorage
-    localStorage.setItem(STORAGE_KEY, roleKey);
-    updateUIByPermission();
-
-    const roleName = ROLES[roleKey].name;
-    // prettier-ignore
-    if (roleKey === "default") {
-      showToast(i18next.t('toast.logout'));
-    }
-    else {
-      showToast(i18next.t('toast.loginAs', { roleName }));
-    }
-  }
-}
-export function logout() {
-  currentRoleKey = "default";
-  // 清除 localStorage
-  localStorage.removeItem(STORAGE_KEY);
-  updateUIByPermission();
-  showToast(i18next.t('toast.logout'));
-}
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-  if (!toast || !toastMessage) return;
-
-  toastMessage.textContent = message;
-  toast.classList.remove("translate-y-20", "opacity-0");
-  toast.classList.add("translate-y-0", "opacity-100");
-
-  setTimeout(() => {
-    toast.classList.remove("translate-y-0", "opacity-100");
-    toast.classList.add("translate-y-20", "opacity-0");
-  }, 3000);
-}
-
-// UI 自動掃描更新
+// UI 權限更新
 export function updateUIByPermission() {
   const permissionElements = document.querySelectorAll("[data-permission]");
 
@@ -260,8 +232,4 @@ export function updateUIByPermission() {
       ? "fa-solid fa-user-check text-green-500"
       : "fa-solid fa-right-to-bracket text-slate-500";
   }
-
-  // 測試：判斷是否為 super_admin
-  // const isSuperAdmin = hasRole('super_admin');
-  // console.log(`[Auth Status] 當前身分 : ${currentRoleKey}, 是否為 super_admin: ${isSuperAdmin}`);
 }

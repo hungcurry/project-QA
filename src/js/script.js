@@ -256,7 +256,6 @@ function getPaginationState(data) {
 
   return { dataLength, totalPages, startIndex, endIndex, pageData };
 }
-
 function renderPagination(state) {
   // 如果容器不存在，直接中斷，避免報錯
   if (!paginationContainer) return;
@@ -272,7 +271,6 @@ function renderPagination(state) {
     paginationButtonsEl.innerHTML = "";
   }
 }
-
 function renderButtons(totalPages) {
   if (totalPages <= 0) {
     paginationButtonsEl.innerHTML = "";
@@ -316,7 +314,6 @@ function renderButtons(totalPages) {
     </button>
   `;
 }
-
 function handleChangePage(e) {
   const btn = e.target.closest(".pagination-btn");
   if (!btn || btn.disabled) return;
@@ -345,150 +342,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===================
-// ... Menu ...
-// ===================
-const mobileMenuIcon = document.getElementById("mobileMenuIcon");
-const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
-const navMenu = document.getElementById("navMenu"); // 對應 HTML 中的共用按鈕選單容器
-
-function toggleMobileMenu() {
-  if (!navMenu || !mobileMenuIcon) return;
-
-  // 檢查目前是否為隱藏狀態（正向思考：isHidden）
-  const isHidden = navMenu.classList.contains("hidden");
-
-  if (isHidden) {
-    // 展開選單：移除 hidden，並加上 flex 讓它顯示
-    navMenu.classList.remove("hidden");
-    navMenu.classList.add("flex");
-    mobileMenuIcon.className = "fa-solid fa-xmark";
-  } else {
-    // 收合選單：加上 hidden，並移除 flex
-    navMenu.classList.add("hidden");
-    navMenu.classList.remove("flex");
-    mobileMenuIcon.className = "fa-solid fa-bars";
-  }
-}
-
-function closeMobileMenu() {
-  if (!navMenu || !mobileMenuIcon) return;
-
-  navMenu.classList.add("hidden");
-  navMenu.classList.remove("flex");
-  mobileMenuIcon.className = "fa-solid fa-bars";
-}
-
-mobileMenuToggleBtn.addEventListener("click", toggleMobileMenu);
-
-// 亮/暗模式
-const themeToggleBtn = document.getElementById("themeToggleBtn");
-const themeIcon = document.getElementById("themeIcon");
-
-function toggleTheme() {
-  const htmlEl = document.documentElement;
-  const isDark = htmlEl.classList.toggle("dark");
-
-  // 切換圖示：暗模式顯示月亮，亮模式顯示太陽
-  if (isDark) {
-    themeIcon.className = "fa-solid fa-moon text-indigo-400";
-    localStorage.setItem("CRA-theme", "dark");
-  } else {
-    themeIcon.className = "fa-solid fa-sun text-amber-500";
-    localStorage.setItem("CRA-theme", "light");
-  }
-}
-
-// 初始化：檢查 localStorage 或系統偏好
-function initTheme() {
-  const savedTheme = localStorage.getItem("CRA-theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.documentElement.classList.add("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
-  } else {
-    document.documentElement.classList.remove("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
-  }
-}
-// 頁面載入時執行初始化
-initTheme();
-
-themeToggleBtn.addEventListener("click", toggleTheme);
-
-// ===================
-// ... i18n ...
-// ===================
-import i18next, { initI18n } from "../locales/index.js";
-
-function getInitialLanguage() {
-  const savedLang = localStorage.getItem("CRA-lang");
-  if (savedLang) return savedLang;
-
-  const systemLang = navigator.language || navigator.userLanguage;
-  return systemLang.startsWith("en") ? "en-US" : "zh-TW";
-}
-function renderI18n() {
-  // 這裡直接使用 import 進來的 i18next 進行翻譯
-  document.querySelectorAll("[data-i18n]").forEach((el) => {
-    el.innerHTML = i18next.t(el.dataset.i18n, {
-      defaultValue: el.innerHTML,
-    });
-  });
-
-  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-    el.placeholder = i18next.t(el.dataset.i18nPlaceholder, {
-      defaultValue: el.placeholder,
-    });
-  });
-
-  updateLogoVisibility();
-  syncLangSelectUI();
-}
-function updateLogoVisibility() {
-  const isEnglish = i18next.language.startsWith("en");
-  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
-    el.classList.toggle("hidden", isEnglish);
-  });
-}
-function syncLangSelectUI() {
-  const langSelect = document.querySelector("#langSelect");
-  if (langSelect) {
-    langSelect.value = i18next.language.startsWith("en") ? "en-US" : "zh-TW";
-  }
-}
-function bindEvents() {
-  const langSelect = document.querySelector("#langSelect");
-  if (langSelect) {
-    langSelect.addEventListener("change", (e) => {
-      handleLanguageChange(e.target.value);
-    });
-  }
-}
-async function handleLanguageChange(lang) {
-  await i18next.changeLanguage(lang);
-  localStorage.setItem("CRA-lang", lang);
-
-  renderI18n();
-  currentPage = 1;
-  updateView();
-  renderCategories();
-}
-function getFaqText(item, field) {
-  return i18next.t(`faqs.${item.translationKey}.${field}`, {
-    defaultValue: item[field],
-  });
-}
-
-// ===================
 // ... auth ...
 // ===================
-import { loginAs, logout, updateUIByPermission, PERMISSIONS, useAdminAuth } from "./permissions.js";
+// prettier-ignore
+import {
+  PERMISSIONS,
+  ROLES,
+  useAdminAuth,
+  updateUIByPermission,
+} from "./permissions.js";
 
-// 實例化 Composable (符合現代前端架構風格)
-const { getCurrentRoleKey, getCurrentUser, hasPermission, hasRole } = useAdminAuth();
+// 實例化 Composable
+// prettier-ignore
+const {
+  getCurrentRoleKey,
+  setCurrentRoleKey,
+  getCurrentUser,
+  hasPermission,
+  hasRole
+} = useAdminAuth();
 
-export function initAuthModal() {
+function initAuthModal() {
   const authBtn = document.getElementById("authBtn");
   const authModal = document.getElementById("authModal");
   const closeModalBtn = document.getElementById("closeModalBtn");
@@ -546,7 +420,7 @@ export function initAuthModal() {
       const email = loginEmailInput ? loginEmailInput.value : "";
       const matchedCard = Array.from(roleCards).find(
         (card) => card.getAttribute("data-email") === email,
-      )
+      );
       // prettier-ignore
       if (matchedCard) {
         // data-role="admin"
@@ -570,7 +444,6 @@ export function initAuthModal() {
     });
   }
 }
-
 function initPermissionActions() {
   // 監聽整個文件的點擊事件 (事件委派)
   document.addEventListener("click", (e) => {
@@ -615,14 +488,193 @@ function initPermissionActions() {
     }
   });
 }
-
-// 頁面載入時初始化 Modal、綁定事件，並根據 localStorage 恢復的身分執行第一次權限掃描更新畫面
+// 頁面載入時初始化 Modal、綁定事件，並根據 localStorage
+// 恢復的身分執行第一次權限掃描更新畫面
 document.addEventListener("DOMContentLoaded", () => {
   initAuthModal();
   initPermissionActions();
   // 此時會自動讀取 localStorage 中的身分進行介面套用
   updateUIByPermission();
 });
+
+// ===================
+// ... Menu ...
+// ===================
+import i18next, { initI18n } from "../locales/index.js";
+// import { ROLES } from "./permissions.js";
+
+const mobileMenuIcon = document.getElementById("mobileMenuIcon");
+const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
+const navMenu = document.getElementById("navMenu"); // 對應 HTML 中的共用按鈕選單容器
+
+// 手機選單
+// ----------
+function toggleMobileMenu() {
+  if (!navMenu || !mobileMenuIcon) return;
+
+  // 檢查目前是否為隱藏狀態（正向思考：isHidden）
+  const isHidden = navMenu.classList.contains("hidden");
+
+  if (isHidden) {
+    // 展開選單：移除 hidden，並加上 flex 讓它顯示
+    navMenu.classList.remove("hidden");
+    navMenu.classList.add("flex");
+    mobileMenuIcon.className = "fa-solid fa-xmark";
+  } else {
+    // 收合選單：加上 hidden，並移除 flex
+    navMenu.classList.add("hidden");
+    navMenu.classList.remove("flex");
+    mobileMenuIcon.className = "fa-solid fa-bars";
+  }
+}
+function closeMobileMenu() {
+  if (!navMenu || !mobileMenuIcon) return;
+
+  navMenu.classList.add("hidden");
+  navMenu.classList.remove("flex");
+  mobileMenuIcon.className = "fa-solid fa-bars";
+}
+
+mobileMenuToggleBtn.addEventListener("click", toggleMobileMenu);
+
+// 亮/暗模式
+// ----------
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeIcon = document.getElementById("themeIcon");
+
+function toggleTheme() {
+  const htmlEl = document.documentElement;
+  const isDark = htmlEl.classList.toggle("dark");
+
+  // 切換圖示：暗模式顯示月亮，亮模式顯示太陽
+  if (isDark) {
+    themeIcon.className = "fa-solid fa-moon text-indigo-400";
+    localStorage.setItem("CRA-theme", "dark");
+  } else {
+    themeIcon.className = "fa-solid fa-sun text-amber-500";
+    localStorage.setItem("CRA-theme", "light");
+  }
+}
+// 初始化：檢查 localStorage 或系統偏好
+function initTheme() {
+  const savedTheme = localStorage.getItem("CRA-theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+    document.documentElement.classList.add("dark");
+    if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
+  } else {
+    document.documentElement.classList.remove("dark");
+    if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
+  }
+}
+
+themeToggleBtn.addEventListener("click", toggleTheme);
+
+// 登入/登出
+// ----------
+// import { useAdminAuth } from "./permissions.js";
+// const { setCurrentRoleKey } = useAdminAuth();
+
+function loginAs(roleKey) {
+  console.log("目前收到的 roleKey 是：", roleKey);
+
+  if (setCurrentRoleKey(roleKey)) {
+    updateUIByPermission();
+
+    const roleName = ROLES[roleKey].name;
+    // prettier-ignore
+    if (roleKey === "default") {
+      showToast(i18next.t('toast.logout'));
+    }
+    else {
+      showToast(i18next.t('toast.loginAs', { roleName }));
+    }
+  }
+}
+function logout() {
+  setCurrentRoleKey("default");
+  updateUIByPermission();
+  showToast(i18next.t("toast.logout"));
+}
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  const toastMessage = document.getElementById("toastMessage");
+  if (!toast || !toastMessage) return;
+
+  toastMessage.textContent = message;
+  toast.classList.remove("translate-y-20", "opacity-0");
+  toast.classList.add("translate-y-0", "opacity-100");
+
+  setTimeout(() => {
+    toast.classList.remove("translate-y-0", "opacity-100");
+    toast.classList.add("translate-y-20", "opacity-0");
+  }, 3000);
+}
+
+// ===================
+// ... i18n ...
+// ===================
+// import i18next, { initI18n } from "../locales/index.js";
+
+function getInitialLanguage() {
+  const savedLang = localStorage.getItem("CRA-lang");
+  if (savedLang) return savedLang;
+
+  const systemLang = navigator.language || navigator.userLanguage;
+  return systemLang.startsWith("en") ? "en-US" : "zh-TW";
+}
+function renderI18n() {
+  // 這裡直接使用 import 進來的 i18next 進行翻譯
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.innerHTML = i18next.t(el.dataset.i18n, {
+      defaultValue: el.innerHTML,
+    });
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = i18next.t(el.dataset.i18nPlaceholder, {
+      defaultValue: el.placeholder,
+    });
+  });
+
+  updateLogoVisibility();
+  syncLangSelectUI();
+}
+function updateLogoVisibility() {
+  const isEnglish = i18next.language.startsWith("en");
+  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
+    el.classList.toggle("hidden", isEnglish);
+  });
+}
+function syncLangSelectUI() {
+  const langSelect = document.querySelector("#langSelect");
+  if (langSelect) {
+    langSelect.value = i18next.language.startsWith("en") ? "en-US" : "zh-TW";
+  }
+}
+function bindEvents() {
+  const langSelect = document.querySelector("#langSelect");
+  if (langSelect) {
+    langSelect.addEventListener("change", (e) => {
+      handleLanguageChange(e.target.value);
+    });
+  }
+}
+function getFaqText(item, field) {
+  return i18next.t(`faqs.${item.translationKey}.${field}`, {
+    defaultValue: item[field],
+  });
+}
+async function handleLanguageChange(lang) {
+  await i18next.changeLanguage(lang);
+  localStorage.setItem("CRA-lang", lang);
+
+  renderI18n();
+  currentPage = 1;
+  updateView();
+  renderCategories();
+}
 
 // ===================
 // ... init ...
@@ -638,22 +690,25 @@ function updateView() {
   renderPagination(state);
 }
 async function initialize() {
-  // data
-  await fetchAllData();
-  faqData = getFaqs();
-  categoryData = getCategories();
+  // ✅ 權限檢查
+  initAuthModal();
+  updateUIByPermission();
 
-  // 註冊語言切換事件
+  // 亮/暗模式
+  initTheme();
+  // 語言切換模式
   const initialLng = getInitialLanguage();
   await initI18n(initialLng);
   renderI18n();
   bindEvents();
 
+  // data
+  await fetchAllData();
+  faqData = getFaqs();
+  categoryData = getCategories();
+
+  // 新更畫面
   updateView();
   renderCategories();
-
-  // ✅ 權限檢查
-  initAuthModal();
-  updateUIByPermission();
 }
 initialize();
