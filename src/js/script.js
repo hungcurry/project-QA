@@ -503,13 +503,15 @@ function initAuthModal() {
     updateAuthModalContent();
   });
 
-  // ✅ 1-1. 點擊已登入的「身分區塊」改為切換展開/收合「下拉選單」
+  // ✅ 1-1. 點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
   loggedUserSection?.addEventListener("click", (e) => {
     e.stopPropagation();
+    // 打開身分選單前，先關閉語系選單（避免衝突）
+    document.getElementById("langDropdownMenu")?.classList.add("hidden");
     userDropdownMenu?.classList.toggle("hidden");
   });
 
-  // ✅ 1-2. 點擊畫面其他地方自動關閉下拉選單
+  // ✅ 1-2. 專屬身分下拉選單的「點擊畫面其他地方關閉」邏輯
   document.addEventListener("click", (e) => {
     if (!loggedUserSection?.contains(e.target) && !userDropdownMenu?.contains(e.target)) {
       userDropdownMenu?.classList.add("hidden");
@@ -671,17 +673,18 @@ themeToggleBtn.addEventListener("click", toggleTheme);
 function initLangDropdown() {
   const langBtn = document.getElementById("langDropdownBtn");
   const langMenu = document.getElementById("langDropdownMenu");
-  const currentLangText = document.getElementById("currentLangText");
 
   if (!langBtn || !langMenu) return;
 
-  // 1. 點擊按鈕展開/收合選單
+  // 1. 點擊語系按鈕展開/收合（同時互斥關閉身分選單）
   langBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    // 打開語系選單前，先關閉身分選單（避免衝突）
+    document.getElementById("userDropdownMenu")?.classList.add("hidden");
     langMenu.classList.toggle("hidden");
   });
 
-  // 2. 點擊畫面其他地方自動關閉選單
+  // 2. 專屬語系下拉選單的「點擊畫面其他地方關閉」邏輯
   document.addEventListener("click", (e) => {
     if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
       langMenu.classList.add("hidden");
@@ -694,13 +697,11 @@ function initLangDropdown() {
       const selectedLang = item.getAttribute("data-lang");
       langMenu.classList.add("hidden");
 
-      // 呼叫您原本的切換語系函式
       await handleLanguageChange(selectedLang);
       syncLangDropdownUI();
     });
   });
 }
-
 // 同步當前選中的語系文字到按鈕上
 function syncLangDropdownUI() {
   const currentLangText = document.getElementById("currentLangText");
@@ -798,13 +799,12 @@ function updateView() {
 async function initialize() {
   // 亮/暗模式
   initTheme();
+
   // 語言切換模式
   const initialLng = getInitialLanguage();
   await initI18n(initialLng);
   renderI18n();
   bindEvents();
-
-  // 
   initLangDropdown();
   syncLangDropdownUI();
 
