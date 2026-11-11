@@ -501,6 +501,7 @@ function initAuthModal() {
   authBtn?.addEventListener("click", () => {
     openAuthModal(authModal);
     updateAuthModalContent();
+    closeMobileMenu(); // 💡 打開登入視窗時收合手機選單
   });
 
   // ✅ 1-1. 點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
@@ -522,6 +523,7 @@ function initAuthModal() {
   dropdownLogoutBtn?.addEventListener("click", () => {
     userDropdownMenu?.classList.add("hidden");
     handleLogout();
+    closeMobileMenu(); // 💡 登出後收合手機選單
   });
 
   // 2. 點擊關閉按鈕
@@ -632,6 +634,16 @@ function closeMobileMenu() {
   navMenu.classList.remove("flex");
   mobileMenuIcon.className = "fa-solid fa-bars";
 }
+document.addEventListener("click", (e) => {
+  const isMenuOpen = navMenu && !navMenu.classList.contains("hidden");
+
+  if (isMenuOpen) {
+    // 如果點擊的目標既不在手機選單內，也不是打開/關閉漢堡按鈕本身
+    if (!navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
+      closeMobileMenu();
+    }
+  }
+});
 
 mobileMenuToggleBtn.addEventListener("click", toggleMobileMenu);
 
@@ -699,6 +711,7 @@ function initLangDropdown() {
 
       await handleLanguageChange(selectedLang);
       syncLangDropdownUI();
+      closeMobileMenu(); // 💡 切換完語系後，自動收合手機版選單
     });
   });
 }
