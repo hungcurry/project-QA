@@ -667,6 +667,54 @@ function initTheme() {
 
 themeToggleBtn.addEventListener("click", toggleTheme);
 
+// 初始化自定義語系下拉選單互動與事件
+function initLangDropdown() {
+  const langBtn = document.getElementById("langDropdownBtn");
+  const langMenu = document.getElementById("langDropdownMenu");
+  const currentLangText = document.getElementById("currentLangText");
+
+  if (!langBtn || !langMenu) return;
+
+  // 1. 點擊按鈕展開/收合選單
+  langBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle("hidden");
+  });
+
+  // 2. 點擊畫面其他地方自動關閉選單
+  document.addEventListener("click", (e) => {
+    if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+      langMenu.classList.add("hidden");
+    }
+  });
+
+  // 3. 點擊選項切換語系
+  langMenu.querySelectorAll("[data-lang]").forEach((item) => {
+    item.addEventListener("click", async () => {
+      const selectedLang = item.getAttribute("data-lang");
+      langMenu.classList.add("hidden");
+
+      // 呼叫您原本的切換語系函式
+      await handleLanguageChange(selectedLang);
+      syncLangDropdownUI();
+    });
+  });
+}
+
+// 同步當前選中的語系文字到按鈕上
+function syncLangDropdownUI() {
+  const currentLangText = document.getElementById("currentLangText");
+  if (!currentLangText) return;
+
+  const isEnglish = i18next.language.startsWith("en");
+  // 根據當前語系設定按鈕顯示的文字 Key
+  currentLangText.setAttribute(
+    "data-i18n",
+    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
+  );
+  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
+}
+
 // ===================
 // ... i18n ...
 // ===================
@@ -755,6 +803,10 @@ async function initialize() {
   await initI18n(initialLng);
   renderI18n();
   bindEvents();
+
+  // 
+  initLangDropdown();
+  syncLangDropdownUI();
 
   // data
   await fetchAllData();
