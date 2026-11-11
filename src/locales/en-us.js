@@ -11,6 +11,21 @@ export default {
     login: "Login",
     logout: "Logout",
 
+    // 語系選單文字
+    langSelect: {
+      zh: "Traditional Chinese",
+      en: "English",
+    },
+
+    // 角色身分翻譯
+    roles: {
+      super_admin: "Super Administrator",
+      admin: "Administrator",
+      developer: "Developer",
+      viewer: "Viewer",
+      default: "Not Logged In",
+    },
+
     // 時程區塊
     scheduleTitle: "What is the key timeline?",
     scheduleSubtitle:
@@ -31,8 +46,7 @@ export default {
     feature1Desc:
       "Complies with CRA key requirements through a Secure Development Life Cycle (SDLC) certified by IEC 62443-4-1.",
     feature2Title: "Detect and Verify Vulnerabilities",
-    feature2Desc:
-      "Quickly identify and manage security vulnerabilities within products.",
+    feature2Desc: "Quickly identify and manage security vulnerabilities within products.",
     feature3Title: "Future-Proof Solutions",
     feature3Desc: "Proactively complies with regulatory requirements and evolving EU standards.",
 
@@ -52,12 +66,7 @@ export default {
     emailPlaceholder: "e.g., pm@cra.com",
     passwordLabel: "Password",
     passwordPlaceholder: "Enter password",
-    errorMsg: "Invalid account or password, please try again.",
     submitBtn: "Confirm Login",
-    quickTestTitle: "Quick Test Accounts:",
-    pmBtn: "PM Account",
-    rdBtn: "RD Account",
-    randomBtn: "Random Account",
   },
   toast: {
     defaultSuccess: "Submitted successfully!",

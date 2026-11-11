@@ -489,6 +489,11 @@ function initAuthModal() {
   const submitLoginBtn = document.getElementById("submitLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
 
+  // 下拉選單元素
+  const loggedUserSection = document.getElementById("loggedUserSection");
+  const userDropdownMenu = document.getElementById("userDropdownMenu");
+  const dropdownLogoutBtn = document.getElementById("dropdownLogoutBtn");
+
   // 必要 DOM authBtn/authModal 不存在就不初始化
   if (!authModal) return;
 
@@ -498,10 +503,23 @@ function initAuthModal() {
     updateAuthModalContent();
   });
 
-  // ✅ 1-1. 點擊右上角已登入的「身分區塊」也能開啟 Modal（進行登出或切換）
-  loggedUserSection?.addEventListener("click", () => {
-    openAuthModal(authModal);
-    updateAuthModalContent(); // 這會自動切換顯示 logoutSection 讓你按登出
+  // ✅ 1-1. 點擊已登入的「身分區塊」改為切換展開/收合「下拉選單」
+  loggedUserSection?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    userDropdownMenu?.classList.toggle("hidden");
+  });
+
+  // ✅ 1-2. 點擊畫面其他地方自動關閉下拉選單
+  document.addEventListener("click", (e) => {
+    if (!loggedUserSection?.contains(e.target) && !userDropdownMenu?.contains(e.target)) {
+      userDropdownMenu?.classList.add("hidden");
+    }
+  });
+
+  // ✅ 1-3. 點擊下拉選單內的登出按鈕
+  dropdownLogoutBtn?.addEventListener("click", () => {
+    userDropdownMenu?.classList.add("hidden");
+    handleLogout();
   });
 
   // 2. 點擊關閉按鈕

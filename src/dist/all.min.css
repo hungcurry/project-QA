@@ -751,12 +751,24 @@ video {
   margin-bottom: 2rem;
 }
 
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.mt-0\.5 {
+  margin-top: 0.125rem;
+}
+
 .mt-1 {
   margin-top: 0.25rem;
 }
 
 .mt-10 {
   margin-top: 2.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .mt-5 {
@@ -867,6 +879,14 @@ video {
   width: 75%;
 }
 
+.w-4 {
+  width: 1rem;
+}
+
+.w-60 {
+  width: 15rem;
+}
+
 .w-7 {
   width: 1.75rem;
 }
@@ -885,6 +905,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-36 {
+  width: 9rem;
 }
 
 .min-w-\[600px\] {
@@ -1056,6 +1080,12 @@ video {
 
 .overflow-y-auto {
   overflow-y: auto;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .whitespace-nowrap {
@@ -1268,15 +1298,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-}
-
-.bg-slate-800 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1));
-}
-
-.bg-slate-800\/80 {
-  background-color: rgb(30 41 59 / 0.8);
 }
 
 .object-contain {
@@ -1658,9 +1679,19 @@ video {
   color: rgb(220 38 38 / var(--tw-text-opacity, 1));
 }
 
+.text-rose-400 {
+  --tw-text-opacity: 1;
+  color: rgb(251 113 133 / var(--tw-text-opacity, 1));
+}
+
 .text-slate-100 {
   --tw-text-opacity: 1;
   color: rgb(241 245 249 / var(--tw-text-opacity, 1));
+}
+
+.text-slate-200 {
+  --tw-text-opacity: 1;
+  color: rgb(226 232 240 / var(--tw-text-opacity, 1));
 }
 
 .text-slate-300 {
@@ -1701,11 +1732,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-}
-
-.text-slate-200 {
-  --tw-text-opacity: 1;
-  color: rgb(226 232 240 / var(--tw-text-opacity, 1));
 }
 
 .underline {
@@ -2144,9 +2170,9 @@ body {
   background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1));
 }
 
-.hover\:bg-slate-700:hover {
+.hover\:bg-slate-800:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(51 65 85 / var(--tw-bg-opacity, 1));
+  background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:text-slate-600:hover {
@@ -2221,6 +2247,11 @@ body {
 
 .dark\:hidden:is(.dark *) {
   display: none;
+}
+
+.dark\:border-slate-500:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-color: rgb(100 116 139 / var(--tw-border-opacity, 1));
 }
 
 .dark\:border-slate-700:is(.dark *) {
@@ -2330,6 +2361,10 @@ body {
     top: 100%;
   }
 
+  .sm\:left-0 {
+    left: 0px;
+  }
+
   .sm\:block {
     display: block;
   }
@@ -2356,6 +2391,10 @@ body {
 
   .sm\:w-auto {
     width: auto;
+  }
+
+  .sm\:w-60 {
+    width: 15rem;
   }
 
   .sm\:min-w-full {

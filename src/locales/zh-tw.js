@@ -10,6 +10,21 @@ export default {
     login: "登入",
     logout: "登出",
 
+    // 語系選單文字
+    langSelect: {
+      zh: "繁體中文",
+      en: "英文",
+    },
+
+    // 角色身分翻譯
+    roles: {
+      super_admin: "超級管理員",
+      admin: "管理員",
+      developer: "開發者",
+      viewer: "檢視者",
+      default: "未登入",
+    },
+
     // 時程區塊
     scheduleTitle: "關鍵時程為何？",
     scheduleSubtitle: "CRA 已於 2024 年 12 月 10 日正式生效，相關義務分階段實施：",
@@ -40,18 +55,13 @@ export default {
     copyright: "&copy; 2026 CRA 網路韌性法案. All rights reserved.",
   },
   authModal: {
-    title: "會員登入 (權限驗證)",
-    subtitle: "請輸入帳號密碼登入對應身分，或點擊下方快速帶入測試帳號。",
-    emailLabel: "電子郵件 (信箱)",
-    emailPlaceholder: "例如：pm@cra.com",
+    title: "選擇登入身分",
+    subtitle: "請選擇要切換的測試角色權限",
+    emailLabel: "信箱",
+    emailPlaceholder: "請輸入信箱",
     passwordLabel: "密碼",
     passwordPlaceholder: "請輸入密碼",
-    errorMsg: "帳號或密碼錯誤，請重新輸入。",
-    submitBtn: "確認登入",
-    quickTestTitle: "快速測試帳號一鍵帶入：",
-    pmBtn: "PM 帳號",
-    rdBtn: "RD 帳號",
-    randomBtn: "隨便帳號",
+    submitBtn: "登入",
   },
   toast: {
     defaultSuccess: "已成功送出！",

@@ -5,7 +5,7 @@ import enUS from "./en-us.js";
 
 export async function initI18n() {
   await i18next.init({
-    lng: localStorage.getItem("lang") || "zh-TW",
+    lng: localStorage.getItem("CRA-lang") || "zh-TW",
     fallbackLng: "zh-TW",
 
     resources: {
