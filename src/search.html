@@ -19,7 +19,8 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between font-sans antialiased bg-dark">
 
   <!-- header -->
-  <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100 bg-dark">
+  <header class="bg-white sticky top-0 z-40 shadow-xs border-b border-slate-100 bg-dark z-[900]">
+
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between relative">
 
@@ -79,7 +80,7 @@
         <div class="relative w-full sm:w-auto">
           <!-- 1. 未登入狀態：登入按鈕 -->
           <button id="authBtn"
-            class="w-full flex justify-center items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-750 transition-colors github-dark">
+            class="w-full flex justify-center items-center gap-2 px-3 py-2.5 sm:py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-750 transition-colors github-dark">
             <i id="authIcon" class="fa-solid fa-right-to-bracket text-slate-500"></i>
             <span class="text-sm" data-i18n="index.login">登入</span>
           </button>
@@ -87,7 +88,7 @@
           <!-- 2. 已登入狀態：可點擊展開下拉選單的身分顯示區塊（平時預設 hidden） -->
           <div class="relative">
             <button id="loggedUserSection"
-              class="hidden w-full flex justify-center items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 transition-colors cursor-pointer github-dark">
+              class="hidden w-full text-sm flex justify-center items-center gap-2 px-3 py-2.5 sm:py-2 rounded-lg bg-slate-100 text-slate-700 transition-colors cursor-pointer github-dark">
               <i id="roleIcon" class="fa-solid fa-user-shield text-amber-500"></i>
               <!-- 加上 data-i18n，預設給 roles.admin -->
               <span id="currentRoleText" data-i18n="roles.admin">Admin</span>
@@ -130,8 +131,13 @@
         </button>
       </div>
 
+
     </div>
   </header>
+
+  <div id="menuBackdrop"
+    class="fixed inset-x-0 top-0 h-screen bg-black/40 dark:bg-slate-800/70 backdrop-blur-xs sm:hidden hidden z-50">
+  </div>
 
   <!-- Hero區 -->
   <div data-permission="HERO_READ" class="hero hero-bg w-full relative overflow-hidden">
@@ -371,24 +377,26 @@
 
   <!-- 登入彈出視窗 (Modal) -->
   <div id="authModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden">
+    class="fixed inset-0 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs py-[60px] px-4 hidden z-[999]">
+
+    <!-- 內層卡片：使用 custom-scrollbar 類別 -->
     <div
-      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 w-full max-w-md mx-4 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200 max-h-full overflow-y-auto custom-scrollbar">
 
       <!-- 關閉按鈕 -->
       <button id="closeModalBtn"
-        class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-2">
+        class="sticky top-0 float-right z-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-2 rounded-full">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <!-- Modal 標題 -->
-      <div class="text-center mb-6">
+      <div class="text-center mb-6 clear-both">
         <h3 class="text-xl font-bold text-slate-900 dark:text-gray-100" data-i18n="authModal.title">選擇登入身分</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" data-i18n="authModal.subtitle">請選擇要切換的測試角色權限
         </p>
       </div>
 
-      <!-- 新增：信箱、密碼與登入按鈕區塊 -->
+      <!-- 信箱、密碼與登入按鈕區塊 -->
       <div class="space-y-4 mb-6" id="loginFormSection">
         <div>
           <label for="loginEmail" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
@@ -416,7 +424,7 @@
         <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
       </div>
 
-      <!-- 身分選項清單 (包含 4 種角色) -->
+      <!-- 身分選項清單 -->
       <div class="space-y-3 mb-6" id="roleSelectList">
         <!-- Super Admin -->
         <div data-role="super_admin" data-email="superadmin@example.com" data-password="password123"

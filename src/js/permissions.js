@@ -277,11 +277,12 @@ function handleLoggedOutState() {
 export function updateUIByPermission() {
   // 1. 遍歷所有帶有權限控制的 DOM 元素進行狀態更新
   const permissionElements = document.querySelectorAll("[data-permission]");
-  permissionElements.forEach(handlePermissionElement);
+  permissionElements.forEach((el) => {
+    handlePermissionElement(el);
+  });
 
   // 2. 根據角色身分切換登入按鈕與會員區塊的顯示
-  const isLogged = currentRoleKey !== "default";
-  if (isLogged) {
+  if (currentRoleKey !== "default") {
     handleLoggedInState();
   } else {
     handleLoggedOutState();

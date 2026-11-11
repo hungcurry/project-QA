@@ -432,7 +432,6 @@ function handleLogin() {
 }
 function handleLogout() {
   logout();
-
   resetLoginForm();
   closeAuthModal(document.getElementById("authModal"));
 }
@@ -451,7 +450,6 @@ function loginAs(roleKey) {
 }
 function logout() {
   if (!applyRole("default")) return;
-
   showToast(i18next.t("toast.logout"));
 }
 function showToast(message) {
@@ -473,9 +471,7 @@ function showToast(message) {
 // 套用角色
 function applyRole(roleKey) {
   if (!setCurrentRoleKey(roleKey)) return false;
-
   updateUIByPermission();
-
   return true;
 }
 // Modal 初始化事件
@@ -488,13 +484,9 @@ function initAuthModal() {
   // 登入/登出
   const submitLoginBtn = document.getElementById("submitLoginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
-
   // 下拉選單元素
-  const loggedUserSection = document.getElementById("loggedUserSection");
-  const userDropdownMenu = document.getElementById("userDropdownMenu");
   const dropdownLogoutBtn = document.getElementById("dropdownLogoutBtn");
 
-  // 必要 DOM authBtn/authModal 不存在就不初始化
   if (!authModal) return;
 
   // 1. 點擊「登入」按鈕開啟 Modal
@@ -504,51 +496,46 @@ function initAuthModal() {
     closeMobileMenu(); // 💡 打開登入視窗時收合手機選單
   });
 
-  // ✅ 1-1. 點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
+  // 2.點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
+  const loggedUserSection = document.getElementById("loggedUserSection");
+  const userDropdownMenu = document.getElementById("userDropdownMenu");
+
   loggedUserSection?.addEventListener("click", (e) => {
     e.stopPropagation();
-    // 打開身分選單前，先關閉語系選單（避免衝突）
     document.getElementById("langDropdownMenu")?.classList.add("hidden");
     userDropdownMenu?.classList.toggle("hidden");
   });
 
-  // ✅ 1-2. 專屬身分下拉選單的「點擊畫面其他地方關閉」邏輯
-  document.addEventListener("click", (e) => {
-    if (!loggedUserSection?.contains(e.target) && !userDropdownMenu?.contains(e.target)) {
-      userDropdownMenu?.classList.add("hidden");
-    }
-  });
-
-  // ✅ 1-3. 點擊下拉選單內的登出按鈕
+  // 3.點擊下拉選單內的登出按鈕
   dropdownLogoutBtn?.addEventListener("click", () => {
     userDropdownMenu?.classList.add("hidden");
     handleLogout();
     closeMobileMenu(); // 💡 登出後收合手機選單
   });
 
-  // 2. 點擊關閉按鈕
+  // 4.點擊關閉按鈕
   closeModalBtn?.addEventListener("click", () => {
     closeAuthModal(authModal);
   });
 
-  // 3. 點擊 Modal 背景關閉
+  // 5.點擊 Modal 背景關閉
   authModal.addEventListener("click", (e) => {
     if (e.target === authModal) {
       closeAuthModal(authModal);
     }
   });
 
-  // 4. 選擇身分卡片
+  // 6.選擇身分卡片
   roleCards.forEach((card) => {
     card.addEventListener("click", () => {
       fillLoginForm(card);
     });
   });
 
-  // 5. 點擊登入
+  // 7.點擊登入
   submitLoginBtn?.addEventListener("click", handleLogin);
 
-  // 6. 點擊登出
+  // 8.點擊登出
   logoutBtn?.addEventListener("click", handleLogout);
 }
 
@@ -573,13 +560,10 @@ function initPermissionActions() {
     // 確認事件目標是 Element
     if (!(e.target instanceof Element)) return;
 
-    // 尋找 data-permission 元素
     const target = e.target.closest("[data-permission]");
-
     if (!target) return;
 
     const permissionKey = target.dataset.permission;
-
     // 取得對應權限值
     const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
 
@@ -587,11 +571,9 @@ function initPermissionActions() {
     if (!hasPermission(permissionValue)) {
       e.preventDefault();
       e.stopPropagation();
-
       alert(`權限不足：您的身分沒有執行 ${permissionValue} 的權限！`);
       return;
     }
-
     // 權限通過，執行操作
     handlePermissionAction(target, permissionKey, permissionValue);
   });
@@ -605,7 +587,8 @@ import i18next, { initI18n } from "../locales/index.js";
 
 const mobileMenuIcon = document.getElementById("mobileMenuIcon");
 const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
-const navMenu = document.getElementById("navMenu"); // 對應 HTML 中的共用按鈕選單容器
+const navMenu = document.getElementById("navMenu");
+const menuBackdrop = document.getElementById("menuBackdrop");
 
 // 手機選單
 // ----------
@@ -616,15 +599,14 @@ function toggleMobileMenu() {
   const isHidden = navMenu.classList.contains("hidden");
 
   if (isHidden) {
-    // 展開選單：移除 hidden，並加上 flex 讓它顯示
+    // 展開選單與遮罩
     navMenu.classList.remove("hidden");
     navMenu.classList.add("flex");
+    menuBackdrop?.classList.remove("hidden"); // 顯示遮罩
     mobileMenuIcon.className = "fa-solid fa-xmark";
   } else {
-    // 收合選單：加上 hidden，並移除 flex
-    navMenu.classList.add("hidden");
-    navMenu.classList.remove("flex");
-    mobileMenuIcon.className = "fa-solid fa-bars";
+    // 收合選單與遮罩
+    closeMobileMenu();
   }
 }
 function closeMobileMenu() {
@@ -632,20 +614,13 @@ function closeMobileMenu() {
 
   navMenu.classList.add("hidden");
   navMenu.classList.remove("flex");
+  menuBackdrop?.classList.add("hidden"); // 隱藏遮罩
   mobileMenuIcon.className = "fa-solid fa-bars";
 }
-document.addEventListener("click", (e) => {
-  const isMenuOpen = navMenu && !navMenu.classList.contains("hidden");
 
-  if (isMenuOpen) {
-    // 如果點擊的目標既不在手機選單內，也不是打開/關閉漢堡按鈕本身
-    if (!navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
-      closeMobileMenu();
-    }
-  }
-});
-
-mobileMenuToggleBtn.addEventListener("click", toggleMobileMenu);
+// 點擊遮罩時關閉手機選單
+menuBackdrop?.addEventListener("click", closeMobileMenu);
+mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
 
 // 亮/暗模式
 // ----------
@@ -653,10 +628,8 @@ const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeIcon = document.getElementById("themeIcon");
 
 function toggleTheme() {
-  const htmlEl = document.documentElement;
-  const isDark = htmlEl.classList.toggle("dark");
+  const isDark = document.documentElement.classList.toggle("dark");
 
-  // 切換圖示：暗模式顯示月亮，亮模式顯示太陽
   if (isDark) {
     themeIcon.className = "fa-solid fa-moon text-indigo-400";
     localStorage.setItem("CRA-theme", "dark");
@@ -679,7 +652,7 @@ function initTheme() {
   }
 }
 
-themeToggleBtn.addEventListener("click", toggleTheme);
+themeToggleBtn?.addEventListener("click", toggleTheme);
 
 // 初始化自定義語系下拉選單互動與事件
 function initLangDropdown() {
@@ -691,19 +664,11 @@ function initLangDropdown() {
   // 1. 點擊語系按鈕展開/收合（同時互斥關閉身分選單）
   langBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    // 打開語系選單前，先關閉身分選單（避免衝突）
     document.getElementById("userDropdownMenu")?.classList.add("hidden");
     langMenu.classList.toggle("hidden");
   });
 
-  // 2. 專屬語系下拉選單的「點擊畫面其他地方關閉」邏輯
-  document.addEventListener("click", (e) => {
-    if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
-      langMenu.classList.add("hidden");
-    }
-  });
-
-  // 3. 點擊選項切換語系
+  // 2. 點擊選項切換語系
   langMenu.querySelectorAll("[data-lang]").forEach((item) => {
     item.addEventListener("click", async () => {
       const selectedLang = item.getAttribute("data-lang");
@@ -741,8 +706,8 @@ function getInitialLanguage() {
   const systemLang = navigator.language || navigator.userLanguage;
   return systemLang.startsWith("en") ? "en-US" : "zh-TW";
 }
+// 使用i18next 進行翻譯
 function renderI18n() {
-  // 這裡直接使用 import 進來的 i18next 進行翻譯
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
@@ -756,27 +721,13 @@ function renderI18n() {
   });
 
   updateLogoVisibility();
-  syncLangSelectUI();
+  // syncLangSelectUI();
 }
 function updateLogoVisibility() {
   const isEnglish = i18next.language.startsWith("en");
   document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
     el.classList.toggle("hidden", isEnglish);
   });
-}
-function syncLangSelectUI() {
-  const langSelect = document.querySelector("#langSelect");
-  if (langSelect) {
-    langSelect.value = i18next.language.startsWith("en") ? "en-US" : "zh-TW";
-  }
-}
-function bindEvents() {
-  const langSelect = document.querySelector("#langSelect");
-  if (langSelect) {
-    langSelect.addEventListener("change", (e) => {
-      handleLanguageChange(e.target.value);
-    });
-  }
 }
 function getFaqText(item, field) {
   return i18next.t(`faqs.${item.translationKey}.${field}`, {
@@ -797,9 +748,38 @@ async function handleLanguageChange(lang) {
 }
 
 // ===================
+// ... Global Click Listener ...
+// ===================
+// 合併所有點擊畫面其他地方關閉選單的邏輯，避免多次註冊全域監聽
+document.addEventListener("click", (e) => {
+  // 1. 手機選單點擊外部關閉
+  const isMenuOpen = navMenu && !navMenu.classList.contains("hidden");
+  if (isMenuOpen && !navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
+    closeMobileMenu();
+  }
+
+  // 2. 身分下拉選單點擊外部關閉
+  const loggedUserSection = document.getElementById("loggedUserSection");
+  const userDropdownMenu = document.getElementById("userDropdownMenu");
+  if (userDropdownMenu && !userDropdownMenu.classList.contains("hidden")) {
+    if (!loggedUserSection?.contains(e.target) && !userDropdownMenu?.contains(e.target)) {
+      userDropdownMenu.classList.add("hidden");
+    }
+  }
+
+  // 3. 語系下拉選單點擊外部關閉
+  const langBtn = document.getElementById("langDropdownBtn");
+  const langMenu = document.getElementById("langDropdownMenu");
+  if (langMenu && !langMenu.classList.contains("hidden")) {
+    if (!langBtn?.contains(e.target) && !langMenu?.contains(e.target)) {
+      langMenu.classList.add("hidden");
+    }
+  }
+});
+
+// ===================
 // ... init ...
 // ===================
-// 更新畫面
 function updateView() {
   filterData = getFilterData();
 
@@ -809,34 +789,32 @@ function updateView() {
   renderFaqs(state.pageData);
   renderPagination(state);
 }
-async function initialize() {
-  // 亮/暗模式
-  initTheme();
 
-  // 語言切換模式
+// 初始化順序
+async function initialize() {
+  // 1. 優先執行同步介面狀態與事件綁定（確保 UI 元素即時可互動）
+  initTheme();
+  initAuthModal();
+  initPermissionActions();
+  initLangDropdown();
+
+  // 2. 初始化語系並進行畫面多語系轉譯
   const initialLng = getInitialLanguage();
   await initI18n(initialLng);
   renderI18n();
-  bindEvents();
-  initLangDropdown();
   syncLangDropdownUI();
 
-  // data
+  // 3. data
   await fetchAllData();
   faqData = getFaqs();
   categoryData = getCategories();
 
-  // 新更畫面
+  // 4. 更新畫面與權限狀態
   updateView();
   renderCategories();
-
-  // ✅ 權限檢查
-  // 確保所有渲染、i18n 翻譯都結束後，
-  // 才最後根據身分更新介面與導覽列文字
-  initAuthModal();
-  initPermissionActions();
   updateUIByPermission();
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   initialize();
 });
