@@ -174,94 +174,116 @@ export function useAdminAuth() {
     hasRole: (roleName) => hasRole(roleName),
   };
 }
+// ==========================================
 import i18next from "../locales/index.js";
-export function updateUIByPermission() {
-  const permissionElements = document.querySelectorAll("[data-permission]");
 
-  permissionElements.forEach((el) => {
-    const requiredPermissionKey = el.getAttribute("data-permission");
-    const permissionValue = PERMISSIONS[requiredPermissionKey] || requiredPermissionKey;
+// el / DOM 元素
+function handlePermissionElement(el) {
+  const requiredPermissionKey = el.getAttribute("data-permission");
+  if (!requiredPermissionKey) return;
 
-    if (!permissionValue) return;
+  const permissionValue = PERMISSIONS[requiredPermissionKey] || requiredPermissionKey;
+  if (!permissionValue) return;
 
-    const allowed = hasPermission(permissionValue);
-    const isReadPermission =
-      requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
+  const allowed = hasPermission(permissionValue);
 
-    if (isReadPermission) {
-      el.style.display = allowed ? "" : "none";
-    } else {
-      if (allowed) {
-        el.removeAttribute("disabled");
-        el.removeAttribute("aria-disabled");
-        el.classList.remove(
-          "is-disabled",
-          "opacity-50",
-          "cursor-not-allowed",
-          "pointer-events-none",
-        );
-      } else {
-        if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {
-          el.setAttribute("disabled", "true");
-        } else {
-          el.setAttribute("aria-disabled", "true");
-        }
-        el.classList.add("is-disabled", "opacity-50", "cursor-not-allowed", "pointer-events-none");
-      }
+  // 判斷是否為「讀取權限」（決定顯示/隱藏 vs 啟用/停用）
+  const isReadPermission =
+    requiredPermissionKey.includes("READ") || permissionValue.endsWith(":read");
+
+  // prettier-ignore
+  if (isReadPermission) {
+    // 讀取權限：控制元素的顯示與隱藏
+    el.style.display = allowed ? "" : "none";
+  }
+  else {
+    // 操作權限：控制元素的啟用與停用（加上 Tailwind 禁用樣式）
+    if (allowed) {
+      el.removeAttribute("disabled");
+      el.removeAttribute("aria-disabled");
+      el.classList.remove("is-disabled", "opacity-50", "cursor-not-allowed", "pointer-events-none");
     }
-  });
-
-  // ==========================================
-  // ✅ 獨立切換「登入按鈕」與「已登入身分區塊」
-  // ==========================================
-  const authBtn = document.getElementById("authBtn");
-  const loggedUserSection = document.getElementById("loggedUserSection");
-  const roleTextSpan = document.getElementById("currentRoleText");
-  const roleIcon = document.getElementById("roleIcon");
-
-  const dropdownRoleName = document.getElementById("dropdownRoleName");
-  const dropdownUserEmail = document.getElementById("dropdownUserEmail");
-
-  const isLogged = currentRoleKey !== "default";
-
-  if (authBtn && loggedUserSection) {
-    if (isLogged) {
-      authBtn.classList.add("hidden");
-      loggedUserSection.classList.remove("hidden");
-
-      // 組合出 3 層的翻譯 Key（例如 index.roles.admin, index.roles.developer）
-      const roleI18nKey = `index.roles.${currentRoleKey}`;
-      const defaultName = ROLES[currentRoleKey]?.name || currentRoleKey;
-      const translatedRole = i18next.t(roleI18nKey, { defaultValue: defaultName });
-
-      // 1. 設定外層身分名稱與 data-i18n
-      if (roleTextSpan) {
-        roleTextSpan.setAttribute("data-i18n", roleI18nKey); // 👈 確保是 index.roles.xxx
-        roleTextSpan.textContent = translatedRole;
+    else {
+      if (["BUTTON", "INPUT", "SELECT", "TEXTAREA"].includes(el.tagName)) {
+        el.setAttribute("disabled", "true");
+      } else {
+        el.setAttribute("aria-disabled", "true");
       }
-
-      // 2. 設定下拉選單內的的角色名稱與 data-i18n
-      if (dropdownRoleName) {
-        dropdownRoleName.setAttribute("data-i18n", roleI18nKey); // 👈 確保是 index.roles.xxx
-        dropdownRoleName.textContent = translatedRole;
-      }
-
-      if (dropdownUserEmail) {
-        const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
-        dropdownUserEmail.textContent = currentUser?.email || "super@cra.com";
-      }
-
-      if (roleIcon) {
-        roleIcon.className =
-          currentRoleKey === "admin" || currentRoleKey === "super_admin"
-            ? "fa-solid fa-user-shield text-amber-500"
-            : "fa-solid fa-user-check text-green-500";
-      }
-    } else {
-      authBtn.classList.remove("hidden");
-      loggedUserSection.classList.add("hidden");
-      document.getElementById("userDropdownMenu")?.classList.add("hidden");
+      el.classList.add("is-disabled", "opacity-50", "cursor-not-allowed", "pointer-events-none");
     }
   }
-  // ==========================================
+}
+// 處理登入後的介面狀態更新（角色文字、圖示、下拉選單資訊）
+function handleLoggedInState() {
+  const authBtn = document.getElementById("authBtn");
+  const loggedUserSection = document.getElementById("loggedUserSection");
+
+  if (!authBtn || !loggedUserSection) return;
+
+  authBtn.classList.add("hidden");
+  loggedUserSection.classList.remove("hidden");
+
+  // 組合出 3 層的翻譯 Key（例如 index.roles.admin, index.roles.developer）
+  const roleI18nKey = `index.roles.${currentRoleKey}`;
+  const defaultName = ROLES[currentRoleKey]?.name || currentRoleKey;
+
+  // 支援 i18next，若無則降級回傳預設名稱
+  const translatedRole =
+    typeof i18next !== "undefined" && typeof i18next.t === "function"
+      ? i18next.t(roleI18nKey, { defaultValue: defaultName })
+      : defaultName;
+
+  // 1. 設定外層身分名稱與 i18n 屬性
+  const roleTextSpan = document.getElementById("currentRoleText");
+  if (roleTextSpan) {
+    roleTextSpan.setAttribute("data-i18n", roleI18nKey);
+    roleTextSpan.textContent = translatedRole;
+  }
+
+  // 2. 設定下拉選單內的角色名稱與 i18n 屬性
+  const dropdownRoleName = document.getElementById("dropdownRoleName");
+  if (dropdownRoleName) {
+    dropdownRoleName.setAttribute("data-i18n", roleI18nKey);
+    dropdownRoleName.textContent = translatedRole;
+  }
+
+  // 3. 設定使用者 Email 資訊
+  const dropdownUserEmail = document.getElementById("dropdownUserEmail");
+  if (dropdownUserEmail) {
+    const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+    dropdownUserEmail.textContent = currentUser?.email || "super@cra.com";
+  }
+
+  // 4. 根據不同權限角色切換對應的圖示與顏色
+  const roleIcon = document.getElementById("roleIcon");
+  if (roleIcon) {
+    roleIcon.className =
+      currentRoleKey === "admin" || currentRoleKey === "super_admin"
+        ? "fa-solid fa-user-shield text-amber-500"
+        : "fa-solid fa-user-check text-green-500";
+  }
+}
+// 處理未登入時的介面狀態重置
+function handleLoggedOutState() {
+  const authBtn = document.getElementById("authBtn");
+  const loggedUserSection = document.getElementById("loggedUserSection");
+
+  if (authBtn) authBtn.classList.remove("hidden");
+  if (loggedUserSection) loggedUserSection.classList.add("hidden");
+
+  document.getElementById("userDropdownMenu")?.classList.add("hidden");
+}
+// 主進入點：根據當前使用者的權限與登入狀態更新整個介面
+export function updateUIByPermission() {
+  // 1. 遍歷所有帶有權限控制的 DOM 元素進行狀態更新
+  const permissionElements = document.querySelectorAll("[data-permission]");
+  permissionElements.forEach(handlePermissionElement);
+
+  // 2. 根據角色身分切換登入按鈕與會員區塊的顯示
+  const isLogged = currentRoleKey !== "default";
+  if (isLogged) {
+    handleLoggedInState();
+  } else {
+    handleLoggedOutState();
+  }
 }
