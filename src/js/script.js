@@ -195,7 +195,6 @@ function handleAccordion(e) {
     answerDiv.classList.add("active");
   }
 }
-
 // 封裝成函數，檢查元素是否存在
 function initFaqEventListeners() {
   if (categoryFilters) {
@@ -348,6 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
 import {
   PERMISSIONS,
   ROLES,
+  UserJSON,
   useAdminAuth,
   updateUIByPermission,
 } from "./permissions.js";
@@ -362,6 +362,77 @@ const {
   hasRole
 } = useAdminAuth();
 
+// 登入與登出
+// ----------
+function handleLogin() {
+  const email = document.getElementById("loginEmail")?.value.trim() || "";
+  const password = document.getElementById("loginPassword")?.value || "";
+  const authModal = document.getElementById("authModal");
+
+  // 防呆 比對資料
+  const matchedUser = UserJSON.find(
+    (user) => user.role !== "default" && user.email === email && user.password === password,
+  );
+  if (!matchedUser) {
+    alert("請選擇或輸入有效的測試帳號");
+    return;
+  }
+
+  // 執行登入，取得對應的 role
+  loginAs(matchedUser.role);
+  closeAuthModal(authModal);
+}
+function handleLogout() {
+  const authModal = document.getElementById("authModal");
+  logout();
+  resetLoginForm();
+  closeAuthModal(authModal);
+}
+function loginAs(roleKey) {
+  console.log("目前收到的 roleKey 是：", roleKey);
+  if (!setCurrentRoleKey(roleKey)) return;
+
+  const roleName = ROLES[roleKey].name;
+  // prettier-ignore
+  if (roleKey === "default") {
+    showToast(i18next.t("toast.logout"));
+  }
+  else {
+    showToast(i18next.t("toast.loginAs", { roleName }));
+  }
+}
+function logout() {
+  if (!setCurrentRoleKey("default")) return;
+  showToast(i18next.t("toast.logout"));
+}
+// 清空登入表單
+function resetLoginForm() {
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginPassword").value = "";
+}
+// 填入測試帳號
+function fillLoginForm(card) {
+  // console.log("填入測試帳號:", card);
+  document.getElementById("loginEmail").value = card.dataset.email || "";
+  document.getElementById("loginPassword").value = card.dataset.password || "";
+}
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  const toastMessage = document.getElementById("toastMessage");
+
+  if (!toast || !toastMessage) return;
+
+  toastMessage.textContent = message;
+
+  toast.classList.remove("translate-y-20", "opacity-0");
+  toast.classList.add("translate-y-0", "opacity-100");
+
+  setTimeout(() => {
+    toast.classList.remove("translate-y-0", "opacity-100");
+    toast.classList.add("translate-y-20", "opacity-0");
+  }, 3000);
+}
+
 // Modal
 // ----------
 function openAuthModal(authModal) {
@@ -370,7 +441,6 @@ function openAuthModal(authModal) {
 function closeAuthModal(authModal) {
   authModal.classList.add("hidden");
 }
-// 根據登入狀態切換 Modal 畫面
 function updateAuthModalContent() {
   const isLoggedIn = Boolean(getCurrentUser());
 
@@ -390,91 +460,7 @@ function updateAuthModalContent() {
     resetLoginForm();
   }
 }
-
-// 表單管理
-// ----------
-// 清空登入表單
-function resetLoginForm() {
-  document.getElementById("loginEmail").value = "";
-  document.getElementById("loginPassword").value = "";
-}
-// 填入測試帳號
-function fillLoginForm(card) {
-  // console.log("填入測試帳號:", card);
-  document.getElementById("loginEmail").value = card.dataset.email || "";
-  document.getElementById("loginPassword").value = card.dataset.password || "";
-}
-
-// 登入與登出
-// ----------
-function handleLogin() {
-  const email = document.getElementById("loginEmail")?.value.trim() || "";
-  const password = document.getElementById("loginPassword")?.value || "";
-  const roleCards = document.querySelectorAll(".role-card");
-
-  // 比對測試帳號
-  const matchedCard = Array.from(roleCards).find(
-    (card) => card.dataset.email === email && card.dataset.password === password,
-  );
-
-  if (!matchedCard) {
-    alert("請選擇或輸入有效的測試帳號");
-    return;
-  }
-
-  const roleKey = matchedCard.dataset.role;
-
-  // 執行登入
-  loginAs(roleKey); // admin
-
-  // 關閉 Modal
-  closeAuthModal(document.getElementById("authModal"));
-}
-function handleLogout() {
-  logout();
-  resetLoginForm();
-  closeAuthModal(document.getElementById("authModal"));
-}
-function loginAs(roleKey) {
-  console.log("目前收到的 roleKey 是：", roleKey);
-
-  if (!applyRole(roleKey)) return;
-
-  const roleName = ROLES[roleKey].name;
-
-  if (roleKey === "default") {
-    showToast(i18next.t("toast.logout"));
-  } else {
-    showToast(i18next.t("toast.loginAs", { roleName }));
-  }
-}
-function logout() {
-  if (!applyRole("default")) return;
-  showToast(i18next.t("toast.logout"));
-}
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  const toastMessage = document.getElementById("toastMessage");
-
-  if (!toast || !toastMessage) return;
-
-  toastMessage.textContent = message;
-
-  toast.classList.remove("translate-y-20", "opacity-0");
-  toast.classList.add("translate-y-0", "opacity-100");
-
-  setTimeout(() => {
-    toast.classList.remove("translate-y-0", "opacity-100");
-    toast.classList.add("translate-y-20", "opacity-0");
-  }, 3000);
-}
-// 套用角色
-function applyRole(roleKey) {
-  if (!setCurrentRoleKey(roleKey)) return false;
-  updateUIByPermission();
-  return true;
-}
-// Modal 初始化事件
+// Modal 初始化
 function initAuthModal() {
   const authBtn = document.getElementById("authBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
@@ -483,63 +469,61 @@ function initAuthModal() {
   const roleCards = document.querySelectorAll(".role-card");
   // 登入/登出
   const submitLoginBtn = document.getElementById("submitLoginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  // 下拉選單元素
   const dropdownLogoutBtn = document.getElementById("dropdownLogoutBtn");
+  // 下拉選單元素
+  const loggedUserSection = document.getElementById("loggedUserSection");
+  const userDropdownMenu = document.getElementById("userDropdownMenu");
 
   if (!authModal) return;
 
   // 1. 點擊「登入」按鈕開啟 Modal
   authBtn?.addEventListener("click", () => {
     openAuthModal(authModal);
+    // 根據登入狀態切換 Modal 畫面內容
     updateAuthModalContent();
-    closeMobileMenu(); // 💡 打開登入視窗時收合手機選單
+    // 打開登入視窗時收合手機選單
+    closeMobileMenu();
   });
 
-  // 2.點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
-  const loggedUserSection = document.getElementById("loggedUserSection");
-  const userDropdownMenu = document.getElementById("userDropdownMenu");
-
-  loggedUserSection?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    document.getElementById("langDropdownMenu")?.classList.add("hidden");
-    userDropdownMenu?.classList.toggle("hidden");
-  });
-
-  // 3.點擊下拉選單內的登出按鈕
-  dropdownLogoutBtn?.addEventListener("click", () => {
-    userDropdownMenu?.classList.add("hidden");
-    handleLogout();
-    closeMobileMenu(); // 💡 登出後收合手機選單
-  });
-
-  // 4.點擊關閉按鈕
+  // 2. 點擊關閉按鈕
   closeModalBtn?.addEventListener("click", () => {
     closeAuthModal(authModal);
   });
 
-  // 5.點擊 Modal 背景關閉
+  // 3. 點擊 Modal 背景關閉
   authModal.addEventListener("click", (e) => {
     if (e.target === authModal) {
       closeAuthModal(authModal);
     }
   });
 
-  // 6.選擇身分卡片
+  // 4. 選擇身分卡片
   roleCards.forEach((card) => {
     card.addEventListener("click", () => {
       fillLoginForm(card);
     });
   });
 
-  // 7.點擊登入
+  // 5. 點擊登入
   submitLoginBtn?.addEventListener("click", handleLogin);
 
-  // 8.點擊登出
-  logoutBtn?.addEventListener("click", handleLogout);
+  // 6. 點擊下拉選單內的登出按鈕
+  dropdownLogoutBtn?.addEventListener("click", () => {
+    userDropdownMenu?.classList.add("hidden");
+    handleLogout();
+    // 登出後收合手機選單
+    closeMobileMenu();
+  });
+
+  // 7. 點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
+  loggedUserSection?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.getElementById("langDropdownMenu")?.classList.add("hidden");
+    userDropdownMenu?.classList.toggle("hidden");
+  });
 }
 
-// 權限操作管理
+// Permissions
 // ----------
 function handlePermissionAction(target, permissionKey, permissionValue) {
   const permLower = permissionKey.toLowerCase();
@@ -555,6 +539,7 @@ function handlePermissionAction(target, permissionKey, permissionValue) {
     console.log(`執行操作：${permissionValue}`);
   }
 }
+// Permissions 初始化
 function initPermissionActions() {
   document.addEventListener("click", (e) => {
     // 確認事件目標是 Element
@@ -654,7 +639,8 @@ function initTheme() {
 
 themeToggleBtn?.addEventListener("click", toggleTheme);
 
-// 初始化自定義語系下拉選單互動與事件
+// 語系下拉選單
+// ----------
 function initLangDropdown() {
   const langBtn = document.getElementById("langDropdownBtn");
   const langMenu = document.getElementById("langDropdownMenu");
@@ -789,7 +775,6 @@ function updateView() {
   renderFaqs(state.pageData);
   renderPagination(state);
 }
-
 // 初始化順序
 async function initialize() {
   // 1. 優先執行同步介面狀態與事件綁定（確保 UI 元素即時可互動）
@@ -814,7 +799,6 @@ async function initialize() {
   renderCategories();
   updateUIByPermission();
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   initialize();
 });
