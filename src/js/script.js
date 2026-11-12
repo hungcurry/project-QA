@@ -600,26 +600,28 @@ function initAuthModal() {
 import i18next, { initI18n } from "../locales/index.js";
 // import { ROLES } from "./permissions.js";
 
+// 手機選單
+// ----------
 const mobileMenuIcon = document.getElementById("mobileMenuIcon");
 const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
 const navMenu = document.getElementById("navMenu");
-const menuBackdrop = document.getElementById("menuBackdrop");
+const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
 
-// 手機選單
-// ----------
 function toggleMobileMenu() {
   if (!navMenu || !mobileMenuIcon) return;
 
-  // 檢查目前是否為隱藏狀態（正向思考：isHidden）
+  // 檢查目前是否為隱藏狀態
   const isHidden = navMenu.classList.contains("hidden");
 
+  // prettier-ignore
   if (isHidden) {
     // 展開選單與遮罩
     navMenu.classList.remove("hidden");
     navMenu.classList.add("flex");
-    menuBackdrop?.classList.remove("hidden"); // 顯示遮罩
+    mobileMenuBackdrop?.classList.remove("hidden"); // 顯示遮罩
     mobileMenuIcon.className = "fa-solid fa-xmark";
-  } else {
+  }
+  else {
     // 收合選單與遮罩
     closeMobileMenu();
   }
@@ -629,13 +631,12 @@ function closeMobileMenu() {
 
   navMenu.classList.add("hidden");
   navMenu.classList.remove("flex");
-  menuBackdrop?.classList.add("hidden"); // 隱藏遮罩
+  mobileMenuBackdrop?.classList.add("hidden"); // 隱藏遮罩
   mobileMenuIcon.className = "fa-solid fa-bars";
 }
 
-// 點擊遮罩時關閉手機選單
-menuBackdrop?.addEventListener("click", closeMobileMenu);
 mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
+mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
 
 // 亮/暗模式
 // ----------
@@ -645,23 +646,26 @@ const themeIcon = document.getElementById("themeIcon");
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle("dark");
 
+  // prettier-ignore
   if (isDark) {
     themeIcon.className = "fa-solid fa-moon text-indigo-400";
     localStorage.setItem("CRA-theme", "dark");
-  } else {
+  }
+  else {
     themeIcon.className = "fa-solid fa-sun text-amber-500";
     localStorage.setItem("CRA-theme", "light");
   }
 }
-// 初始化：檢查 localStorage 或系統偏好
 function initTheme() {
   const savedTheme = localStorage.getItem("CRA-theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
+  // prettier-ignore
   if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
     document.documentElement.classList.add("dark");
     if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
-  } else {
+  }
+  else {
     document.documentElement.classList.remove("dark");
     if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
   }
@@ -671,10 +675,23 @@ themeToggleBtn?.addEventListener("click", toggleTheme);
 
 // 語系下拉選單
 // ----------
-function initLangDropdown() {
-  const langBtn = document.getElementById("langDropdownBtn");
-  const langMenu = document.getElementById("langDropdownMenu");
+const langBtn = document.getElementById("langDropdownBtn");
+const langMenu = document.getElementById("langDropdownMenu");
 
+// 同步當前選中的語系文字到按鈕上
+function syncLangDropdownUI() {
+  const currentLangText = document.getElementById("currentLangText");
+  if (!currentLangText) return;
+
+  const isEnglish = i18next.language.startsWith("en");
+  // 根據當前語系設定按鈕顯示的文字 Key
+  currentLangText.setAttribute(
+    "data-i18n",
+    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
+  );
+  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
+}
+function initLangDropdown() {
   if (!langBtn || !langMenu) return;
 
   // 1. 點擊語系按鈕展開/收合（同時互斥關閉身分選單）
@@ -692,22 +709,9 @@ function initLangDropdown() {
 
       await handleLanguageChange(selectedLang);
       syncLangDropdownUI();
-      closeMobileMenu(); // 💡 切換完語系後，自動收合手機版選單
+      closeMobileMenu();
     });
   });
-}
-// 同步當前選中的語系文字到按鈕上
-function syncLangDropdownUI() {
-  const currentLangText = document.getElementById("currentLangText");
-  if (!currentLangText) return;
-
-  const isEnglish = i18next.language.startsWith("en");
-  // 根據當前語系設定按鈕顯示的文字 Key
-  currentLangText.setAttribute(
-    "data-i18n",
-    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
-  );
-  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
 }
 
 // ===================
@@ -837,7 +841,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ... Test ...
 // ===================
 // 這邊程式碼 不影響運作 測試用
-// Permissions
+// Permission 頁面
 // ----------
 function handlePermissionAction(target, permissionKey, permissionValue) {
   const permLower = permissionKey.toLowerCase();
