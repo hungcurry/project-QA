@@ -578,7 +578,7 @@ function initAuthModal() {
   // 5. 點擊登入
   submitLoginBtn?.addEventListener("click", handleLogin);
 
-  // 6. 點擊下拉選單內的登出按鈕
+  // 6. 點擊登出
   dropdownLogoutBtn?.addEventListener("click", () => {
     userDropdownMenu?.classList.add("hidden");
     handleLogout();
@@ -586,11 +586,11 @@ function initAuthModal() {
     closeMobileMenu();
   });
 
-  // 7. 點擊已登入的「身分區塊」切換展開/收合（同時互斥關閉語系選單）
+  // 7. 點擊身分區塊 - 切換下拉選單展開/收合（同時互斥關閉語系選單）
   loggedUserSection?.addEventListener("click", (e) => {
     e.stopPropagation();
-    document.getElementById("langDropdownMenu")?.classList.add("hidden");
     userDropdownMenu?.classList.toggle("hidden");
+    document.getElementById("langDropdownMenu")?.classList.add("hidden");
   });
 }
 
