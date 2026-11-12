@@ -377,44 +377,106 @@ function handleLogin() {
     alert("請選擇或輸入有效的測試帳號");
     return;
   }
-
   // 執行登入，取得對應的 role
-  loginAs(matchedUser.role);
+  updateLoginState(matchedUser.role);
   closeAuthModal(authModal);
 }
 function handleLogout() {
   const authModal = document.getElementById("authModal");
-  logout();
+  updateLoginState("default");
   resetLoginForm();
   closeAuthModal(authModal);
 }
-function loginAs(roleKey) {
+// 更新登入/登出狀態
+function updateLoginState(roleKey) {
   console.log("目前收到的 roleKey 是：", roleKey);
   if (!setCurrentRoleKey(roleKey)) return;
 
-  const roleName = ROLES[roleKey].name;
+  const isLoggedIn = roleKey !== "default";
+
   // prettier-ignore
-  if (roleKey === "default") {
-    showToast(i18next.t("toast.logout"));
-  }
-  else {
+  if (isLoggedIn) {
+    renderAuthUI(true, roleKey);
+    const roleName = getTranslatedRoleName(roleKey);
     showToast(i18next.t("toast.loginAs", { roleName }));
   }
+  else {
+    renderAuthUI(false);
+    showToast(i18next.t("toast.logout"));
+  }
 }
-function logout() {
-  if (!setCurrentRoleKey("default")) return;
-  showToast(i18next.t("toast.logout"));
+// 渲染登入/登出選單
+function renderAuthUI(isLoggedIn, roleKey = "default") {
+  const authBtn = document.getElementById("authBtn");
+  const loggedUserSection = document.getElementById("loggedUserSection");
+  const userDropdownMenu = document.getElementById("userDropdownMenu");
+
+  if (!authBtn || !loggedUserSection) return;
+  userDropdownMenu?.classList.add("hidden");
+
+  // prettier-ignore
+  if (isLoggedIn) {
+    authBtn.classList.add("hidden");
+    loggedUserSection.classList.remove("hidden");
+
+    // 處理已登入後的畫面細節...
+    const roleI18nKey = `index.roles.${roleKey}`;
+    const translatedRole = getTranslatedRoleName(roleKey);
+
+    // 設定外層身分名稱
+    const roleNameEl = document.getElementById("currentRoleText");
+    if (roleNameEl) {
+      roleNameEl.setAttribute("data-i18n", roleI18nKey);
+      roleNameEl.textContent = translatedRole;
+    }
+
+    // 設定下拉選單內的角色名稱
+    const dropdownRoleNameEl = document.getElementById("dropdownRoleName");
+    if (dropdownRoleNameEl) {
+      dropdownRoleNameEl.setAttribute("data-i18n", roleI18nKey);
+      dropdownRoleNameEl.textContent = translatedRole;
+    }
+
+    // 設定使用者 Email 資訊
+    const dropdownUserEmailEl = document.getElementById("dropdownUserEmail");
+    if (dropdownUserEmailEl) {
+      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+      dropdownUserEmailEl.textContent = currentUser?.email || "example@example.com";
+    }
+
+    // 根據不同權限角色切換對應的圖示與顏色
+    const roleIcon = document.getElementById("roleIcon");
+    if (roleIcon) {
+      const isAdmin = roleKey === "admin" || roleKey === "super_admin";
+      roleIcon.className = isAdmin
+        ? "fa-solid fa-user-shield text-amber-500"
+        : "fa-solid fa-user-check text-green-500";
+    }
+  }
+  else {
+    authBtn.classList.remove("hidden");
+    loggedUserSection.classList.add("hidden");
+  }
 }
-// 清空登入表單
-function resetLoginForm() {
-  document.getElementById("loginEmail").value = "";
-  document.getElementById("loginPassword").value = "";
+// 取得轉譯後的角色名稱
+function getTranslatedRoleName(roleKey) {
+  // 翻譯後的角色文字
+  const roleI18nKey = `index.roles.${roleKey}`; // index.roles.admin
+  const defaultName = ROLES[roleKey]?.name || roleKey; // Admin / admin
+
+  return typeof i18next !== "undefined" && typeof i18next.t === "function"
+    ? i18next.t(roleI18nKey, { defaultValue: defaultName })
+    : defaultName;
 }
 // 填入測試帳號
 function fillLoginForm(card) {
   // console.log("填入測試帳號:", card);
   document.getElementById("loginEmail").value = card.dataset.email || "";
   document.getElementById("loginPassword").value = card.dataset.password || "";
+}
+function resetLoginForm() {
+  document.getElementById("loginEmail").value = "";
+  document.getElementById("loginPassword").value = "";
 }
 function showToast(message) {
   const toast = document.getElementById("toast");
@@ -431,6 +493,15 @@ function showToast(message) {
     toast.classList.remove("translate-y-0", "opacity-100");
     toast.classList.add("translate-y-20", "opacity-0");
   }, 3000);
+}
+// 更新使用者個人檔案狀態
+function updateUserProfile() {
+  const currentRole = typeof getCurrentRoleKey === "function" ? getCurrentRoleKey() : "default";
+  if (currentRole && currentRole !== "default") {
+    renderAuthUI(true, currentRole);
+  } else {
+    renderAuthUI(false);
+  }
 }
 
 // Modal
@@ -520,47 +591,6 @@ function initAuthModal() {
     e.stopPropagation();
     document.getElementById("langDropdownMenu")?.classList.add("hidden");
     userDropdownMenu?.classList.toggle("hidden");
-  });
-}
-
-// Permissions
-// ----------
-function handlePermissionAction(target, permissionKey, permissionValue) {
-  const permLower = permissionKey.toLowerCase();
-  const classList = target.classList;
-
-  if (permLower.includes("create") || classList.contains("create")) {
-    alert("新增成功！");
-  } else if (permLower.includes("update") || classList.contains("update")) {
-    alert("修改成功！");
-  } else if (permLower.includes("delete") || classList.contains("delete")) {
-    alert("刪除成功！");
-  } else {
-    console.log(`執行操作：${permissionValue}`);
-  }
-}
-// Permissions 初始化
-function initPermissionActions() {
-  document.addEventListener("click", (e) => {
-    // 確認事件目標是 Element
-    if (!(e.target instanceof Element)) return;
-
-    const target = e.target.closest("[data-permission]");
-    if (!target) return;
-
-    const permissionKey = target.dataset.permission;
-    // 取得對應權限值
-    const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
-
-    // 檢查權限
-    if (!hasPermission(permissionValue)) {
-      e.preventDefault();
-      e.stopPropagation();
-      alert(`權限不足：您的身分沒有執行 ${permissionValue} 的權限！`);
-      return;
-    }
-    // 權限通過，執行操作
-    handlePermissionAction(target, permissionKey, permissionValue);
   });
 }
 
@@ -707,7 +737,6 @@ function renderI18n() {
   });
 
   updateLogoVisibility();
-  // syncLangSelectUI();
 }
 function updateLogoVisibility() {
   const isEnglish = i18next.language.startsWith("en");
@@ -728,9 +757,6 @@ async function handleLanguageChange(lang) {
   currentPage = 1;
   updateView();
   renderCategories();
-
-  // ✅ 切換語系時同步更新身分顯示區塊的翻譯文字
-  updateUIByPermission();
 }
 
 // ===================
@@ -780,7 +806,6 @@ async function initialize() {
   // 1. 優先執行同步介面狀態與事件綁定（確保 UI 元素即時可互動）
   initTheme();
   initAuthModal();
-  initPermissionActions();
   initLangDropdown();
 
   // 2. 初始化語系並進行畫面多語系轉譯
@@ -798,7 +823,58 @@ async function initialize() {
   updateView();
   renderCategories();
   updateUIByPermission();
+  updateUserProfile();
+
+  // 這邊程式碼 不影響運作 測試用
+  // ==========================================
+  initPermissionActions();
 }
 document.addEventListener("DOMContentLoaded", () => {
   initialize();
 });
+
+// ===================
+// ... Test ...
+// ===================
+// 這邊程式碼 不影響運作 測試用
+// Permissions
+// ----------
+function handlePermissionAction(target, permissionKey, permissionValue) {
+  const permLower = permissionKey.toLowerCase();
+  const classList = target.classList;
+
+  // prettier-ignore
+  if (permLower.includes("create") || classList.contains("create")) {
+    alert("新增成功！");
+  } else if (permLower.includes("update") || classList.contains("update")) {
+    alert("修改成功！");
+  } else if (permLower.includes("delete") || classList.contains("delete")) {
+    alert("刪除成功！");
+  } else {
+    console.log(`執行操作：${permissionValue}`);
+  }
+}
+// Permissions 初始化
+function initPermissionActions() {
+  document.addEventListener("click", (e) => {
+    // 確認事件目標是 Element
+    if (!(e.target instanceof Element)) return;
+
+    const target = e.target.closest("[data-permission]");
+    if (!target) return;
+
+    const permissionKey = target.dataset.permission;
+    // 取得對應權限值
+    const permissionValue = PERMISSIONS[permissionKey] || permissionKey;
+
+    // 檢查權限
+    if (!hasPermission(permissionValue)) {
+      e.preventDefault();
+      e.stopPropagation();
+      alert(`權限不足：您的身分沒有執行 ${permissionValue} 的權限！`);
+      return;
+    }
+    // 權限通過，執行操作
+    handlePermissionAction(target, permissionKey, permissionValue);
+  });
+}
