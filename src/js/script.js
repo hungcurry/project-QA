@@ -341,6 +341,85 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===================
+// ... Menu ...
+// ===================
+import i18next, { initI18n } from "../locales/index.js";
+// import { ROLES } from "./permissions.js";
+
+// 手機選單
+// ----------
+const mobileMenuIcon = document.getElementById("mobileMenuIcon");
+const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
+const navMenu = document.getElementById("navMenu");
+const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
+
+function toggleMobileMenu() {
+  if (!navMenu || !mobileMenuIcon) return;
+
+  // 檢查目前是否為隱藏狀態
+  const isHidden = navMenu.classList.contains("hidden");
+
+  // prettier-ignore
+  if (isHidden) {
+    // 展開選單與遮罩
+    navMenu.classList.remove("hidden");
+    navMenu.classList.add("flex");
+    mobileMenuBackdrop?.classList.remove("hidden"); // 顯示遮罩
+    mobileMenuIcon.className = "fa-solid fa-xmark";
+  }
+  else {
+    // 收合選單與遮罩
+    closeMobileMenu();
+  }
+}
+function closeMobileMenu() {
+  if (!navMenu || !mobileMenuIcon) return;
+
+  navMenu.classList.add("hidden");
+  navMenu.classList.remove("flex");
+  mobileMenuBackdrop?.classList.add("hidden"); // 隱藏遮罩
+  mobileMenuIcon.className = "fa-solid fa-bars";
+}
+
+mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
+mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
+
+// 亮/暗模式
+// ----------
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+const themeIcon = document.getElementById("themeIcon");
+
+function toggleTheme() {
+  const isDark = document.documentElement.classList.toggle("dark");
+
+  // prettier-ignore
+  if (isDark) {
+    themeIcon.className = "fa-solid fa-moon text-indigo-400";
+    localStorage.setItem("CRA-theme", "dark");
+  }
+  else {
+    themeIcon.className = "fa-solid fa-sun text-amber-500";
+    localStorage.setItem("CRA-theme", "light");
+  }
+}
+function initTheme() {
+  const savedTheme = localStorage.getItem("CRA-theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  // prettier-ignore
+  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+    document.documentElement.classList.add("dark");
+    if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
+  }
+  else {
+    document.documentElement.classList.remove("dark");
+    if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
+  }
+}
+
+themeToggleBtn?.addEventListener("click", toggleTheme);
+
+// ===================
 // ... Permission ...
 // ===================
 // prettier-ignore
@@ -595,129 +674,14 @@ function initAuthModal() {
 }
 
 // ===================
-// ... Menu ...
+// ... i18n ...
 // ===================
-import i18next, { initI18n } from "../locales/index.js";
-// import { ROLES } from "./permissions.js";
-
-// 手機選單
-// ----------
-const mobileMenuIcon = document.getElementById("mobileMenuIcon");
-const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
-const navMenu = document.getElementById("navMenu");
-const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
-
-function toggleMobileMenu() {
-  if (!navMenu || !mobileMenuIcon) return;
-
-  // 檢查目前是否為隱藏狀態
-  const isHidden = navMenu.classList.contains("hidden");
-
-  // prettier-ignore
-  if (isHidden) {
-    // 展開選單與遮罩
-    navMenu.classList.remove("hidden");
-    navMenu.classList.add("flex");
-    mobileMenuBackdrop?.classList.remove("hidden"); // 顯示遮罩
-    mobileMenuIcon.className = "fa-solid fa-xmark";
-  }
-  else {
-    // 收合選單與遮罩
-    closeMobileMenu();
-  }
-}
-function closeMobileMenu() {
-  if (!navMenu || !mobileMenuIcon) return;
-
-  navMenu.classList.add("hidden");
-  navMenu.classList.remove("flex");
-  mobileMenuBackdrop?.classList.add("hidden"); // 隱藏遮罩
-  mobileMenuIcon.className = "fa-solid fa-bars";
-}
-
-mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
-mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
-
-// 亮/暗模式
-// ----------
-const themeToggleBtn = document.getElementById("themeToggleBtn");
-const themeIcon = document.getElementById("themeIcon");
-
-function toggleTheme() {
-  const isDark = document.documentElement.classList.toggle("dark");
-
-  // prettier-ignore
-  if (isDark) {
-    themeIcon.className = "fa-solid fa-moon text-indigo-400";
-    localStorage.setItem("CRA-theme", "dark");
-  }
-  else {
-    themeIcon.className = "fa-solid fa-sun text-amber-500";
-    localStorage.setItem("CRA-theme", "light");
-  }
-}
-function initTheme() {
-  const savedTheme = localStorage.getItem("CRA-theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  // prettier-ignore
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.documentElement.classList.add("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
-  }
-  else {
-    document.documentElement.classList.remove("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
-  }
-}
-
-themeToggleBtn?.addEventListener("click", toggleTheme);
+// import i18next, { initI18n } from "../locales/index.js";
 
 // 語系下拉選單
 // ----------
 const langBtn = document.getElementById("langDropdownBtn");
 const langMenu = document.getElementById("langDropdownMenu");
-
-// 同步當前選中的語系文字到按鈕上
-function syncLangDropdownUI() {
-  const currentLangText = document.getElementById("currentLangText");
-  if (!currentLangText) return;
-
-  const isEnglish = i18next.language.startsWith("en");
-  // 根據當前語系設定按鈕顯示的文字 Key
-  currentLangText.setAttribute(
-    "data-i18n",
-    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
-  );
-  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
-}
-function initLangDropdown() {
-  if (!langBtn || !langMenu) return;
-
-  // 1. 點擊語系按鈕展開/收合（同時互斥關閉身分選單）
-  langBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    document.getElementById("userDropdownMenu")?.classList.add("hidden");
-    langMenu.classList.toggle("hidden");
-  });
-
-  // 2. 點擊選項切換語系
-  langMenu.querySelectorAll("[data-lang]").forEach((item) => {
-    item.addEventListener("click", async () => {
-      const selectedLang = item.getAttribute("data-lang");
-      langMenu.classList.add("hidden");
-
-      await handleLanguageChange(selectedLang);
-      syncLangDropdownUI();
-      closeMobileMenu();
-    });
-  });
-}
-
-// ===================
-// ... i18n ...
-// ===================
-// import i18next, { initI18n } from "../locales/index.js";
 
 function getInitialLanguage() {
   const savedLang = localStorage.getItem("CRA-lang");
@@ -761,6 +725,41 @@ async function handleLanguageChange(lang) {
   currentPage = 1;
   updateView();
   renderCategories();
+}
+// 同步當前選中的語系文字到按鈕上
+function syncLangDropdownUI() {
+  const currentLangText = document.getElementById("currentLangText");
+  if (!currentLangText) return;
+
+  const isEnglish = i18next.language.startsWith("en");
+  // 根據當前語系設定按鈕顯示的文字 Key
+  currentLangText.setAttribute(
+    "data-i18n",
+    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
+  );
+  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
+}
+function initLangDropdown() {
+  if (!langBtn || !langMenu) return;
+
+  // 1. 點擊語系按鈕展開/收合（同時互斥關閉身分選單）
+  langBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle("hidden");
+    document.getElementById("userDropdownMenu")?.classList.add("hidden");
+  });
+
+  // 2. 點擊選項切換語系
+  langMenu.querySelectorAll("[data-lang]").forEach((item) => {
+    item.addEventListener("click", async () => {
+      const selectedLang = item.getAttribute("data-lang");
+      langMenu.classList.add("hidden");
+
+      await handleLanguageChange(selectedLang);
+      syncLangDropdownUI();
+      closeMobileMenu();
+    });
+  });
 }
 
 // ===================
