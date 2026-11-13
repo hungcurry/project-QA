@@ -32,8 +32,8 @@ function getFilterData() {
     // 條件 B：關鍵字有沒有符合？
     // 檢查「問題」或「答案」之中是否包含關鍵字
     // 預設 任何字串都包含空字串 ("")
-    const question = getFaqText(item, "question");
-    const answer = getFaqText(item, "answer");
+    const question = getTranslatedFaq(item, "question");
+    const answer = getTranslatedFaq(item, "answer");
 
     const matchesKeyword =
       question.toLowerCase().includes(keyword) || answer.toLowerCase().includes(keyword);
@@ -67,11 +67,10 @@ function renderFaqs(pageData) {
 
   // 渲染當前頁面的資料
   pageData.forEach((item) => {
-    const question = getFaqText(item, "question");
-    const answer = getFaqText(item, "answer");
+    const question = getTranslatedFaq(item, "question");
+    const answer = getTranslatedFaq(item, "answer");
 
     const highlightedQuestion = highlightText(question, keyword);
-
     const highlightedAnswer = highlightText(answer, keyword);
 
     const itemHtml = `
@@ -134,6 +133,10 @@ function highlightText(text, keyword) {
     '<span class="bg-primary-50 text-primary-700 font-semibold px-1 rounded">$1</span>',
   );
 }
+function getTranslatedFaq(item, field) {
+  const key = `faqs.${item.translationKey}.${field}`;
+  return translateWithFallback(key, item[field]);
+}
 
 // ===================
 // ... Events ...
@@ -151,7 +154,7 @@ function handleCategoryFilter(e) {
   });
 
   currentPage = 1; // 切換分類時重置回第一頁
-  updateView();
+  updateFaqView();
 }
 // 搜尋事件
 function handleSearch(e) {
@@ -162,7 +165,7 @@ function handleSearch(e) {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     currentPage = 1; // 搜尋時重置回第一頁
-    updateView();
+    updateFaqView();
   }, 300);
 }
 // 清除搜尋事件
@@ -171,7 +174,7 @@ function handleClearSearch(e) {
   clearSearchBtn.classList.add("hidden");
 
   currentPage = 1; // 清除搜尋時重置回第一頁
-  updateView();
+  updateFaqView();
   searchInput.focus();
 }
 // 展開收合事件
@@ -343,11 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ===================
 // ... Menu ...
 // ===================
-import i18next, { initI18n } from "../locales/index.js";
-// import { ROLES } from "./permissions.js";
-
 // 手機選單
-// ----------
 const mobileMenuIcon = document.getElementById("mobileMenuIcon");
 const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
 const navMenu = document.getElementById("navMenu");
@@ -539,13 +538,9 @@ function renderAuthUI(isLoggedIn, roleKey = "default") {
 }
 // 取得轉譯後的角色名稱
 function getTranslatedRoleName(roleKey) {
-  // 翻譯後的角色文字
-  const roleI18nKey = `index.roles.${roleKey}`; // index.roles.admin
+  const key = `index.roles.${roleKey}`; // index.roles.admin
   const defaultName = ROLES[roleKey]?.name || roleKey; // Admin / admin
-
-  return typeof i18next !== "undefined" && typeof i18next.t === "function"
-    ? i18next.t(roleI18nKey, { defaultValue: defaultName })
-    : defaultName;
+  return translateWithFallback(key, defaultName);
 }
 // 填入測試帳號
 function fillLoginForm(card) {
@@ -610,7 +605,6 @@ function updateAuthModalContent() {
     resetLoginForm();
   }
 }
-// Modal 初始化
 function initAuthModal() {
   const authBtn = document.getElementById("authBtn");
   const closeModalBtn = document.getElementById("closeModalBtn");
@@ -676,7 +670,8 @@ function initAuthModal() {
 // ===================
 // ... i18n ...
 // ===================
-// import i18next, { initI18n } from "../locales/index.js";
+import i18next, { initI18n } from "../locales/index.js";
+// import { ROLES } from "./permissions.js";
 
 // 語系下拉選單
 // ----------
@@ -690,8 +685,16 @@ function getInitialLanguage() {
   const systemLang = navigator.language || navigator.userLanguage;
   return systemLang.startsWith("en") ? "en-US" : "zh-TW";
 }
+function updateLogoVisibility() {
+  const isEnglish = i18next.language.startsWith("en");
+  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
+    el.classList.toggle("hidden", isEnglish);
+  });
+}
 // 使用i18next 進行翻譯
 function renderI18n() {
+  // renderI18n() 負責：靜態文字翻譯
+  // updateFaqView() 負責：動態文字翻譯
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
@@ -703,27 +706,26 @@ function renderI18n() {
       defaultValue: el.placeholder,
     });
   });
-
-  updateLogoVisibility();
 }
-function updateLogoVisibility() {
-  const isEnglish = i18next.language.startsWith("en");
-  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
-    el.classList.toggle("hidden", isEnglish);
-  });
-}
-function getFaqText(item, field) {
-  return i18next.t(`faqs.${item.translationKey}.${field}`, {
-    defaultValue: item[field],
-  });
+// 基底共用翻譯
+function translateWithFallback(key, defaultValue) {
+  if (typeof i18next === "undefined" || typeof i18next.t !== "function") {
+    return defaultValue;
+  }
+  return i18next.t(key, { defaultValue });
 }
 async function handleLanguageChange(lang) {
+  // 這句只會切換 語系翻譯檔案
   await i18next.changeLanguage(lang);
   localStorage.setItem("CRA-lang", lang);
 
+  // 靜態文字翻譯
   renderI18n();
+  updateLogoVisibility();
+
+  // 動態文字翻譯
   currentPage = 1;
-  updateView();
+  updateFaqView();
   renderCategories();
 }
 // 同步當前選中的語系文字到按鈕上
@@ -761,9 +763,6 @@ function initLangDropdown() {
     });
   });
 }
-//-----------------------------
-
-
 
 // ===================
 // ... Global Click Listener ...
@@ -798,7 +797,7 @@ document.addEventListener("click", (e) => {
 // ===================
 // ... init ...
 // ===================
-function updateView() {
+function updateFaqView() {
   filterData = getFilterData();
 
   // renderFaqs(filterData);
@@ -826,7 +825,7 @@ async function initialize() {
   categoryData = getCategories();
 
   // 4. 更新畫面與權限狀態
-  updateView();
+  updateFaqView();
   renderCategories();
   updateUIByPermission();
   updateUserProfile();
