@@ -67,6 +67,9 @@ function renderFaqs(pageData) {
 
   // 渲染當前頁面的資料
   pageData.forEach((item) => {
+    // 這邊使用 getTranslatedFaq 不用 data-i18n
+    // 動態API翻譯 跟靜態翻譯 要分開
+    // 這裡範例: 要是使用靜態方式 會直接把 高亮功能蓋過去
     const question = getTranslatedFaq(item, "question");
     const answer = getTranslatedFaq(item, "answer");
 
@@ -119,6 +122,16 @@ function renderCategories() {
 
     categoryFilters.insertAdjacentHTML("beforeend", btnHtml);
   });
+}
+function updateFaqView() {
+  filterData = getFilterData();
+
+  // renderFaqs(filterData);
+  // 或
+  // 這邊是會先拿到 切割過的分頁資料
+  const paginatedData = getPaginationState(filterData);
+  renderFaqs(paginatedData.pageData);
+  renderPagination(paginatedData);
 }
 // 關鍵字高亮
 function highlightText(text, keyword) {
@@ -671,7 +684,7 @@ function initAuthModal() {
 // ===================
 // ... i18n ...
 // ===================
-import i18next, { initI18n } from "../locales/index.js";
+import i18next, { initI18n, SUPPORTED_LANGS } from "../locales/index.js";
 // import { ROLES } from "./permissions.js";
 
 // 語系下拉選單
@@ -679,23 +692,10 @@ import i18next, { initI18n } from "../locales/index.js";
 const langBtn = document.getElementById("langDropdownBtn");
 const langMenu = document.getElementById("langDropdownMenu");
 
-function getInitialLanguage() {
-  const savedLang = localStorage.getItem("CRA-lang");
-  if (savedLang) return savedLang;
-
-  const systemLang = navigator.language || navigator.userLanguage;
-  return systemLang.startsWith("en") ? "en-US" : "zh-TW";
-}
-function updateLogoVisibility() {
-  const isEnglish = i18next.language.startsWith("en");
-  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
-    el.classList.toggle("hidden", isEnglish);
-  });
-}
-// 使用i18next 進行翻譯
-function renderI18n() {
-  // renderI18n() 負責：靜態文字翻譯
-  // updateFaqView() 負責：動態文字翻譯
+function renderStaticI18n() {
+  // renderStaticI18n() 負責：靜態文字翻譯
+  // renderDynamicI18n() 負責：動態文字翻譯
+  // 靜態 與動態最好分開,例如 '高亮功能' 就只能走動態
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
@@ -708,32 +708,52 @@ function renderI18n() {
     });
   });
 }
+function renderDynamicI18n() {
+  currentPage = 1;
+  updateFaqView();
+  renderCategories();
+}
+// 選中的語系文字到按鈕上
+function updateLangButton() {
+  const currentLangText = document.getElementById("currentLangText");
+  if (!currentLangText) return;
+
+  // 取得當前 i18next 的語系
+  const currentLang = i18next.language;
+  const langConfig = SUPPORTED_LANGS[currentLang] || SUPPORTED_LANGS["zh-TW"];
+
+  // 動態設定對應的 data-i18n 與顯示文字
+  currentLangText.setAttribute("data-i18n", langConfig.i18nKey);
+  currentLangText.textContent = langConfig.label;
+}
+function updateLogoVisibility() {
+  const currentLang = i18next.resolvedLanguage || i18next.language;
+
+  const langConfig = SUPPORTED_LANGS[currentLang] || SUPPORTED_LANGS["zh-TW"];
+  const showLogo = langConfig.showLogo ?? false;
+
+  document.querySelectorAll(".cra-logo-text, .cra-logo-patten").forEach((el) => {
+    // true  = 加入 hidden（隱藏）
+    // false = 移除 hidden（顯示）
+    // showLogo 為 true 時，需要反向傳入 false，才能顯示 Logo
+    el.classList.toggle("hidden", !showLogo);
+  });
+}
+function updateLangUI() {
+  updateLangButton();
+  updateLogoVisibility();
+}
 async function handleLanguageChange(lang) {
   // 這句只會切換 語系翻譯檔案
   await i18next.changeLanguage(lang);
   localStorage.setItem("CRA-lang", lang);
 
   // 靜態文字翻譯
-  renderI18n();
-  updateLogoVisibility();
+  renderStaticI18n();
+  updateLangUI();
 
   // 動態文字翻譯
-  currentPage = 1;
-  updateFaqView();
-  renderCategories();
-}
-// 同步當前選中的語系文字到按鈕上
-function syncLangDropdownUI() {
-  const currentLangText = document.getElementById("currentLangText");
-  if (!currentLangText) return;
-
-  const isEnglish = i18next.language.startsWith("en");
-  // 根據當前語系設定按鈕顯示的文字 Key
-  currentLangText.setAttribute(
-    "data-i18n",
-    isEnglish ? "index.langSelect.en" : "index.langSelect.zh",
-  );
-  currentLangText.textContent = isEnglish ? "English" : "繁體中文";
+  renderDynamicI18n();
 }
 function initLangDropdown() {
   if (!langBtn || !langMenu) return;
@@ -752,7 +772,6 @@ function initLangDropdown() {
       langMenu.classList.add("hidden");
 
       await handleLanguageChange(selectedLang);
-      syncLangDropdownUI();
       closeMobileMenu();
     });
   });
@@ -791,15 +810,6 @@ document.addEventListener("click", (e) => {
 // ===================
 // ... init ...
 // ===================
-function updateFaqView() {
-  filterData = getFilterData();
-
-  // renderFaqs(filterData);
-  // 或
-  const state = getPaginationState(filterData);
-  renderFaqs(state.pageData);
-  renderPagination(state);
-}
 // 初始化順序
 async function initialize() {
   // 1. 初始化同步介面功能
@@ -816,20 +826,18 @@ async function initialize() {
 
   // 3. 多語系
   // --------
-  const initialLng = getInitialLanguage();
-  await initI18n(initialLng);
-  // 靜態翻譯
-  renderI18n();
-  syncLangDropdownUI();
+  await initI18n();
+  updateLangUI();
 
   // 4. 渲染動態內容/翻譯
   // --------
   // 介面與權限
   updateUIByPermission();
   updateUserProfile();
+  // 靜態翻譯
+  renderStaticI18n();
   // 動態翻譯
-  updateFaqView();
-  renderCategories();
+  renderDynamicI18n();
 
   // 這邊程式碼 不影響運作 測試用
   // ==========================================
