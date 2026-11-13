@@ -212,28 +212,10 @@ function handleAccordion(e) {
     answerDiv.classList.add("active");
   }
 }
-// 封裝成函數，檢查元素是否存在
-function initFaqEventListeners() {
-  if (categoryFilters) {
-    categoryFilters.addEventListener("click", handleCategoryFilter);
-  }
-
-  if (searchInput) {
-    searchInput.addEventListener("input", handleSearch);
-  }
-
-  if (clearSearchBtn) {
-    clearSearchBtn.addEventListener("click", handleClearSearch);
-  }
-
-  if (faqList) {
-    faqList.addEventListener("click", handleAccordion);
-  }
-}
-// 確保 DOM 載入完成後執行
-document.addEventListener("DOMContentLoaded", () => {
-  initFaqEventListeners();
-});
+categoryFilters?.addEventListener("click", handleCategoryFilter);
+searchInput?.addEventListener("input", handleSearch);
+clearSearchBtn?.addEventListener("click", handleClearSearch);
+faqList?.addEventListener("click", handleAccordion);
 
 // ===================
 // ... Pagination ...
@@ -346,21 +328,13 @@ function handleChangePage(e) {
     window.scrollTo({ top: 200, behavior: "smooth" });
   }
 }
-// 封裝成函數，檢查元素是否存在
-function initPaginationEventListeners() {
-  if (paginationButtonsEl) {
-    paginationButtonsEl.addEventListener("click", handleChangePage);
-  }
-}
-// 確保 DOM 載入完成後執行
-document.addEventListener("DOMContentLoaded", () => {
-  initPaginationEventListeners();
-});
+paginationButtonsEl?.addEventListener("click", handleChangePage);
 
 // ===================
 // ... Menu ...
 // ===================
 // 手機選單
+// ----------
 const mobileMenuIcon = document.getElementById("mobileMenuIcon");
 const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
 const navMenu = document.getElementById("navMenu");
@@ -393,7 +367,6 @@ function closeMobileMenu() {
   mobileMenuBackdrop?.classList.add("hidden"); // 隱藏遮罩
   mobileMenuIcon.className = "fa-solid fa-bars";
 }
-
 mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
 mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
 
@@ -429,7 +402,6 @@ function initTheme() {
     if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
   }
 }
-
 themeToggleBtn?.addEventListener("click", toggleTheme);
 
 // ===================
@@ -748,10 +720,9 @@ async function handleLanguageChange(lang) {
   await i18next.changeLanguage(lang);
   localStorage.setItem("CRA-lang", lang);
 
+  updateLangUI();
   // 靜態文字翻譯
   renderStaticI18n();
-  updateLangUI();
-
   // 動態文字翻譯
   renderDynamicI18n();
 }
@@ -812,7 +783,7 @@ document.addEventListener("click", (e) => {
 // ===================
 // 初始化順序
 async function initialize() {
-  // 1. 初始化同步介面功能
+  // 1. 介面功能
   // --------
   initTheme();
   initAuthModal();
@@ -824,19 +795,19 @@ async function initialize() {
   faqData = getFaqs();
   categoryData = getCategories();
 
-  // 3. 多語系
-  // --------
+  // 3. 初始化多語系
+  // ----------------
   await initI18n();
-  updateLangUI();
 
-  // 4. 渲染動態內容/翻譯
-  // --------
-  // 介面與權限
+  // 4. 更新介面與權限
+  // ----------------
   updateUIByPermission();
   updateUserProfile();
-  // 靜態翻譯
+  updateLangUI();
+
+  // 5. 靜態與動態翻譯
+  // ----------------
   renderStaticI18n();
-  // 動態翻譯
   renderDynamicI18n();
 
   // 這邊程式碼 不影響運作 測試用
