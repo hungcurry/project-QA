@@ -105,10 +105,7 @@ function renderCategories() {
   categoryData.forEach((item) => {
     const isActive = item.category === currentCategory;
 
-    const label = i18next.t(`categories.${item.translationKey}`, {
-      defaultValue: item.label,
-    });
-
+    const label = getTranslatedCategories(item);
     const btnHtml = `
       <button
         data-category="${item.category}"
@@ -136,6 +133,10 @@ function highlightText(text, keyword) {
 function getTranslatedFaq(item, field) {
   const key = `faqs.${item.translationKey}.${field}`;
   return translateWithFallback(key, item[field]);
+}
+function getTranslatedCategories(item) {
+  const key = `categories.${item.translationKey}`;
+  return translateWithFallback(key, item.label);
 }
 
 // ===================
@@ -707,13 +708,6 @@ function renderI18n() {
     });
   });
 }
-// 基底共用翻譯
-function translateWithFallback(key, defaultValue) {
-  if (typeof i18next === "undefined" || typeof i18next.t !== "function") {
-    return defaultValue;
-  }
-  return i18next.t(key, { defaultValue });
-}
 async function handleLanguageChange(lang) {
   // 這句只會切換 語系翻譯檔案
   await i18next.changeLanguage(lang);
@@ -808,27 +802,34 @@ function updateFaqView() {
 }
 // 初始化順序
 async function initialize() {
-  // 1. 優先執行同步介面狀態與事件綁定（確保 UI 元素即時可互動）
+  // 1. 初始化同步介面功能
+  // --------
   initTheme();
   initAuthModal();
   initLangDropdown();
 
-  // 2. 初始化語系並進行畫面多語系轉譯
-  const initialLng = getInitialLanguage();
-  await initI18n(initialLng);
-  renderI18n();
-  syncLangDropdownUI();
-
-  // 3. data
+  // 2. 取得資料
+  // --------
   await fetchAllData();
   faqData = getFaqs();
   categoryData = getCategories();
 
-  // 4. 更新畫面與權限狀態
-  updateFaqView();
-  renderCategories();
+  // 3. 多語系
+  // --------
+  const initialLng = getInitialLanguage();
+  await initI18n(initialLng);
+  // 靜態翻譯
+  renderI18n();
+  syncLangDropdownUI();
+
+  // 4. 渲染動態內容/翻譯
+  // --------
+  // 介面與權限
   updateUIByPermission();
   updateUserProfile();
+  // 動態翻譯
+  updateFaqView();
+  renderCategories();
 
   // 這邊程式碼 不影響運作 測試用
   // ==========================================
@@ -839,10 +840,22 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ===================
-// ... Test ...
+// ... Utility ...
 // ===================
+// 這邊先拆出來 模組化記得也要複製使用
+// 基底共用翻譯
+function translateWithFallback(key, defaultValue) {
+  if (typeof i18next === "undefined" || typeof i18next.t !== "function") {
+    return defaultValue;
+  }
+  return i18next.t(key, { defaultValue });
+}
+
+// ===================
+// ... Test ...
 // 這邊程式碼 不影響運作 測試用
-// Permission 頁面
+// ===================
+// Permission頁面 使用
 // ----------
 function handlePermissionAction(target, permissionKey, permissionValue) {
   const permLower = permissionKey.toLowerCase();
