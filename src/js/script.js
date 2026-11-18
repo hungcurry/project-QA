@@ -123,16 +123,6 @@ function renderCategories() {
     categoryFilters.insertAdjacentHTML("beforeend", btnHtml);
   });
 }
-function updateFaqView() {
-  filterData = getFilterData();
-
-  // renderFaqs(filterData);
-  // 或
-  // 這邊是會先拿到 切割過的分頁資料
-  const paginatedData = getPaginationState(filterData);
-  renderFaqs(paginatedData.pageData);
-  renderPagination(paginatedData);
-}
 // 關鍵字高亮
 function highlightText(text, keyword) {
   if (!keyword) return text;
@@ -150,6 +140,16 @@ function getTranslatedFaq(item, field) {
 function getTranslatedCategories(item) {
   const key = `categories.${item.translationKey}`;
   return translateWithFallback(key, item.label);
+}
+function updateFaqView() {
+  filterData = getFilterData();
+
+  // renderFaqs(filterData);
+  // 或
+  // 這邊是會先拿到 切割過的分頁資料
+  const paginatedData = getPaginationState(filterData);
+  renderFaqs(paginatedData.pageData);
+  renderPagination(paginatedData);
 }
 
 // ===================
@@ -245,12 +245,12 @@ function getPaginationState(data) {
   // 第 1 頁時 (currentPage = 1)
   // startIndex = (1 - 1) * 10 => 0
   // endIndex = Math.min(0 + 10, 13) => 取最小值 10
-  // filterData.slice(0, 10) 抓 1-10 筆資料
+  // data.slice(0, 10) 抓 1-10 筆資料
   // -----
   // 第 2 頁時 (currentPage = 2)
   // startIndex = (2 - 1) * 10 => 10
   // endIndex = Math.min(10 + 10, 13) => 取最小值 13
-  // filterData.slice(10, 13) 抓 11-13 筆資料
+  // data.slice(10, 13) 抓 11-13 筆資料
 
   return { dataLength, totalPages, startIndex, endIndex, pageData };
 }
@@ -260,11 +260,13 @@ function renderPagination(state) {
 
   const { dataLength, totalPages, startIndex, endIndex } = state;
 
+  // prettier-ignore
   if (dataLength > dataNum) {
     paginationContainer.classList.remove("hidden");
     paginationInfoEl.textContent = `顯示第 ${startIndex + 1}-${endIndex} 筆，共 ${dataLength} 筆`;
     renderButtons(totalPages);
-  } else {
+  }
+  else {
     paginationContainer.classList.add("hidden");
     paginationButtonsEl.innerHTML = "";
   }
@@ -348,23 +350,26 @@ function toggleMobileMenu() {
 
   // prettier-ignore
   if (isHidden) {
-    // 展開選單與遮罩
-    navMenu.classList.remove("hidden");
-    navMenu.classList.add("flex");
-    mobileMenuBackdrop?.classList.remove("hidden"); // 顯示遮罩
-    mobileMenuIcon.className = "fa-solid fa-xmark";
+    openMobileMenu();
   }
   else {
     // 收合選單與遮罩
     closeMobileMenu();
   }
 }
+function openMobileMenu() {
+  // 展開選單與遮罩
+  navMenu.classList.remove("hidden");
+  navMenu.classList.add("flex");
+  // 顯示遮罩
+  mobileMenuBackdrop?.classList.remove("hidden");
+  mobileMenuIcon.className = "fa-solid fa-xmark";
+}
 function closeMobileMenu() {
-  if (!navMenu || !mobileMenuIcon) return;
-
   navMenu.classList.add("hidden");
   navMenu.classList.remove("flex");
-  mobileMenuBackdrop?.classList.add("hidden"); // 隱藏遮罩
+  // 隱藏遮罩
+  mobileMenuBackdrop?.classList.add("hidden");
   mobileMenuIcon.className = "fa-solid fa-bars";
 }
 mobileMenuToggleBtn?.addEventListener("click", toggleMobileMenu);
@@ -375,32 +380,37 @@ mobileMenuBackdrop?.addEventListener("click", closeMobileMenu);
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 const themeIcon = document.getElementById("themeIcon");
 
-function toggleTheme() {
-  const isDark = document.documentElement.classList.toggle("dark");
+function updateThemeUI(isDark) {
+  const THEME_ICONS = {
+    dark: "fa-solid fa-moon text-indigo-400",
+    light: "fa-solid fa-sun text-amber-500",
+  };
 
   // prettier-ignore
   if (isDark) {
-    themeIcon.className = "fa-solid fa-moon text-indigo-400";
-    localStorage.setItem("CRA-theme", "dark");
+    document.documentElement.classList.add("dark");
   }
   else {
-    themeIcon.className = "fa-solid fa-sun text-amber-500";
-    localStorage.setItem("CRA-theme", "light");
+    document.documentElement.classList.remove("dark");
   }
+
+  // 設定模式
+  if (themeIcon) {
+    themeIcon.className = isDark ? THEME_ICONS.dark : THEME_ICONS.light;
+  }
+  localStorage.setItem("CRA-theme", isDark ? "dark" : "light");
+}
+function toggleTheme() {
+  // 最外層根元素—— <html> 標籤
+  const isDark = document.documentElement.classList.toggle("dark");
+  updateThemeUI(isDark);
 }
 function initTheme() {
   const savedTheme = localStorage.getItem("CRA-theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  // prettier-ignore
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.documentElement.classList.add("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-moon text-indigo-400";
-  }
-  else {
-    document.documentElement.classList.remove("dark");
-    if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
-  }
+  // 判斷是否應該為深色模式
+  const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+  updateThemeUI(isDark);
 }
 themeToggleBtn?.addEventListener("click", toggleTheme);
 
@@ -416,7 +426,6 @@ import {
   updateUIByPermission,
 } from "./permissions.js";
 
-// 實例化 Composable
 // prettier-ignore
 const {
   getCurrentRoleKey,
@@ -461,7 +470,7 @@ function updateLoginState(roleKey) {
   // prettier-ignore
   if (isLoggedIn) {
     renderAuthUI(true, roleKey);
-    const roleName = getTranslatedRoleName(roleKey);
+    const roleName = getTranslatedRoleName(roleKey); // 管理員 / Administrator
     showToast(i18next.t("toast.loginAs", { roleName }));
   }
   else {
@@ -484,8 +493,8 @@ function renderAuthUI(isLoggedIn, roleKey = "default") {
     loggedUserSection.classList.remove("hidden");
 
     // 處理已登入後的畫面細節...
-    const roleI18nKey = `index.roles.${roleKey}`;
-    const translatedRole = getTranslatedRoleName(roleKey);
+    const roleI18nKey = `index.roles.${roleKey}`; // index.roles.admin
+    const translatedRole = getTranslatedRoleName(roleKey); // 管理員 / Administrator
 
     // 設定外層身分名稱
     const roleNameEl = document.getElementById("currentRoleText");
@@ -526,7 +535,7 @@ function renderAuthUI(isLoggedIn, roleKey = "default") {
 function getTranslatedRoleName(roleKey) {
   const key = `index.roles.${roleKey}`; // index.roles.admin
   const defaultName = ROLES[roleKey]?.name || roleKey; // Admin / admin
-  return translateWithFallback(key, defaultName);
+  return translateWithFallback(key, defaultName); // 管理員 / Administrator
 }
 // 填入測試帳號
 function fillLoginForm(card) {
@@ -554,7 +563,7 @@ function showToast(message) {
     toast.classList.add("translate-y-20", "opacity-0");
   }, 3000);
 }
-// 更新使用者個人檔案狀態
+// 更新登入身分顯示
 function updateUserProfile() {
   const currentRole = typeof getCurrentRoleKey === "function" ? getCurrentRoleKey() : "default";
   if (currentRole && currentRole !== "default") {
@@ -582,6 +591,7 @@ function updateAuthModalContent() {
   // console.log("logoutSection 元素:", document.getElementById("logoutSection"));
 
   // 登入表單與身分清單
+  // true : add / false : remove
   document.getElementById("loginFormSection")?.classList.toggle("hidden", isLoggedIn);
   document.getElementById("roleSelectList")?.classList.toggle("hidden", isLoggedIn);
   document.getElementById("logoutSection")?.classList.toggle("hidden", !isLoggedIn);
@@ -657,7 +667,6 @@ function initAuthModal() {
 // ... i18n ...
 // ===================
 import i18next, { initI18n, SUPPORTED_LANGS } from "../locales/index.js";
-// import { ROLES } from "./permissions.js";
 
 // 語系下拉選單
 // ----------
@@ -667,7 +676,7 @@ const langMenu = document.getElementById("langDropdownMenu");
 function renderStaticI18n() {
   // renderStaticI18n() 負責：靜態文字翻譯
   // renderDynamicI18n() 負責：動態文字翻譯
-  // 靜態 與動態最好分開,例如 '高亮功能' 就只能走動態
+  // 靜態 與動態最好分開,例如 '高亮功能' 就只能走動態文字翻譯
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
@@ -692,6 +701,7 @@ function updateLangButton() {
 
   // 取得當前 i18next 的語系
   const currentLang = i18next.language;
+  // console.log("currentLang" , currentLang) // zh-TW
   const langConfig = SUPPORTED_LANGS[currentLang] || SUPPORTED_LANGS["zh-TW"];
 
   // 動態設定對應的 data-i18n 與顯示文字
@@ -751,18 +761,25 @@ function initLangDropdown() {
 // ===================
 // ... Global Click Listener ...
 // ===================
-// 合併所有點擊畫面其他地方關閉選單的邏輯，避免多次註冊全域監聽
+// 點擊畫面其他地方關閉選單的邏輯
 document.addEventListener("click", (e) => {
   // 1. 手機選單點擊外部關閉
-  const isMenuOpen = navMenu && !navMenu.classList.contains("hidden");
-  if (isMenuOpen && !navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
-    closeMobileMenu();
+  const mobileMenuToggleBtn = document.getElementById("mobileMenuToggleBtn");
+  const navMenu = document.getElementById("navMenu");
+  // 檢查選單是否目前是「打開的」
+  if (navMenu && !navMenu.classList.contains("hidden")) {
+    // 判斷點擊事件是否發生在選單或按鈕的「外面」
+    if (!navMenu.contains(e.target) && !mobileMenuToggleBtn.contains(e.target)) {
+      closeMobileMenu();
+    }
   }
 
   // 2. 身分下拉選單點擊外部關閉
   const loggedUserSection = document.getElementById("loggedUserSection");
   const userDropdownMenu = document.getElementById("userDropdownMenu");
+  // 檢查選單是否目前是「打開的」
   if (userDropdownMenu && !userDropdownMenu.classList.contains("hidden")) {
+    // 判斷點擊事件是否發生在選單或按鈕的「外面」
     if (!loggedUserSection?.contains(e.target) && !userDropdownMenu?.contains(e.target)) {
       userDropdownMenu.classList.add("hidden");
     }
@@ -771,7 +788,9 @@ document.addEventListener("click", (e) => {
   // 3. 語系下拉選單點擊外部關閉
   const langBtn = document.getElementById("langDropdownBtn");
   const langMenu = document.getElementById("langDropdownMenu");
+  // 檢查選單是否目前是「打開的」
   if (langMenu && !langMenu.classList.contains("hidden")) {
+    // 判斷點擊事件是否發生在選單或按鈕的「外面」
     if (!langBtn?.contains(e.target) && !langMenu?.contains(e.target)) {
       langMenu.classList.add("hidden");
     }
@@ -801,8 +820,11 @@ async function initialize() {
 
   // 4. 更新介面與權限
   // ----------------
+  // 根據權限-顯示/隱藏 區塊按鈕
   updateUIByPermission();
+  // 根據權限-登入身分顯示
   updateUserProfile();
+  // 根據語言-顯示語言/logo
   updateLangUI();
 
   // 5. 靜態與動態翻譯

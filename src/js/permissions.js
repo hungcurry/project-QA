@@ -108,27 +108,32 @@ export const ROLES = {
 // 使用者帳號資訊 (模擬資料)
 // prettier-ignore
 export const UserJSON = [
-  { role: "super_admin",
+  {
+    role: "super_admin",
     name: "超級管理員",
     email: "superadmin@example.com",
     password: "password123"
   },
-  { role: "admin",
+  {
+    role: "admin",
     name: "管理員",
     email: "admin@example.com",
     password: "password123"
   },
-  { role: "developer",
+  {
+    role: "developer",
     name: "開發者",
     email: "developer@example.com",
     password: "password123"
   },
-  { role: "viewer",
+  {
+    role: "viewer",
     name: "檢視者",
     email: "viewer@example.com",
     password: "password123"
   },
-  { role: "default",
+  {
+    role: "default",
     name: "未登入",
     email: "",
     password: ""

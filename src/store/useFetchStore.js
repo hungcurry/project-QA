@@ -1,21 +1,25 @@
-import axios from 'axios';
+import axios from "axios";
 // ===================
 // ... API ...
 // ===================
 async function fetchFaqsApi() {
+  // prettier-ignore
   try {
     const res = await axios.get("../data/faq.json");
     return res.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error("取得 FAQ 資料失敗", error);
     throw error;
   }
 }
 async function fetchCategoriesApi() {
+  // prettier-ignore
   try {
     const res = await axios.get("../data/categories.json");
     return res.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error("取得 Categories 資料失敗", error);
     throw error;
   }
@@ -38,12 +42,18 @@ async function fetchCategories() {
 // 初始化所有資料（呼叫API）
 export async function fetchAllData() {
   if (state.isLoaded) return;
+
+  // prettier-ignore
   try {
-    await Promise.all([fetchFaqs(), fetchCategories()]);
+    await Promise.all([
+      fetchFaqs(),
+      fetchCategories()
+    ]);
 
     state.isLoaded = true;
     console.log("Store 所有資料初始化成功");
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Store 載入失敗", error);
   }
 }
