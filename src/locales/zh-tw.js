@@ -53,6 +53,11 @@ export default {
     searchPlaceholder: "輸入關鍵字（例如：產品要求、SBOM、漏洞處理...）",
     noResultsTitle: "找不到相關的 CRA 規範解答",
     noResultsDesc: "您可以嘗試更換關鍵字或重設分類條件。",
+
+    // 分頁
+    pagination: {
+      info: "顯示第 {{start}}-{{end}} 筆，共 {{total}} 筆",
+    }
   },
   footer: {
     copyright: "&copy; {{year}} CRA 網路韌性法案. All rights reserved.",

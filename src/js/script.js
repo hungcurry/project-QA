@@ -263,13 +263,26 @@ function renderPagination(state) {
   // prettier-ignore
   if (dataLength > dataNum) {
     paginationContainer.classList.remove("hidden");
-    paginationInfoEl.textContent = `顯示第 ${startIndex + 1}-${endIndex} 筆，共 ${dataLength} 筆`;
+    paginationInfoEl.textContent = getTranslatedPaginationInfo({
+      start: startIndex + 1,
+      end: endIndex,
+      total: dataLength,
+    });
     renderButtons(totalPages);
   }
   else {
     paginationContainer.classList.add("hidden");
     paginationButtonsEl.innerHTML = "";
   }
+}
+function getTranslatedPaginationInfo({ start, end, total }) {
+  const fallbackTemplate = "顯示第 {{start}}-{{end}} 筆，共 {{total}} 筆";
+  const rawText = translateWithFallback("index.pagination.info", fallbackTemplate);
+
+  return rawText
+    .replaceAll("{{start}}", String(start))
+    .replaceAll("{{end}}", String(end))
+    .replaceAll("{{total}}", String(total));
 }
 function renderButtons(totalPages) {
   if (totalPages <= 0) {

@@ -58,6 +58,11 @@ export default {
     searchPlaceholder: "Enter keywords (e.g., product requirements, SBOM, vulnerability...)",
     noResultsTitle: "No matching CRA compliance answers found",
     noResultsDesc: "Try changing your keywords or resetting category filters.",
+
+    // 分頁
+    pagination: {
+      info: "Showing {{start}}-{{end}} of {{total}} items",
+    }
   },
   footer: {
     copyright: "&copy; {{year}} EU Cyber Resilience Act (CRA). All rights reserved.",
