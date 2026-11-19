@@ -702,9 +702,11 @@ function renderStaticI18n() {
   // renderStaticI18n() 負責：靜態文字翻譯
   // renderDynamicI18n() 負責：動態文字翻譯
   // 靜態 與動態最好分開,例如 '高亮功能' 就只能走動態文字翻譯
+  const currentYear = new Date().getFullYear();
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.innerHTML = i18next.t(el.dataset.i18n, {
       defaultValue: el.innerHTML,
+      year: currentYear, // 統一提供 year 變數
     });
   });
 
