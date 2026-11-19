@@ -105,43 +105,11 @@ export const ROLES = {
       PERMISSIONS.HERO_CREATE],
   },
 }
-// 使用者帳號資訊 (模擬資料)
-// prettier-ignore
-export const UserJSON = [
-  {
-    role: "super_admin",
-    name: "超級管理員",
-    email: "superadmin@example.com",
-    password: "password123"
-  },
-  {
-    role: "admin",
-    name: "管理員",
-    email: "admin@example.com",
-    password: "password123"
-  },
-  {
-    role: "developer",
-    name: "開發者",
-    email: "developer@example.com",
-    password: "password123"
-  },
-  {
-    role: "viewer",
-    name: "檢視者",
-    email: "viewer@example.com",
-    password: "password123"
-  },
-  {
-    role: "default",
-    name: "未登入",
-    email: "",
-    password: ""
-  },
-]
 // ===================
 // ... 權限資訊 ...
 // ===================
+// import { fetchUserRoles, getUserRoles } from "../store/useFetchStore";
+
 const STORAGE_KEY = "CRA-role";
 let currentRoleKey = localStorage.getItem(STORAGE_KEY) || "default";
 // 取得身分
@@ -157,6 +125,8 @@ function setCurrentRoleKey(roleKey) {
   // prettier-ignore
   if (roleKey === "default") {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("CRA-authToken");
+    localStorage.removeItem("CRA-User");
   }
   else {
     localStorage.setItem(STORAGE_KEY, roleKey);
@@ -166,8 +136,20 @@ function setCurrentRoleKey(roleKey) {
 }
 // 取得使用者資訊
 function getCurrentUser() {
-  if (currentRoleKey === "default") return null;
-  return UserJSON.find((u) => u.role === currentRoleKey) || null;
+  const savedUserJson = localStorage.getItem("CRA-User");
+
+  if (!savedUserJson) {
+    return null;
+  }
+
+  // prettier-ignore
+  try {
+    return JSON.parse(savedUserJson);
+  }
+  catch (error) {
+    console.error("解析 CRA-User 失敗", error);
+    return null;
+  }
 }
 // 檢查權限
 function hasPermission(permission, targetRoleKey = currentRoleKey) {

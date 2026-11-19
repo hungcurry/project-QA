@@ -417,13 +417,13 @@ themeToggleBtn?.addEventListener("click", toggleTheme);
 // ===================
 // ... Permission ...
 // ===================
+import { apiLogin } from "../store/useFetchStore";
 // prettier-ignore
 import {
   PERMISSIONS,
   ROLES,
-  UserJSON,
   useAdminAuth,
-  updateUIByPermission,
+  updateUIByPermission
 } from "./permissions.js";
 
 // prettier-ignore
@@ -437,22 +437,39 @@ const {
 
 // 登入與登出
 // ----------
-function handleLogin() {
+async function handleLogin() {
   const email = document.getElementById("loginEmail")?.value.trim() || "";
   const password = document.getElementById("loginPassword")?.value || "";
   const authModal = document.getElementById("authModal");
 
-  // 防呆 比對資料
-  const matchedUser = UserJSON.find(
-    (user) => user.role !== "default" && user.email === email && user.password === password,
-  );
-  if (!matchedUser) {
-    alert("請選擇或輸入有效的測試帳號");
+  if (!email || !password) {
+    alert("請輸入帳號與密碼");
     return;
   }
-  // 執行登入，取得對應的 role
-  updateLoginState(matchedUser.role);
-  closeAuthModal(authModal);
+
+  // prettier-ignore
+  try {
+    const response = await apiLogin(email, password);
+    const { token, user } = response.data;
+    // console.log("-----------");
+    const safeUser = {
+      role: user.role,
+      name: user.name,
+      email: user.email
+    };
+    // console.log("登入成功！Token:", token);
+    // console.log("使用者資料:", safeUser);
+    localStorage.setItem("CRA-authToken", token);
+    localStorage.setItem("CRA-User", JSON.stringify(safeUser));
+
+    // 執行登入，取得對應的 role
+    updateLoginState(user.role);
+    closeAuthModal(authModal);
+
+  }
+  catch (error) {
+    alert("請選擇或輸入有效的測試帳號（帳號或密碼錯誤）");
+  }
 }
 function handleLogout() {
   const authModal = document.getElementById("authModal");
@@ -513,7 +530,7 @@ function renderAuthUI(isLoggedIn, roleKey = "default") {
     // 設定使用者 Email 資訊
     const dropdownUserEmailEl = document.getElementById("dropdownUserEmail");
     if (dropdownUserEmailEl) {
-      const currentUser = typeof getCurrentUser === "function" ? getCurrentUser() : null;
+      const currentUser = getCurrentUser();
       dropdownUserEmailEl.textContent = currentUser?.email || "example@example.com";
     }
 
@@ -581,11 +598,12 @@ function openAuthModal(authModal) {
 function closeAuthModal(authModal) {
   authModal.classList.add("hidden");
 }
-function updateAuthModalContent() {
-  const isLoggedIn = Boolean(getCurrentUser());
+async function updateAuthModalContent() {
+  const role = getCurrentRoleKey();
+  const isLoggedIn = Boolean(role) && role !== "default";
 
   // 💡 加上 console.log 檢查抓到的元素是否存在
-  // console.log("當前登入狀態 isLoggedIn:", isLoggedIn);
+  console.log("當前登入狀態 isLoggedIn:", isLoggedIn);
   // console.log("loginFormSection 元素:", document.getElementById("loginFormSection"));
   // console.log("roleSelectList 元素:", document.getElementById("roleSelectList"));
   // console.log("logoutSection 元素:", document.getElementById("logoutSection"));
@@ -801,6 +819,10 @@ document.addEventListener("click", (e) => {
 // ... init ...
 // ===================
 // 初始化順序
+function initGetData() {
+  faqData = getFaqs();
+  categoryData = getCategories();
+}
 async function initialize() {
   // 1. 介面功能
   // --------
@@ -811,8 +833,7 @@ async function initialize() {
   // 2. 取得資料
   // --------
   await fetchAllData();
-  faqData = getFaqs();
-  categoryData = getCategories();
+  initGetData();
 
   // 3. 初始化多語系
   // ----------------
