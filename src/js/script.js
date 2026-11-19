@@ -417,7 +417,7 @@ themeToggleBtn?.addEventListener("click", toggleTheme);
 // ===================
 // ... Permission ...
 // ===================
-import { apiLogin } from "../store/useFetchStore";
+import { fetchLogin } from "../store/useFetchStore";
 // prettier-ignore
 import {
   PERMISSIONS,
@@ -449,7 +449,14 @@ async function handleLogin() {
 
   // prettier-ignore
   try {
-    const response = await apiLogin(email, password);
+    const sendData = {
+      email,
+      password,
+    };
+    const response = await fetchLogin(sendData);
+    console.log('--------------')
+    console.log('response' , response)
+
     const { token, user } = response.data;
     // console.log("-----------");
     const safeUser = {
