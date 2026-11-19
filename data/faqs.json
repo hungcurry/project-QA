@@ -3,35 +3,91 @@
     "id": "3b241101-e2bb-4255-8caf-4136c566a962",
     "translationKey": "cra_intro",
     "category": "product",
-    "question": "什麼是歐盟網路韌性法案(CRA)?",
-    "answer": "歐盟《網路韌性法案》(CRA)是一項歐盟法規，為所有在歐盟市場銷售，內含數位元件的產品（包括硬體與軟體）制定強制性的網路安全要求。"
+    "question": "歐盟《網路韌性法案》(CRA) 是一項什麼樣的法規？",
+    "answer": "歐盟《網路韌性法案》(CRA) 是針對進入歐盟市場、具備數位元素的軟硬體產品所制定的強制性資安標準，旨在規範這些連網或數位產品在上市前後必須達到的網路安全門檻。"
   },
   {
     "id": "8f9a2c11-4b12-4c3e-91a5-7f32d8e4b102",
     "translationKey": "cra_requirements",
     "category": "product",
-    "question": "CRA 對於上市產品在「產品要求」上有哪些核心規範？",
-    "answer": "依據 CRA 規範，產品必須具備適當級別的安全性，且交付的產品必須沒有已知漏洞。製造商須落實預設安全、啟用充分的安全更新等。"
+    "question": "針對準備上市的產品，CRA 制定了哪些關鍵的「產品安全要求」？",
+    "answer": "根據 CRA 規範，產品在交付時不得存在任何已知的可利用漏洞，並須具備相應風險等級的防護能力；製造商也必須落實出廠即安全（預設安全）的機制，同時提供完整且及時的安全更新管道。"
   },
   {
     "id": "1e5b4c77-9a82-4f10-b3e2-6c8a9f11d234",
     "translationKey": "vulnerability_process",
     "category": "vulnerability",
-    "question": "製造商在「漏洞處理流程」中必須執行哪些關鍵步驟？",
-    "answer": "漏洞處理流程涵蓋完整的生命週期管理：包含產出與維護 SBOM、追蹤漏洞並消除已知漏洞、立即處理新發現漏洞等。"
+    "question": "在「漏洞處理流程」方面，製造商需要落實哪些核心作業？",
+    "answer": "製造商必須建立涵蓋產品全生命週期的漏洞管理機制，包括產製並持續更新軟體物料清單 (SBOM)、定期追蹤並修補既有漏洞，以及針對新揭露的安全弱點進行快速應變與處理。"
   },
   {
     "id": "6d2f3a88-1c94-4e2b-a5f1-3b7c8e90f456",
     "translationKey": "compliance_documents",
     "category": "label",
-    "question": "在「資訊和標記」部分，製造商需要準備哪些合規檔案與聲明？",
-    "answer": "資訊和標記要求包括 CE 標誌認證與歐盟符合性聲明 (DoC)、任命授權代表、技術文件（包含網路安全風險評估）與 SBOM 等。"
+    "question": "為了符合「資訊揭露與標示」規範，製造商應備妥哪些合規文件？",
+    "answer": "製造商需完整準備 CE 標誌認證、歐盟符合性聲明 (DoC)、指定歐盟授權代表資料，以及包含網路安全風險評估報告與 SBOM 在內的完整技術文件。"
   },
   {
     "id": "9a4c5b12-3e81-4d6f-8c2a-1f9e7d6b3c89",
     "translationKey": "sbom_importance",
     "category": "vulnerability",
-    "question": "為什麼 SBOM（軟體物料清單）在 CRA 漏洞處理中如此重要？",
-    "answer": "SBOM 能夠協助製造商精確識別產品中包含的所有第三方與開源軟體依賴項，當漏洞爆發時能在最短時間內追蹤受影響範圍。"
+    "question": "為何 SBOM（軟體物料清單）在 CRA 的漏洞管理中扮演關鍵角色？",
+    "answer": "透過 SBOM，製造商能清楚掌握產品內部所引用的各項第三方與開源元件；一旦外界爆發新的資安漏洞，團隊便能迅速盤點並鎖定受影響的產品範圍，大幅縮短應變時間。"
+  },
+  {
+    "id": "a7c1e904-3b58-4d21-9f6e-2c8a1b4d7e30",
+    "translationKey": "security_by_default",
+    "category": "product",
+    "question": "CRA 所強調的「預設安全 (Security by Default)」在實務上代表什麼？",
+    "answer": "「預設安全」意指產品在出廠或初次啟動時，出廠設定就必須處於最嚴謹的資安防護狀態——例如禁止使用預設弱密碼、預先關閉非必要的通訊埠與遠端連線服務，讓一般使用者無須額外調整設定即可獲得基礎防護。"
+  },
+  {
+    "id": "b4d8f219-6e72-4a95-8c13-5f9e0d2a6b41",
+    "translationKey": "support_period_disclosure",
+    "category": "label",
+    "question": "關於安全支援期限，技術文件與說明書應揭露哪些重點？",
+    "answer": "製造商須在技術文件及產品使用說明中，清楚標示預期的安全支援週期（原則上至少 5 年，或依產品實際預期壽命而定），並承諾在此期間內持續提供安全更新與修補程式，讓用戶明確掌握維護時限。"
+  },
+  {
+    "id": "c9e3a562-1f84-4b07-a2d9-8e4c7f1b3a52",
+    "translationKey": "conformity_assessment_classes",
+    "category": "product",
+    "question": "屬於重要類別（Class I / Class II）的數位產品該如何完成合規評估？",
+    "answer": "針對列入重要清單的 Class I 或 Class II 數位與物聯網產品，製造商需視產品的技術複雜度與連網風險高低，採用內部控制評估（自我聲明）或委託歐盟指定驗證機構 (Notified Body) 執行第三方型式檢驗。"
+  },
+  {
+    "id": "d2f7b831-9a46-4c58-b7e1-3a6d9c8e5f63",
+    "translationKey": "enisa_reporting_timeline",
+    "category": "vulnerability",
+    "question": "一旦發現資安漏洞，製造商向歐盟 ENISA 通報的時限規定為何？",
+    "answer": "依 CRA 規範，若製造商察覺產品存在正遭駭客主動利用的漏洞或發生重大資安事件，必須於發現後 24 小時內向歐盟網路安全局 (ENISA) 及相關成員國的電腦緊急應變小組 (CSIRTs) 發出早期預警，並於 72 小時內補齊完整事件報告。"
+  },
+  {
+    "id": "e5a2c490-7d13-4f69-8e45-6b1f2a9d4c74",
+    "translationKey": "ce_marking_display",
+    "category": "label",
+    "question": "硬體與純軟體產品分別該如何呈現 CE 合規標誌？",
+    "answer": "實體硬體產品須將清晰、易辨識且不易磨損的 CE 標誌標示於本體、外包裝或隨附文件中；若是純軟體或數位服務，則應在安裝介面、系統「關於」頁面或官方下載網站等顯眼位置呈現 CE 標誌與合規資訊。"
+  },
+  {
+    "id": "f8b6d153-2c97-4e82-9a38-7d4e5c1b8a85",
+    "translationKey": "open_source_stewards",
+    "category": "product",
+    "question": "開源軟體專案與維護者（Open Source Stewards）是否也受 CRA 規範約束？",
+    "answer": "為避免阻礙開源社群發展，非商業性質的純開源開發與協作不在 CRA 限制範圍內；但若開源專案被納入商業產品供應鏈，或背後具備明確商業實體與營利發行模式，則仍須履行相應的合規與安全維護義務。"
+  },
+  {
+    "id": "13c9e724-5b61-4d30-a8f4-9c2a6e3f7b96",
+    "translationKey": "cicd_sbom_automation",
+    "category": "vulnerability",
+    "question": "研發團隊該如何在日常開發流程中自動產製符合 CRA 規範的 SBOM？",
+    "answer": "研發團隊可將 Syft、CycloneDX 或 Trivy 等掃描工具整合進 CI/CD 自動化建置流程中，讓系統在每次編譯（Build）時自動盤點所有相依套件，並直接輸出標準 JSON 或 XML 格式的 SBOM 檔案供合規歸檔使用。"
+  },
+  {
+    "id": "26d4f085-8e29-4a14-b5c7-1e8b3d7a9c07",
+    "translationKey": "pm_roadmap_timeline",
+    "category": "label",
+    "question": "產品經理 (PM) 在制定產品路線圖時，應如何安排 CRA 的合規時程？",
+    "answer": "PM 須留意 CRA 生效後的過渡緩衝期（正式生效後 36 個月將全面強制實施），建議在產品開發藍圖中提前規劃約 6 至 12 個月的作業時間，用以完成資安風險評估、技術文件撰寫、SBOM 建置及第三方驗證，確保產品如期上市。"
   }
 ]

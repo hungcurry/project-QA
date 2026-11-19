@@ -223,7 +223,7 @@ faqList?.addEventListener("click", handleAccordion);
 const paginationContainer = document.getElementById("paginationContainer");
 const paginationInfoEl = document.getElementById("paginationInfo");
 const paginationButtonsEl = document.getElementById("paginationButtons");
-const dataNum = 10; // 取幾筆資料
+const dataNum = 5; // 取幾筆資料
 let currentPage = 1;
 
 // 取得分頁計算狀態
