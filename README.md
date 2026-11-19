@@ -5,32 +5,18 @@
 > 網址
 
 ```jsx
+// 網路韌性法案（CRA）
+// CRA 法規適用於於歐盟市場供應之具有數位元素的產品與组件，
+// 例如任何處理數位數據的硬體或軟體產品，且該產品預期或合理預期會連接至其他裝置或網路。
+
+// 參考
 https://www.ti.com/zh-tw/technologies/security/cyber-resilience-act.html
-
 https://www.moxa.com/tw/about-us/policies/cyber-resilience-act-cra
-
 https://www.intertek-twn.com/frontend/HtmlEditor.aspx?lang=C&no=10607
 
-圖檔
+// 圖檔
 https://unsplash.com/photos/3d-computer-graphics-rhNff6hB41s
 
-```
-
-> CRA 相關
-
-```jsx
-CRA 要求
-CRA 法規適用於於歐盟市場供應之具有數位元素的產品與组件，
-例如任何處理數位數據的硬體或軟體產品，且該產品預期或合理預期會連接至其他裝置或網路。
-
-網路韌性法案（CRA）
-
-網址: https://www.moxa.com/tw/about-us/policies/cyber-resilience-act-cra
-
-什麼是歐盟網路韌性法案(CRA)？
-
-歐盟《網路韌性法案》(CRA)是一項歐盟法規，為所有在歐盟市場銷售，內含數位元件的產品（包括硬體與軟體）
-制定強制性的網路安全要求。其目的是確保這些產品在整個生命週期中，都能維持最高的安全性。
 ```
 
 > 功能
@@ -98,11 +84,11 @@ QA/
 
 ```jsx
 // 開發階段（自動監聽並即時編譯）
-npx tailwindcss -i ./src/css/style.css -o ./src/all.css --watch
+npx tailwindcss -i ./src/css/style.css -o ./src/dist/all.min.css --watch
 => npm run dev
 
 // 上線打包（壓縮產出 Minify CSS）
-npx tailwindcss -i ./src/css/style.css -o ./src/all.css --minify
+npx tailwindcss -i ./src/css/style.css -o ./src/dist/all.min.css --minify
 => npm run build
 ```
 
