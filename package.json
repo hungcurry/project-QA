@@ -8,7 +8,7 @@
     "dev:js": "npx esbuild ./src/js/script.js --bundle --watch --outfile=./src/dist/all.min.js",
     "dev": "concurrently \"npm run dev:css\" \"npm run dev:js\"",
     "build:css": "npx tailwindcss -i ./src/css/style.css -o ./src/dist/all.min.css --minify",
-    "build:js": "npx esbuild ./src/js/script.js --bundle --minify --outfile=./src/dist/all.min.js",
+    "build:js": "npx esbuild ./src/js/script.js --bundle --minify --drop:console --drop:debugger --outfile=./src/dist/all.min.js",
     "build": "npm run build:css && npm run build:js"
   },
   "keywords": [],
