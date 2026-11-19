@@ -9,16 +9,20 @@ const request = axios.create({
   timeout: 10000,
 });
 
-// 請求攔截器：例如自動帶 token
+// 請求攔截器
 request.interceptors.request.use((config) => {
-  const token = localStorage.getItem("CRA-authToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // console.log("config", config.requiresAuth);
+  if (config.requiresAuth) {
+    const token = localStorage.getItem("CRA-authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
+
   return config;
 });
 
-// 回應攔截器：成功直接回傳 data，失敗統一整理錯誤
+// 回應攔截器
 request.interceptors.response.use(
   (res) => res.data,
   (error) => {

@@ -5,113 +5,114 @@ import {
   apiGetCategories,
   apiGetUserRoles,
   // POST
-  apiCreateFaq
+  apiCreateFaq,
+  apiCreateLogin
 } from "../api/index.js";
 
 // ===================
-// ... Data ...
+// ... State ...
 // ===================
-const state = {
+const contentState = {
   faqs: [],
   categories: [],
   isLoaded: false,
 };
-const useState = {
+const authMockState = {
   userRoles: [],
   isLoaded: false,
 };
-let loadPromise = null;
+let allDataPromise = null;
 
 // ===================
-// ... GET ...
+// Mock Helpers
 // ===================
-// 模擬資料庫抓資料,所以在這邊執行 沒丟出去
-const GetUserRoles = async () => {
+async function loadUserRoles() {
   const userRoles = await apiGetUserRoles();
   // console.log("userRoles", userRoles);
-  return userRoles;
-};
-// GetUserRoles();
+  return Array.isArray(userRoles) ? userRoles : [];
+}
+async function verifyMockUserRoles(credentials = {}) {
+  const email = credentials.email?.trim() ?? "";
+  const password = credentials.password ?? "";
 
-// 初始化所有資料（呼叫API）
-export const fetchAllData = async () => {
-  if (state.isLoaded) return;
-
-  if (loadPromise) {
-    return await loadPromise;
-  }
-  // prettier-ignore
-  try {
-    loadPromise = Promise.all([
-      apiGetFaqs(),
-      apiGetCategories(),
-    ]);
-    console.log("Store 所有資料初始化成功");
-
-    const [faqs, categories] = await loadPromise;
-
-    state.faqs = faqs;
-    state.categories = categories;
-    state.isLoaded = true;
-  }
-  catch (error) {
-    loadPromise = null;
-    throw error;
-  }
-};
-// Getter
-export const getFaqs = () => state.faqs;
-export const getCategories = () => state.categories;
-
-// ===================
-// ... POST ...
-// ===================
-export const handleCreateFaq = async (data) => {
-  const newFaq = await apiCreateFaq(data);
-  state.faqs = [...state.faqs, newFaq];
-  return newFaq;
-};
-// Getter
-export const getIsLoaded = () => state.isLoaded;
-
-// 模擬後端函式
-async function handleUserRoles(data) {
-  // 1. 模擬資料庫還沒載入
-  if (!useState.isLoaded) {
-    useState.userRoles = await GetUserRoles();
-    useState.isLoaded = true;
+  if (!email || !password) {
+    throw new Error("請輸入帳號與密碼");
   }
 
-  // 2. 模擬後端 POST 驗證：從 Store 資料庫中尋找相符的使用者
-  const { email, password } = data;
-  const matchedUser = useState.userRoles.find(
+  // 模擬資料庫還沒載入
+  if (!authMockState.isLoaded) {
+    authMockState.userRoles = await loadUserRoles();
+    authMockState.isLoaded = true;
+  }
+
+  const matchedUser = authMockState.userRoles.find(
     (user) => user.role !== "default" && user.email === email && user.password === password,
   );
 
-  // 3. 驗證失敗：直接拋出錯誤，讓前端 catch 捕捉
   if (!matchedUser) {
     throw new Error("帳號或密碼錯誤");
   }
 
-  // 4. 驗證成功：包裝資料並加上模擬的 Token 回傳給前端
-  const responseData = {
-    // 模擬產生的 Token
-    token: `mock-jwt-token-${Date.now()}`,
-    user: matchedUser,
-  };
+  const { password: _removedPassword, ...safeUser } = matchedUser;
 
-  return responseData;
+  return {
+    token: `mock-jwt-token-${Date.now()}`,
+    user: safeUser,
+  };
 }
-export async function fetchLogin(data) {
+
+// ===================
+// ... GET ...
+// ===================
+// 初始化所有資料（呼叫API）
+export async function fetchAllData() {
+  if (contentState.isLoaded) {
+    return;
+  }
+
+  if (allDataPromise) {
+    return await allDataPromise;
+  }
   // prettier-ignore
   try {
-    // 真的發送 HTTP POST 請求
-    // const result = await request.post("/auth/login", {
-    //   email: data.email,
-    //   password: data.password,
-    // });
+    allDataPromise = Promise.all([
+      apiGetFaqs(),
+      apiGetCategories(),
+    ]);
+    const [faqs, categories] = await allDataPromise;
+
+    contentState.faqs = faqs;
+    contentState.categories = categories;
+    contentState.isLoaded = true;
+    console.log("Store 所有資料初始化成功");
+  }
+  catch (error) {
+    throw error;
+  }
+  finally {
+    allDataPromise = null;
+  }
+}
+// Getter
+export const getFaqs = () => contentState.faqs;
+export const getCategories = () => contentState.categories;
+export const getIsLoadedData = () => contentState.isLoaded;
+
+// ===================
+// ... POST ...
+// ===================
+export async function fetchCreateFaq(data) {
+  const newFaq = await apiCreateFaq(data);
+  contentState.faqs = [...contentState.faqs, newFaq];
+  return newFaq;
+}
+export async function fetchCreateLogin(data) {
+  // prettier-ignore
+  try {
+    // 真的發送 HTTP POST 請求  "/auth/login"
+    // const result = await apiCreateLogin(data);
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const result = await handleUserRoles(data);
+    const result = await verifyMockUserRoles(data);
 
     if (!result) {
       throw new Error("帳號或密碼錯誤");

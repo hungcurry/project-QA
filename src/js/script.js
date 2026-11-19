@@ -417,7 +417,7 @@ themeToggleBtn?.addEventListener("click", toggleTheme);
 // ===================
 // ... Permission ...
 // ===================
-import { fetchLogin } from "../store/useFetchStore";
+import { fetchCreateLogin } from "../store/useFetchStore";
 // prettier-ignore
 import {
   PERMISSIONS,
@@ -453,7 +453,7 @@ async function handleLogin() {
       email,
       password,
     };
-    const response = await fetchLogin(sendData);
+    const response = await fetchCreateLogin(sendData);
     console.log('--------------')
     console.log('response' , response)
 
